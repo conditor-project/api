@@ -1,0 +1,35 @@
+%YAML 1.2
+---
+
+imports:
+    - { resource: 'parameters.yml' }
+
+parameters:
+  CONDITOR_API_HOST: 0.0.0.0
+  CONDITOR_API_PORT: 63332
+  LOG_PATH: /var/log
+  ES_HOSTS: 127.0.0.1:9200
+  ES_VERSION: "6.x"
+
+app:
+  name: conditor-api
+
+nodejs:
+  stackTracelimit: 10
+
+log:
+  path: %env(HOME)%%env(LOG_PATH)%
+
+express:
+  api:
+    host: %env(CONDITOR_API_HOST)%
+    port: %env(CONDITOR_API_PORT)%
+
+elastic:
+  clients:
+    main:
+      hosts: %env(ES_HOSTS)% # String, String[], Object[]
+      apiVersion: %env(ES_VERSION)%
+      requestTimeout: 30000
+      log: # Possible values: error, info, trace, warning, debug
+        - error

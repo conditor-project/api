@@ -1,0 +1,15 @@
+{
+  "UP_TO_DATE"           : "dépôt à jour",
+  "NEED_TO_PULL"         : "\"PULL\" nécessaire",
+  "NEED_TO_PUSH"         : "\"PUSH\" nécessaire",
+  "DIVERGED"             : "le dépôt a divergé",
+  "NOT_A_REPOSITORY"     : "n'est pas un dépôt git",
+  "ENOENT"               : "fichier ou répertoire inexistant",
+  "EACCES"               : "fichier ou répertoire inaccessible",
+  "ENAMETOOLONG"         : "nom de fichier trop long",
+  "UPDATE_ERROR"         : "accés au dépôt distant impossible",
+  "DIFF"                 : "Le dépôt a été modifié",
+  "No Living connections": "Pas de connection elastic",
+  "ECONNREFUSED"         : "Connection refusée avec elastic",
+  "Generic Error"        : "Une erreur s'est produite"
+}
