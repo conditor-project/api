@@ -20,7 +20,7 @@
     "node"
   ],
   "author": "conditor team",
-  "license": "ISC",
+  "license": "CeCILL",
   "bugs": {
     "url": "https://github.com/conditor-project/api/issues"
   },
