@@ -8,9 +8,9 @@ const config           = require('config-component').get(),
 
 let started = false;
 
-module.exports.get       = get;
-module.exports.startAll  = startAll;
-module.exports.stopAll   = stopAll;
+module.exports.get = get;
+module.exports.startAll = startAll;
+module.exports.stopAll = stopAll;
 module.exports.isStarted = isStarted;
 
 
@@ -20,6 +20,7 @@ function get () {
 
 
 function startAll () {
+// jshint validthis: true
   if (started) return this;
   started = true;
   _.transform(config.elastic.clients,
@@ -33,6 +34,7 @@ function startAll () {
 }
 
 function stopAll () {
+// jshint validthis: true
   started = false;
   _.forOwn(clientsContainer, (client) => {client.close();});
 

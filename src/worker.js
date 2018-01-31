@@ -1,20 +1,22 @@
 'use strict';
 
 const
-  express  = require('express'),
-  cluster  = require('cluster'),
-  app      = express(),
-  myColors = require('../helpers/myColors'), // jshint ignore: line
-  helmet  = require('helmet'),
-  morgan  = require('./../middlewares/morgan'),
+  express            = require('express'),
+  app                = express(),
+  myColors           = require('../helpers/myColors'), // jshint ignore: line
+  helmet             = require('helmet'),
+  morgan             = require('./../middlewares/morgan'),
   errorHandler       = require('./../middlewares/errorHandler'),
   elasticContainer   = require('../helpers/clients/elastic'),
-  config   = require('config-component').get(),
-  _        = require('lodash')
+  config             = require('config-component').get(),
+  resConfig          = require('../middlewares/resConfig'),
+  httpMethodsHandler = require('../middlewares/httpMethodsHandler')
 ;
-console.log(elasticContainer.startAll().get())
+
+elasticContainer.startAll();
+
 const
-  root = require('../controllers/root'),
+  root     = require('../controllers/root'),
   document = require('../controllers/document')
 ;
 
@@ -27,7 +29,10 @@ server = app.listen(
   config.express.api.host,
   () => console.info('istex-api server listening on %s:%d'.info, config.express.api.host, config.express.api.port)
 );
-app.use(helmet(), morgan);
+app.set('etag', false);
+app.set('json spaces', 2);
+app.use(httpMethodsHandler, resConfig);
+app.use(helmet({noSniff: false}), morgan);
 app.use(root, document);
 app.use(errorHandler);
 

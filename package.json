@@ -4,7 +4,7 @@
   "description": "Main api of the Conditor-project",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=production forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a app.js",
+    "start": "NODE_ENV=production forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a  -e ~/.forever/conditor-api.errors.log app.js",
     "stop": "forever stop conditor-api",
     "dev": "NODE_ENV=development nodemon app.js",
     "test": "NODE_ENV=test;mocha"
@@ -35,6 +35,7 @@
     "forever": "^0.15.3",
     "helmet": "^3.10.0",
     "lodash": "^4.17.4",
+    "lucene-query-parser": "^1.2.0",
     "mocha": "^5.0.0",
     "morgan": "^1.9.0",
     "should": "^13.2.1",
