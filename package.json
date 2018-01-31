@@ -27,6 +27,7 @@
   "homepage": "https://github.com/conditor-project/api#readme",
   "dependencies": {
     "async": "^2.6.0",
+    "bodybuilder": "^2.2.7",
     "colors": "^1.1.2",
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
     "elasticsearch": "^14.0.0",

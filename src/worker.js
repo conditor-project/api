@@ -29,8 +29,10 @@ server = app.listen(
   config.express.api.host,
   () => console.info('istex-api server listening on %s:%d'.info, config.express.api.host, config.express.api.port)
 );
+
 app.set('etag', false);
 app.set('json spaces', 2);
+
 app.use(httpMethodsHandler, resConfig);
 app.use(helmet({noSniff: false}), morgan);
 app.use(root, document);
