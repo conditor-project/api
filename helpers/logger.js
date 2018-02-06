@@ -14,8 +14,7 @@ function logError (err) {
   console.error('%s: [%s]: %s',
                 'Conditor-api'.bold.danger,
                 new Date(Date.now()).toLocaleString(),
-                ...(_.map(message, trans)),
-                '\n'
+                ...(_.map(message, trans))
   )
   ;
 }
@@ -24,7 +23,6 @@ function logInfo () {
   console.info('%s: [%s]:',
                'Conditor-api'.bold.info,
                new Date(Date.now()).toLocaleString(),
-               ...(_.map(arguments, trans)),
-               '\n'
+               ...(_.map(arguments, trans))
   );
 }
