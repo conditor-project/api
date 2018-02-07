@@ -2,7 +2,7 @@
 ---
 
 imports:
-    - { resource: 'parameters.yml' }
+    - { resource: 'secret_parameters.yml' }
 
 parameters:
   LOG_PATH: /var/log
