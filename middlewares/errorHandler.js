@@ -1,17 +1,12 @@
 /* jshint -W098 */
 'use strict';
-
+const logger   = require('../helpers/logger'),
+      logError = logger.logError
+;
 module.exports = errorHandler;
 
 function errorHandler (err, req, res, next) {
-  console.error(err, err.stack, '\n');
-  let errorResponse =
+  logError(err, err.stack, '\n');
 
-        {
-          'status' : 500,
-          'message': 'Erreur interne du serveur'
-        }
-  ;
-
-  res.status(500).send(errorResponse);
+  if (!res.headersSent) res.sendStatus(500);
 }

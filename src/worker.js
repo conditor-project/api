@@ -15,7 +15,8 @@ const
   semver             = require('semver'),
   errorHandler       = require('../middlewares/errorHandler'),
   resConfig          = require('../middlewares/resConfig'),
-  httpMethodsHandler = require('../middlewares/httpMethodsHandler')
+  httpMethodsHandler = require('../middlewares/httpMethodsHandler'),
+  compression        = require('compression')
 ;
 
 elasticContainer.startAll();
@@ -29,18 +30,28 @@ let server;
 
 Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
 
+module.exports = app;
+
+app._close = ()=>{
+  server.close();
+};
+
 server = app.listen(
   config.express.api.port,
   config.express.api.host,
-  () => logInfo(`Worker ${cluster.worker.id}`.bold,
-                `: server listening on `,
-                `${config.express.api.host + ':' + config.express.api.port}`.bold.success)
+  () => {
+    const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
+    logInfo(clusterId.bold,
+            `: server listening on `,
+            `${config.express.api.host + ':' + config.express.api.port}`.bold.success);
+  }
 );
 
 app.set('etag', false);
 app.set('json spaces', 2);
 app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
+app.use(compression());
 app.use(`/v${semver.major(config.app.version)}`, root, records);
 app.use(errorHandler);
 

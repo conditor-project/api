@@ -12,8 +12,8 @@ responseFormat.getSingleHit = (response) => {
   if (response.hits.total > 1) throw nonUniqueResultException();
 
   return {
-    result: _.get(response, 'hits.hits.0._source'),
-    total : _.get(response, 'hits.total')
+    result    : _.get(response, 'hits.hits.0._source'),
+    totalCount: _.get(response, 'hits.total')
   };
 };
 
@@ -21,20 +21,22 @@ responseFormat.getSingleScalarResult = (response) => {
   if (response.hits.total === 0) throw noResultException();
   if (response.hits.total > 1) throw nonUniqueResultException();
 
-  const result =_.get(response, 'hits.hits.0._source');
+  const result = _.get(response, 'hits.hits.0._source');
   if (_.size(result) === 0) throw noResultException();
   if (_.size(result) > 1) throw nonUniqueResultException();
 
   return {
-    result:  _.find(result),
-    total : _.get(response, 'hits.total')
+    result    : _.find(result),
+    totalCount: _.get(response, 'hits.total')
   };
 };
 
 responseFormat.getResult = (response) => {
   return {
-    result: _.map(response.hits.hits, _.iteratee('_source')),
-    total : _.get(response, 'hits.total')
+    result     : _.map(response.hits.hits, _.iteratee('_source')),
+    totalCount : _.get(response, 'hits.total', 0),
+    resultCount: _.get(response, 'hits.hits.length', 0),
+    scrollId   : _.get(response, '_scroll_id')
   };
 };
 

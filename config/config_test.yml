@@ -1,0 +1,5 @@
+%YAML 1.2
+---
+
+imports:
+  - resource: config.yml

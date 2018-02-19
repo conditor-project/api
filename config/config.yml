@@ -23,6 +23,7 @@ express:
     port: %env(CONDITOR_API_PORT)%
 
 elastic:
+  maxScrollDuration: 300s # d|h|m|s|ms|micros|nanos
   clients:
     main:
       hosts: %env(CONDITOR_ES_HOSTS)% # String, String[], Object[]
