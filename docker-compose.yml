@@ -1,0 +1,30 @@
+version: '2'
+services:
+
+  conditorapi:
+    container_name: conditor-api
+    build:
+      context: .
+      args:
+        - http_proxy
+        - https_proxy
+    image: conditor/conditor-api:1.0.0
+    environment :
+      LOG_PATH: /var/log
+      CONDITOR_API_HOST: 0.0.0.0
+      CONDITOR_API_PORT: 63332
+      CONDITOR_ES_HOSTS: ${CONDITOR_ES_HOSTS}
+      CONDITOR_ES_VERSION: 6.x
+
+    ports:
+      - ${CONDITOR_API_PORT}:63332
+    networks:
+      - apinet
+    volumes:
+      - ./.forever:/app/.forever
+      - ${LOG_PATH}:/var/log
+    restart: "on-failure:3"
+
+networks:
+  apinet:
+    driver: bridge

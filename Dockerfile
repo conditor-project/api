@@ -16,5 +16,6 @@ RUN npm install
 COPY . .
 
 EXPOSE 63332
-CMD [ "npm", "start" ]
+ENV DEBUG *
+CMD [ "node", "app" ]
 
