@@ -17,5 +17,5 @@ COPY . .
 
 EXPOSE 63332
 ENV DEBUG *
-CMD [ "node", "app" ]
+CMD [ "node", "app"]
 
