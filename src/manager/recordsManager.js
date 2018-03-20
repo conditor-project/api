@@ -1,6 +1,7 @@
 'use strict';
 
 const
+  Buffer           = require('buffer').Buffer,
   elasticContainer = require('../../helpers/clients/elastic').get(),
   esClient         = elasticContainer.main,
   config           = require('config-component').get(),
@@ -20,14 +21,14 @@ const recordsManager = module.exports;
 
 const defaultParams   = {},
       mandatoryParams = {
-        index     : 'notices'
-        //,
-        //filterPath: 'hits.hits._source, hits.total, _scroll_id'
+        index     : 'records',
+        filterPath: 'hits.hits._source, hits.total, _scroll_id'
       }
 ;
 
 recordsManager.getSingleHitByIdConditor = getSingleHitByIdConditor;
 recordsManager.getSinglePathByIdConditor = getSinglePathByIdConditor;
+recordsManager.getTeiByIdConditor = getTeiByIdConditor;
 recordsManager.search = search;
 recordsManager.searchRecords = searchRecords;
 recordsManager.filterByCriteria = filterByCriteria;
@@ -65,6 +66,8 @@ function filterByCriteria (criteria, queryString = {}) {
                                   {body: builder.build()},
                                   _queryStringToParams(queryString),
                                   defaultParams);
+
+    console.dir(params, {depth: 10})
     esClient
       .search(params)
       .then(esResultFormat.getResult)
@@ -77,31 +80,40 @@ function filterByCriteria (criteria, queryString = {}) {
 function getSingleHitByIdConditor (idConditor, queryString) {
   return new Promise((resolve, reject) => {
 
-    const params = _.defaultsDeep({size:1, q: `idConditor:"${idConditor}"`},
+    const params = _.defaultsDeep({size: 1, q: `idConditor:"${idConditor}"`},
                                   mandatoryParams,
                                   _queryStringToParams(queryString),
                                   defaultParams);
     return esClient
       .search(params)
-      .then(esResultFormat.getSingleHit)
+      .then(esResultFormat.getSingleResult)
       .then(resolve)
       .catch(reject)
-    ;
+      ;
   });
 }
 
 function searchRecords (queryString) {
-  const params = _queryStringToParams(queryString);
-  return esClient
-    .search({index: 'notices', filterPath: 'hits.hits._source, hits.total, _scroll_id'})
-    .then(esResultFormat.getResult)
-    ;
+
+  return new Promise((resolve, reject) => {
+
+    const params = _.defaultsDeep({},
+                                  mandatoryParams,
+                                  _queryStringToParams(queryString),
+                                  defaultParams);
+    return esClient
+      .search(params)
+      .then(esResultFormat.getResult)
+      .then(resolve)
+      .catch(reject)
+      ;
+  });
 }
 
 function getSinglePathByIdConditor (idConditor) {
   return esClient
     .search({
-              index     : 'notices',
+              index     : 'records',
               q         : `idConditor:"${idConditor}"`,
               filterPath: 'hits.hits._source.path, hits.total',
               size      : 1
@@ -113,8 +125,21 @@ function getSinglePathByIdConditor (idConditor) {
       throw err;
     });
 }
-
-
+function getTeiByIdConditor (idConditor) {
+  return esClient
+    .search({
+              index     : 'records',
+              q         : `idConditor:"${idConditor}"`,
+              filterPath: 'hits.hits._source.teiBlob, hits.total',
+              size      : 1
+            })
+    .then(esResultFormat.getSingleScalarResult)
+    .then((result) => {
+      result.result = Buffer.from(result.result, 'base64');
+      return result;
+    })
+    ;
+}
 
 function search (query) {
   const
@@ -122,20 +147,19 @@ function search (query) {
     searchBody  = bodybuilder().filter('term', parsedQuery.left.field, parsedQuery.left.term).build();
   console.dir(parsedQuery, {depth: 5});
   console.dir(searchBody, {depth: 5});
-  //return esClient
-  //  .search({index: 'notices',  q:query.q})
-  //  ;
+
   return esClient
-    .search({index: 'notices', body: searchBody})
+    .search({index: 'records', body: searchBody})
     .then(esResultFormat.getResult)
     ;
 }
+
 function _queryStringToParams (queryString) {
   const queryStringToParams = {
           scroll   : {isValid: _validateScrollDuration},
           includes : {mapKey: _.constant('_sourceInclude'), mapValue: split(',')},
           excludes : {mapKey: _.constant('_sourceExclude'), mapValue: split(',')},
-          size     : {},
+          size     : {isValid: _validateSize},
           scroll_id: {mapKey: _.constant('scrollId')}
         }
   ;
@@ -144,12 +168,14 @@ function _queryStringToParams (queryString) {
     .pick(_.keys(queryStringToParams))
     .transform(
       (accu, value, key) => {
-        const newKey   = _.has(queryStringToParams, [key, 'mapKey']) ? _.invoke(queryStringToParams,
-                                                                                [key, 'mapKey'],
-                                                                                key) : key,
-              newValue = _.has(queryStringToParams, [key, 'mapValue']) ? _.invoke(queryStringToParams,
-                                                                                  [key, 'mapValue'],
-                                                                                  value) : value
+        const newKey   =
+                _.has(queryStringToParams, [key, 'mapKey'])
+                  ? _.invoke(queryStringToParams, [key, 'mapKey'], key)
+                  : key,
+              newValue =
+                _.has(queryStringToParams, [key, 'mapValue'])
+                  ? _.invoke(queryStringToParams, [key, 'mapValue'], value)
+                  : value
         ;
         _.invoke(queryStringToParams, [key, 'isValid'], value);
 
@@ -159,6 +185,11 @@ function _queryStringToParams (queryString) {
     )
     .value()
     ;
+}
+
+function _validateSize (size) {
+
+  if (size > config.elastic.maxSize) throw sizeTooHighException(size, config.elastic.maxSize);
 }
 
 function _validateScrollDuration (durationString) {
@@ -173,6 +204,13 @@ function _validateScrollDuration (durationString) {
   }
 
   if (scrollDuration > maxDuration) throw invalidScrollDurationException(scrollDuration, maxDuration);
+}
+
+function sizeTooHighException (value, maxValue) {
+  let err = new Error(`The required size ${value} exceed the maximum  ${maxValue}`);
+  err.name = 'sizeTooHighException';
+  err.status = 400;
+  return err;
 }
 
 function invalidScrollDurationException (scrollDuration, maxScrollDuration) {

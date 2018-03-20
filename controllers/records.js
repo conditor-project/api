@@ -13,82 +13,40 @@ const IS_DUPLICATE     = 'duplicate',
       IS_NOT_DUPLICATE = 'not_duplicate'
 ;
 
-const reqParamsToCriteria = {
-  isDuplicate: {mapValue: {[IS_DUPLICATE]: true, [IS_NOT_DUPLICATE]: false}},
-  datePubli  : {mapKey: 'datePubli.normalized'}
-};
 
-function _filterUselessParams (params) {
-  return _(params)
-    .pickBy(
-      (value, key) => { return _.isNaN(_.toNumber(key)); })
-    .omitBy(_.isUndefined)
-    .value();
-}
-
-function _mapParams (params) {
-  return _.transform(params,
-                     (accu, value, key) => {
-                       value = _.get(reqParamsToCriteria, [key, 'mapValue', _.toLower(value)], value);
-                       key = _.get(reqParamsToCriteria, [key, 'mapKey'], key);
-                       accu[key] = value;
-                     },
-                     {});
-}
-
-function _getResultHandler (res) {
-  return ({result, resultCount, totalCount, scrollId}) => {
-    scrollId && res.set('Scroll-Id', scrollId);
-    res.set('X-Total-Count', totalCount);
-    res.set('X-Result-Count', resultCount);
-    console.log(res.get('X-Total-Count'))
-    res.json(result);
-  };
-}
-
-function _getErrorCatcher (res) {
-  return (err) => {
-    let status = 500;
-    logError(err);
-    if (err.status === 400) status = 400;
-    res.sendStatus(status);
-  };
-}
-
+// /records(/{ALL})?scroll_id={SCROLL_ID}&scroll={DurationString}
 router.use('/records', (req, res, next) => {
   if (!req.query.scroll_id) return next();
 
   recordsManager
     .scroll(req.query)
     .then(_getResultHandler(res))
-    .catch(_getErrorCatcher(res))
+    .catch(_getErrorHandler(res))
   ;
 });
 
+// /records(/{source})(/{year})(/{DUPLICATE_FLAG})
 router.get(
-  `/records(/:source(hal|wos))?(/:datePubli(((18|19|20)[0-9]{2})))?(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`,
+  `/records(/:source(hal|wos))?(/:publicationYear(((18|19|20)[0-9]{2})))?(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`,
   (req, res, next) => {
-    const params = _filterUselessParams(req.params);
-    if (_.isEmpty(params)) return next();
-
-    const criteria = _mapParams(params);
+    const criteria = _routeParamsToCriteria(req.params);
+    if (_.isEmpty(criteria)) return next();
 
     recordsManager
       .filterByCriteria(criteria, req.query)
       .then(_getResultHandler(res))
-      .catch(_getErrorCatcher(res));
+      .catch(_getErrorHandler(res));
   });
 
+
+// /records/{idConditor}/tei
 router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res, next) => {
   recordsManager
-    .getSinglePathByIdConditor(req.params.idConditor)
+    .getTeiByIdConditor(req.params.idConditor)
     .then(({result, total}) => {
-      res.set('Content-Type', 'application/tei+xml');
+      res.set('Content-Type', 'application/xml');
       res.set('X-Total-Count', total);
-      res.sendFile(result, (err) => {
-        if (err && err.code === 'ENOENT') return res.sendStatus(410);
-        if (err) next(err);
-      });
+      res.send(result);
     })
     .catch((err) => {
       if (err.name === 'NoResultException') return res.sendStatus(404);
@@ -97,6 +55,7 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res, next) => {
     });
 });
 
+// /records/{idConditor}
 router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
   recordsManager
     .getSingleHitByIdConditor(req.params.idConditor, req.query)
@@ -105,39 +64,58 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
       if (err.name === 'NoResultException') return res.sendStatus(404);
       throw(err);
     })
-    .catch(_getErrorCatcher(res))
+    .catch(_getErrorHandler(res))
   ;
 });
 
-router.get('/records/filter', (req, res, next) => {
-  if (_.isEmpty(req.query) || !req.query.filter) return next();
 
-  recordsManager
-    .search(req.query)
-    .then(({result, total, scrollId}) => {
-      res.set('X-Total-Count', total);
-      scrollId && res.set('Scroll-Id', scrollId);
-      res.json(result);
-    })
-    .catch((err) => {
-      logError(err);
-      res.sendStatus(500);
-    });
-});
-
-
+// /records
 router.get('/records', (req, res) => {
   recordsManager
     .searchRecords(req.query)
-    .then(({result, total, scrollId}) => {
-      res.set('X-Total-Count', total);
-      scrollId && res.set('Scroll-Id', scrollId);
-      res.json(result);
-    })
-    .catch((err) => {
-      logError(err);
-      res.sendStatus(500);
-    });
+    .then(_getResultHandler(res))
+    .catch(_getErrorHandler(res));
 });
+
+
+function _routeParamsToCriteria (routeParams) {
+  const reqParamsToCriteria = {
+    source         : {},
+    isDuplicate    : {mapValue: {[IS_DUPLICATE]: true, [IS_NOT_DUPLICATE]: false}},
+    publicationYear: {mapKey: 'datePubli.normalized'}
+  };
+
+  return _(routeParams)
+    .omitBy((value, key) => { return _isNumeric(key); })
+    .omitBy(_.isUndefined)
+    .transform((accu, value, key) => {
+                 value = _.get(reqParamsToCriteria, [key, 'mapValue', _.toLower(value)], value);
+                 key = _.get(reqParamsToCriteria, [key, 'mapKey'], key);
+                 accu[key] = value;
+               },
+               {})
+    .value();
+}
+
+function _isNumeric (n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function _getResultHandler (res) {
+  return ({result, resultCount, totalCount, scrollId}) => {
+    scrollId && res.set('Scroll-Id', scrollId);
+    res.set('X-Total-Count', totalCount);
+    res.set('X-Result-Count', resultCount);
+    res.json(result);
+  };
+}
+
+function _getErrorHandler (res) {
+  return (err) => {
+    let status = [400, 404].includes(err.status) ? err.status : 500;
+    logError(err);
+    res.sendStatus(status);
+  };
+}
 
 module.exports = router;

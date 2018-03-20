@@ -7,21 +7,21 @@ const _              = require('lodash'),
 
 module.exports = responseFormat;
 
-responseFormat.getSingleHit = (response) => {
+responseFormat.getSingleResult = (response) => {
   if (response.hits.total === 0) throw noResultException();
   if (response.hits.total > 1) throw nonUniqueResultException();
 
-  return {
-    result    : _.get(response, 'hits.hits.0._source'),
-    totalCount: _.get(response, 'hits.total')
-  };
+  const resultWrapper = responseFormat.getResult(response);
+  resultWrapper.result = _.find(resultWrapper.result);
+
+  return resultWrapper;
 };
 
 responseFormat.getSingleScalarResult = (response) => {
   if (response.hits.total === 0) throw noResultException();
   if (response.hits.total > 1) throw nonUniqueResultException();
 
-  const result = _.get(response, 'hits.hits.0._source');
+  const result = _.get(response, 'hits.hits.0._source', {});
   if (_.size(result) === 0) throw noResultException();
   if (_.size(result) > 1) throw nonUniqueResultException();
 
@@ -36,7 +36,7 @@ responseFormat.getResult = (response) => {
     result     : _.map(response.hits.hits, _.iteratee('_source')),
     totalCount : _.get(response, 'hits.total', 0),
     resultCount: _.get(response, 'hits.hits.length', 0),
-    scrollId   : _.get(response, '_scroll_id')
+    scrollId   : _.get(response, '_scroll_id', null)
   };
 };
 

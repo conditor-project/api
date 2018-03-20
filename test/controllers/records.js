@@ -1,62 +1,50 @@
 'use strict';
 
 const request = require('supertest'),
-      app     = require('../../src/worker'),
-      Promise = require('bluebird')
+      app     = require('../../src/worker')
 ;
 
-let promiseWhile = function(condition, action) {
-  var resolver = Promise.defer();
-
-  var loop = function() {
-    if (!condition()) return resolver.resolve();
-    return Promise.cast(action())
-                  .then(loop)
-                  .catch(resolver.reject);
-  };
-
-  process.nextTick(loop);
-
-  return resolver.promise;
-};
 
 describe('GET /records', function() {
   this.timeout(100000);
   after(function() {
     app._close();
   });
+  describe('/{Source}?scroll={DurationString}&size={Number}', function() {
+    it('should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
+      request(app)
+        .get('/v1/records?scroll=5m&size=1000&includes=idConditor,titre&excludes=titre.value')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .expect('Scroll-Id', /[A-Za-z0-9]+/)
+        .end(function(err, res) {
+          if (err) return done(err);
+          let scrollId = res.header['scroll-id'];
+          let scrolledResultCount = +res.header['x-result-count'];
+          console.log('\tScrolled/Total\n');
 
-  it('respond with JSON', function(done) {
-    request(app)
-      .get('/v1/records/hal/1999?scroll=5m&size=2&includes=idConditor')
-      .expect(200)
-      .expect('Content-Type', /json/)
-      .expect('Scroll-Id', /[A-Za-z0-9]+/)
-      .end(function(err, res) {
-        if (err) return done(err);
-        console.log(res.get['scroll-id'])
-        let scrollId = res.header['scroll-id'];
-        let scrolledResultCount = res.header['x-result-count'];
-        console.log(scrollId, scrolledResultCount, res.get['content-type']);
-        promiseWhile(() => {
-                       return res.header['X-Total-Count'] > scrolledResultCount;
-                     },
-                     () => {
-                       return request(app)
-                         .get(`/v1/records?scroll_id=${scrollId}&scroll=5m`)
-                         .expect(200)
-                         .expect('Content-Type', /json/)
-                         .expect('Scroll-Id', /[A-Za-z0-9]+/)
-                         .then(function(res) {
-                           console.log(scrollId, scrolledResultCount);
-                           scrolledResultCount += res.header['X-Result-Count'];
-                           scrollId = res.header['scroll-id'];
-                         })
-                         .catch(done);
-                     }
-        ).then(() => {done();});
+          (function scroll () {
+            request(app)
+              .get(`/v1/records?scroll_id=${scrollId}&scroll=5m`)
+              .expect(200)
+              .expect('Content-Type', /json/)
+              .expect('Scroll-Id', /[A-Za-z0-9]+/)
+              .then(function(res) {
+                scrolledResultCount += +res.header['x-result-count'];
+                scrollId = res.header['scroll-id'];
 
-
-      });
+                const print = scrolledResultCount + '/' + res.header['x-total-count'];
+                console.log('\u001b[1A\u001b[1K\t' + print);
+                if (res.header['x-total-count'] > scrolledResultCount) {
+                  return scroll();
+                }
+                return done();
+              })
+              .catch((err) => {done(err);})
+            ;
+          })();
+        });
+    });
   });
+
 });

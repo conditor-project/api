@@ -28,26 +28,26 @@
   "dependencies": {
     "async": "^2.6.0",
     "bluebird": "^3.5.1",
-    "bodybuilder": "^2.2.7",
-    "colors": "^1.1.2",
-    "compression": "^1.7.1",
+    "bodybuilder": "^2.2.9",
+    "colors": "^1.2.1",
+    "compression": "^1.7.2",
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
-    "elasticsearch": "^14.0.0",
-    "express": "^4.16.2",
-    "file-stream-rotator": "^0.2.0",
+    "elasticsearch": "^14.2.0",
+    "express": "^4.16.3",
+    "file-stream-rotator": "^0.2.1",
     "forever": "^0.15.3",
     "fs-extra": "^5.0.0",
-    "helmet": "^3.10.0",
-    "lodash": "^4.17.4",
+    "helmet": "^3.12.0",
+    "lodash": "^4.17.5",
     "lucene-query-parser": "^1.2.0",
-    "mocha": "^5.0.0",
-    "moment-duration-format": "^2.2.1",
+    "mocha": "^5.0.4",
+    "moment-duration-format": "^2.2.2",
     "morgan": "^1.9.0",
     "semver": "^5.5.0",
     "should": "^13.2.1",
     "supertest": "^3.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.14.11"
+    "nodemon": "^1.17.2"
   }
 }
