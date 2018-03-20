@@ -7,7 +7,7 @@ imports:
 nodejs:
   stackTracelimit: 20
 
-#elastic:
- # clients:
- #   main:
-      #hosts: 127.0.0.1:9200 # String, String[], Object[]
+elastic:
+  clients:
+    main:
+      hosts: 127.0.0.1:9200 # String, String[], Object[]
