@@ -19,16 +19,15 @@ const
 
 const recordsManager = module.exports;
 
-const defaultParams   = {},
-      mandatoryParams = {
-        index     : 'records',
-        filterPath: 'hits.hits._source, hits.total, _scroll_id'
-      }
+const
+  defaultParams = {
+    index     : 'records',
+    filterPath: ['hits.hits._source', 'hits.total', '_scroll_id']
+  }
 ;
 
 recordsManager.getSingleHitByIdConditor = getSingleHitByIdConditor;
-recordsManager.getSinglePathByIdConditor = getSinglePathByIdConditor;
-recordsManager.getTeiByIdConditor = getTeiByIdConditor;
+recordsManager.getSingleTeiByIdConditor = getSingleTeiByIdConditor;
 recordsManager.search = search;
 recordsManager.searchRecords = searchRecords;
 recordsManager.filterByCriteria = filterByCriteria;
@@ -36,109 +35,100 @@ recordsManager.scroll = scroll;
 
 
 function scroll (queryString = {}) {
-  return new Promise((resolve, reject) => {
-    const params = _.defaultsDeep({},
-                                  {
-                                    filterPath: 'hits.hits._source, hits.total, _scroll_id'
-                                  },
-                                  _queryStringToParams(queryString),
-                                  defaultParams);
-    esClient
-      .scroll(params)
-      .then(esResultFormat.getResult)
-      .then(resolve)
-      .catch(reject)
-    ;
-  });
+  return Promise
+    .resolve()
+    .then(() => {
+      const params =
+              _.defaultsDeep(
+                _queryStringToParams(queryString),
+                _.omit(defaultParams, 'index')
+              );
+
+      return esClient
+        .scroll(params)
+        .then(esResultFormat.getResult)
+        ;
+    });
+
 }
 
 function filterByCriteria (criteria, queryString = {}) {
 
-  return new Promise((resolve, reject) => {
-    const builder = bodybuilder();
+  return Promise
+    .resolve()
+    .then(() => {
+      const builder = bodybuilder();
 
-    _.forOwn(criteria, (value, field) => {
-      builder.filter('term', field, value);
+      _.forOwn(criteria, (value, field) => {
+        builder.filter('term', field, value);
+      });
+
+      const params =
+              _.defaultsDeep(
+                {body: builder.build()},
+                _queryStringToParams(queryString),
+                defaultParams);
+
+      return esClient
+        .search(params)
+        .then(esResultFormat.getResult)
+        ;
     });
-
-    const params = _.defaultsDeep({},
-                                  mandatoryParams,
-                                  {body: builder.build()},
-                                  _queryStringToParams(queryString),
-                                  defaultParams);
-
-    console.dir(params, {depth: 10})
-    esClient
-      .search(params)
-      .then(esResultFormat.getResult)
-      .then(resolve)
-      .catch(reject)
-    ;
-  });
 }
 
 function getSingleHitByIdConditor (idConditor, queryString) {
-  return new Promise((resolve, reject) => {
 
-    const params = _.defaultsDeep({size: 1, q: `idConditor:"${idConditor}"`},
-                                  mandatoryParams,
-                                  _queryStringToParams(queryString),
-                                  defaultParams);
-    return esClient
-      .search(params)
-      .then(esResultFormat.getSingleResult)
-      .then(resolve)
-      .catch(reject)
-      ;
-  });
+  return Promise
+    .resolve()
+    .then(() => {
+      const searchBody = bodybuilder().filter('term', 'idConditor', idConditor).build(),
+            params     = _.defaultsDeep({body: searchBody},
+                                        _queryStringToParams(queryString),
+                                        defaultParams
+            );
+
+      return esClient
+        .search(params)
+        .then(esResultFormat.getSingleResult)
+        ;
+    });
 }
 
 function searchRecords (queryString) {
 
-  return new Promise((resolve, reject) => {
+  return Promise
+    .resolve()
+    .then(() => {
+      const params = _.defaultsDeep(_queryStringToParams(queryString),
+                                    defaultParams
+      );
 
-    const params = _.defaultsDeep({},
-                                  mandatoryParams,
-                                  _queryStringToParams(queryString),
-                                  defaultParams);
-    return esClient
-      .search(params)
-      .then(esResultFormat.getResult)
-      .then(resolve)
-      .catch(reject)
-      ;
-  });
-}
-
-function getSinglePathByIdConditor (idConditor) {
-  return esClient
-    .search({
-              index     : 'records',
-              q         : `idConditor:"${idConditor}"`,
-              filterPath: 'hits.hits._source.path, hits.total',
-              size      : 1
-            })
-    .then(esResultFormat.getSingleScalarResult)
-    .catch((err) => {
-      err.context = 'getSingleHitByIdConditor';
-      err.args = arguments;
-      throw err;
+      return esClient
+        .search(params)
+        .then(esResultFormat.getResult)
+        ;
     });
 }
-function getTeiByIdConditor (idConditor) {
+
+
+function getSingleTeiByIdConditor (idConditor, queryString) {
+  const searchBody = bodybuilder().filter('term', 'idConditor', idConditor).build(),
+        params     =
+          _.defaultsDeep({
+                           body          : searchBody,
+                           _sourceInclude: 'teiBlob'
+                         },
+                         _queryStringToParams(queryString),
+                         defaultParams
+          );
+
   return esClient
-    .search({
-              index     : 'records',
-              q         : `idConditor:"${idConditor}"`,
-              filterPath: 'hits.hits._source.teiBlob, hits.total',
-              size      : 1
-            })
+    .search(params)
     .then(esResultFormat.getSingleScalarResult)
-    .then((result) => {
-      result.result = Buffer.from(result.result, 'base64');
-      return result;
-    })
-    ;
+    .then(({result, ...rest}) => {
+      result = Buffer.from(result, 'base64');
+      return _.assign({result}, rest);
+    });
 }
 
 function search (query) {
@@ -156,39 +146,42 @@ function search (query) {
 
 function _queryStringToParams (queryString) {
   const queryStringToParams = {
-          scroll   : {isValid: _validateScrollDuration},
+          scroll   : {
+            isValid  : _validateScrollDuration,
+            // @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
+            transform: (accu, value, key, queryParams) => {if (!queryParams.scroll_id) {accu.sort = ['_doc:asc'];}}
+          },
           includes : {mapKey: _.constant('_sourceInclude'), mapValue: split(',')},
           excludes : {mapKey: _.constant('_sourceExclude'), mapValue: split(',')},
           size     : {isValid: _validateSize},
           scroll_id: {mapKey: _.constant('scrollId')}
         }
   ;
+  return _(queryString).pick(_.keys(queryStringToParams))
+                       .transform(
+                         (accu, value, key, queryParams) => {
+                           _.invoke(queryStringToParams, [key, 'isValid'], value);
 
-  return _(queryString)
-    .pick(_.keys(queryStringToParams))
-    .transform(
-      (accu, value, key) => {
-        const newKey   =
-                _.has(queryStringToParams, [key, 'mapKey'])
-                  ? _.invoke(queryStringToParams, [key, 'mapKey'], key)
-                  : key,
-              newValue =
-                _.has(queryStringToParams, [key, 'mapValue'])
-                  ? _.invoke(queryStringToParams, [key, 'mapValue'], value)
-                  : value
-        ;
-        _.invoke(queryStringToParams, [key, 'isValid'], value);
+                           const newKey   =
+                                   _.has(queryStringToParams, [key, 'mapKey'])
+                                     ? _.invoke(queryStringToParams, [key, 'mapKey'], key)
+                                     : key,
+                                 newValue =
+                                   _.has(queryStringToParams, [key, 'mapValue'])
+                                     ? _.invoke(queryStringToParams, [key, 'mapValue'], value)
+                                     : value
+                           ;
 
-        accu[newKey] = newValue;
-      },
-      {}
-    )
-    .value()
+                           _.invoke(queryStringToParams, [key, 'transform'], accu, value, key, queryParams);
+                           accu[newKey] = newValue;
+                         },
+                         {}
+                       )
+                       .value()
     ;
 }
 
 function _validateSize (size) {
-
   if (size > config.elastic.maxSize) throw sizeTooHighException(size, config.elastic.maxSize);
 }
 
