@@ -11,6 +11,7 @@ const
   logError         = logger.logError,
   parser           = require('lucene-query-parser'),
   bodybuilder      = require('bodybuilder'),
+  queryBuilder     = require('../../helpers/queryBuilder'),
   moment           = require('moment'),
   _                = require('lodash'),
   split            = require('lodash/fp/split')
@@ -28,7 +29,7 @@ const
 
 recordsManager.getSingleHitByIdConditor = getSingleHitByIdConditor;
 recordsManager.getSingleTeiByIdConditor = getSingleTeiByIdConditor;
-recordsManager.search = search;
+recordsManager.filterRecords = filterRecords;
 recordsManager.searchRecords = searchRecords;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.scroll = scroll;
@@ -131,15 +132,14 @@ function getSingleTeiByIdConditor (idConditor, queryString) {
     });
 }
 
-function search (query) {
-  const
-    parsedQuery = parser.parse(query.filter),
-    searchBody  = bodybuilder().filter('term', parsedQuery.left.field, parsedQuery.left.term).build();
-  console.dir(parsedQuery, {depth: 5});
-  console.dir(searchBody, {depth: 5});
-
+function filterRecords (queryString) {
+const searchBody = queryBuilder.filter(queryString.filter);
+  const params = _.defaultsDeep(_queryStringToParams(queryString),
+                                defaultParams
+  );
+  params.body = searchBody;
   return esClient
-    .search({index: 'records', body: searchBody})
+    .search(params)
     .then(esResultFormat.getResult)
     ;
 }
@@ -149,7 +149,7 @@ function _queryStringToParams (queryString) {
           scroll   : {
             isValid  : _validateScrollDuration,
             // @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
-            transform: (accu, value, key, queryParams) => {if (!queryParams.scroll_id) {accu.sort = ['_doc:asc'];}}
+            transform: (params, value, key, queryString) => {if (!queryString.scroll_id) {params.sort = ['_doc:asc'];}}
           },
           includes : {mapKey: _.constant('_sourceInclude'), mapValue: split(',')},
           excludes : {mapKey: _.constant('_sourceExclude'), mapValue: split(',')},
@@ -159,7 +159,7 @@ function _queryStringToParams (queryString) {
   ;
   return _(queryString).pick(_.keys(queryStringToParams))
                        .transform(
-                         (accu, value, key, queryParams) => {
+                         (params, value, key, queryString) => {
                            _.invoke(queryStringToParams, [key, 'isValid'], value);
 
                            const newKey   =
@@ -172,8 +172,8 @@ function _queryStringToParams (queryString) {
                                      : value
                            ;
 
-                           _.invoke(queryStringToParams, [key, 'transform'], accu, value, key, queryParams);
-                           accu[newKey] = newValue;
+                           _.invoke(queryStringToParams, [key, 'transform'], params, value, key, queryString);
+                           params[newKey] = newValue;
                          },
                          {}
                        )

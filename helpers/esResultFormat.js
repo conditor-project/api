@@ -1,10 +1,9 @@
 'use strict';
 
-const _              = require('lodash'),
-      responseFormat = {}
+const _ = require('lodash')
 ;
 
-module.exports = responseFormat;
+const responseFormat = module.exports;
 
 responseFormat.getSingleResult = (response) => {
   if (response.hits.total === 0) throw noResultException();

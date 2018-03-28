@@ -7,7 +7,8 @@
     "start": "NODE_ENV=production forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a  -e ~/.forever/conditor-api.errors.log app.js",
     "stop": "forever stop conditor-api",
     "dev": "NODE_ENV=development nodemon app.js",
-    "test": "export NODE_ENV=test; npx view-config; mocha --recursive"
+    "test": "export NODE_ENV=test; npx view-config; mocha --recursive",
+    "test:helpers": "export NODE_ENV=test; npx view-config; mocha test/helpers --recursive"
   },
   "repository": {
     "type": "git",
@@ -28,7 +29,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "bluebird": "^3.5.1",
-    "bodybuilder": "^2.2.9",
+    "bodybuilder": "^2.2.10",
     "colors": "^1.2.1",
     "compression": "^1.7.2",
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
@@ -40,7 +41,7 @@
     "helmet": "^3.12.0",
     "lodash": "^4.17.5",
     "lucene-query-parser": "^1.2.0",
-    "mocha": "^5.0.4",
+    "mocha": "^5.0.5",
     "moment-duration-format": "^2.2.2",
     "morgan": "^1.9.0",
     "semver": "^5.5.0",

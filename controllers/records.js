@@ -66,6 +66,18 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
   ;
 });
 
+// @todo Work in progress
+router.get('/records', (req, res, next) => {
+  return next(); // to remove
+
+  if (!req.query.filter) return next();
+
+  recordsManager
+    .filterRecords(req.query)
+    .then(_getResultHandler(res))
+    .then(({result}) => res.json(result))
+    .catch(_getErrorHandler(res));
+});
 
 // /records
 router.get('/records', (req, res) => {
