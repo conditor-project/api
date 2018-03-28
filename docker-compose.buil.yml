@@ -3,6 +3,11 @@ services:
 
   conditorapi:
     container_name: conditor-api
+    build:
+      context: .
+      args:
+        - http_proxy
+        - https_proxy
     image: conditor/conditor-api:1.0.0-beta.1
     environment :
       LOG_PATH: /var/log

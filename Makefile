@@ -14,7 +14,7 @@ run-prod: ## run conditor-api with prod parameters
 	NODE_ENV=production docker-compose up -d
 
 run-debug: ## run conditor-api with debug parameters
-	NODE_ENV=development DEBUG=* docker-compose -f ./docker-compose.yml up
+	NODE_ENV=development DEBUG=* docker-compose -f ./docker-compose.build.yml up
 
 kill: ## stop running containers (the hard way)
 	docker-compose -f ./docker-compose.yml kill
