@@ -4,7 +4,6 @@ const _              = require('lodash'),
       responseFormat = {}
 ;
 
-
 module.exports = responseFormat;
 
 responseFormat.getSingleResult = (response) => {
@@ -25,10 +24,10 @@ responseFormat.getSingleScalarResult = (response) => {
   if (_.size(result) === 0) throw noResultException();
   if (_.size(result) > 1) throw nonUniqueResultException();
 
-  return {
-    result    : _.find(result),
-    totalCount: _.get(response, 'hits.total')
-  };
+  const resultWrapper = responseFormat.getResult(response);
+  resultWrapper.result = _.find(result);
+
+  return resultWrapper;
 };
 
 responseFormat.getResult = (response) => {

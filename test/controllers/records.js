@@ -34,8 +34,8 @@ describe('GET /records', function() {
                 scrollId = res.header['scroll-id'];
 
                 const print = scrolledResultCount + '/' + res.header['x-total-count'];
-                console.log('\u001b[1A\u001b[1K\t' + print);
-                if (res.header['x-total-count'] > scrolledResultCount) {
+                console.info('\u001b[1A\u001b[1K\t' + print);
+                if (+res.header['x-total-count'] > scrolledResultCount) {
                   return scroll();
                 }
                 return done();

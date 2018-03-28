@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a  -e ~/.forever/conditor-api.errors.log app.js",
     "stop": "forever stop conditor-api",
     "dev": "NODE_ENV=development nodemon app.js",
-    "test": "export NODE_ENV=test; mocha --recursive"
+    "test": "export NODE_ENV=test; npx view-config; mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "colors": "^1.2.1",
     "compression": "^1.7.2",
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
-    "elasticsearch": "^14.2.0",
+    "elasticsearch": "^14.2.1",
     "express": "^4.16.3",
     "file-stream-rotator": "^0.2.1",
     "forever": "^0.15.3",

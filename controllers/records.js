@@ -21,13 +21,14 @@ router.use('/records', (req, res, next) => {
   recordsManager
     .scroll(req.query)
     .then(_getResultHandler(res))
+    .then(({result}) => res.json(result))
     .catch(_getErrorHandler(res))
   ;
 });
 
 // /records(/{source})(/{year})(/{DUPLICATE_FLAG})
 router.get(
-  `/records(/:source(hal|wos))?(/:publicationYear(((18|19|20)[0-9]{2})))?(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`,
+  `/records(/:source(hal|wos|sudoc))?(/:publicationYear(((18|19|20)[0-9]{2})))?(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`,
   (req, res, next) => {
     const criteria = _routeParamsToCriteria(req.params);
     if (_.isEmpty(criteria)) return next();
@@ -35,24 +36,23 @@ router.get(
     recordsManager
       .filterByCriteria(criteria, req.query)
       .then(_getResultHandler(res))
+      .then(({result}) => res.json(result))
       .catch(_getErrorHandler(res));
   });
 
 
 // /records/{idConditor}/tei
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res, next) => {
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
   recordsManager
-    .getTeiByIdConditor(req.params.idConditor)
-    .then(({result, total}) => {
+    .getSingleTeiByIdConditor(req.params.idConditor, req.query)
+    .then(_getResultHandler(res))
+    .then(({result}) => {
       res.set('Content-Type', 'application/xml');
-      res.set('X-Total-Count', total);
       res.send(result);
     })
-    .catch((err) => {
-      if (err.name === 'NoResultException') return res.sendStatus(404);
-      logError(err);
-      res.sendStatus(500);
-    });
+    .catch(_getSingleResultErrorHandler(res))
+    .catch(_getErrorHandler(res))
+  ;
 });
 
 // /records/{idConditor}
@@ -60,10 +60,8 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
   recordsManager
     .getSingleHitByIdConditor(req.params.idConditor, req.query)
     .then(_getResultHandler(res))
-    .catch((err) => {
-      if (err.name === 'NoResultException') return res.sendStatus(404);
-      throw(err);
-    })
+    .then(({result}) => res.json(result))
+    .catch(_getSingleResultErrorHandler(res))
     .catch(_getErrorHandler(res))
   ;
 });
@@ -74,8 +72,11 @@ router.get('/records', (req, res) => {
   recordsManager
     .searchRecords(req.query)
     .then(_getResultHandler(res))
+    .then(({result}) => res.json(result))
     .catch(_getErrorHandler(res));
 });
+
+module.exports = router;
 
 
 function _routeParamsToCriteria (routeParams) {
@@ -102,20 +103,29 @@ function _isNumeric (n) {
 }
 
 function _getResultHandler (res) {
-  return ({result, resultCount, totalCount, scrollId}) => {
+  return ({result, resultCount, totalCount, scrollId, ...rest}) => {
+
     scrollId && res.set('Scroll-Id', scrollId);
     res.set('X-Total-Count', totalCount);
     res.set('X-Result-Count', resultCount);
-    res.json(result);
+
+    return _.assign({result, resultCount, totalCount, scrollId}, rest);
+  };
+}
+function _getSingleResultErrorHandler (res) {
+  return (err) => {
+    if (err.name === 'NoResultException') return res.sendStatus(404);
+    if (err.name === 'NonUniqueResultException') return res.sendStatus(300);
+    throw(err);
   };
 }
 
 function _getErrorHandler (res) {
-  return (err) => {
-    let status = [400, 404].includes(err.status) ? err.status : 500;
-    logError(err);
+  return (reason) => {
+    let status = [400, 404].includes(reason.status) ? reason.status : 500;
+    logError(reason);
     res.sendStatus(status);
   };
 }
 
-module.exports = router;
+
