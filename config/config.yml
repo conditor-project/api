@@ -11,6 +11,11 @@ app:
   name: conditor-api
   version: 1.0.0
 
+security:
+  jwt:
+    secret: %env(JWT_KEY)%
+    expiresIn: 30 days # https://github.com/zeit/ms
+
 nodejs:
   stackTracelimit: 10
 

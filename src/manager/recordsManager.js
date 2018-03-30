@@ -213,6 +213,7 @@ function invalidScrollDurationException (scrollDuration, maxScrollDuration) {
   return err;
 }
 
+// @todo look at https://github.com/zeit/ms it would maybe be better to use it
 function _convertDurationStringToSecond (durationString) {
   const parsedDuration = _parseDurationString(durationString);
   return moment.duration(+parsedDuration.duration, parsedDuration.unit).asSeconds();
