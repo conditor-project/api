@@ -1,0 +1,25 @@
+version: '2'
+services:
+
+  conditorapi:
+    container_name: conditor-api
+    image: conditor/conditor-api:1.0.0-beta.1
+    environment :
+      LOG_PATH: /var/log
+      CONDITOR_API_HOST: 0.0.0.0
+      CONDITOR_API_PORT: 63332
+      CONDITOR_ES_HOSTS: ${CONDITOR_ES_HOSTS}
+      NODE_ENV: ${NODE_ENV}
+      CONDITOR_ES_VERSION: 6.x
+
+    ports:
+      - 63332:63332
+    networks:
+      - apinet
+    volumes:
+      - ${LOG_PATH}:/root/var/log
+    restart: "on-failure:5"
+
+networks:
+  apinet:
+    driver: bridge

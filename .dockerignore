@@ -1,0 +1,5 @@
+node_modules
+test
+config/secret_parameters.yml
+npm-debug.log
+
