@@ -5,6 +5,7 @@ const
   express            = require('express'),
   app                = express(),
   config             = require('config-component').get(),
+  {security}             = require('config-component').get(),
   myColors           = require('../helpers/myColors'), // jshint ignore: line
   elasticContainer   = require('../helpers/clients/elastic'),
   logger             = require('../helpers/logger'),
@@ -32,7 +33,7 @@ Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
 
 module.exports = app;
 
-app._close = ()=>{
+app._close = () => {
   server.close();
 };
 
@@ -46,9 +47,9 @@ server = app.listen(
             `${config.express.api.host + ':' + config.express.api.port}`.bold.success);
   }
 );
-
 app.set('etag', false);
 app.set('json spaces', 2);
+app.set('trust proxy', security.reverseProxy);
 app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
 app.use(compression());

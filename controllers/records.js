@@ -1,18 +1,18 @@
 'use strict';
 
-const express        = require('express'),
-      router         = express.Router(),
-      logger         = require('../helpers/logger'),
-      logInfo        = logger.logInfo,
-      logError       = logger.logError,
-      recordsManager = require('../src/manager/recordsManager'),
-      _              = require('lodash')
+const express             = require('express'),
+      router              = express.Router(),
+      {logError} = require('../helpers/logger'),
+      recordsManager      = require('../src/manager/recordsManager'),
+      _                   = require('lodash'),
+      firewall            = require('../src/firewall')
 ;
 
 const IS_DUPLICATE     = 'duplicate',
       IS_NOT_DUPLICATE = 'not_duplicate'
 ;
 
+router.use(firewall);
 
 // /records(/{ALL})?scroll_id={SCROLL_ID}&scroll={DurationString}
 router.use('/records', (req, res, next) => {

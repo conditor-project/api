@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * Remove expired token from registry
+ */
 const {security: {jwt: jwtConfig}} = require('config-component').get(),
       jwt                          = require('jsonwebtoken'),
       fs                           = require('fs-extra'),

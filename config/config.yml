@@ -12,9 +12,15 @@ app:
   version: 1.0.0
 
 security:
+  reverseProxy: %env(REVERSE_PROXY)%
   jwt:
     secret: %env(JWT_KEY)%
     expiresIn: 30 days # https://github.com/zeit/ms
+    forbidenIds: ~
+  ip:
+    inMemory:
+#      - 127.0.0.1
+      - ::ffff:127.0.0.1 # supertest request ip
 
 nodejs:
   stackTracelimit: 10

@@ -2,21 +2,12 @@
 
 const {security: {jwt: jwtConfig}} = require('config-component').get(),
       jwt                          = require('jsonwebtoken'),
-      nanoid                       = require('nanoid'),
-      fs                           = require('fs-extra')
+      fs                           = require('fs-extra'),
+      {generate}                   = require('../src/jwtToken')
 ;
 const file = './.jwt/tokenRegistry.json';
 
-const token = jwt.sign(
-  {},
-  jwtConfig.secret,
-  {
-    algorithm: 'HS512',
-    expiresIn: jwtConfig.expiresIn,
-    issuer   : 'Conditor API',
-    jwtid    : nanoid()
-  }
-);
+const token = generate();
 
 fs.readJson(file)
   .then((registry) => {

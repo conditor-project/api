@@ -18,7 +18,7 @@ accessLogStream.on('new', newStreamHandler);
 
 // apache like logs
 const logSyntax =
-        ':remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
+        ':remote-addr [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
 
 module.exports = morgan(logSyntax, {stream: accessLogStream});
 
