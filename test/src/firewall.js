@@ -7,7 +7,7 @@ const request    = require('supertest'),
 ;
 
 
-describe.only('GET /records', function() {
+describe('GET /records', function() {
   after(function() {
     app._close();
   });

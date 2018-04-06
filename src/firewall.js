@@ -41,13 +41,13 @@ function authorize (req, res, next) {
 }
 
 function authenticateByIp (req) {
-  return security.ip.inMemory.includes(req.ip);
+  return _.get(security,'ip.inMemory',[]).includes(req.ip);
 }
 
 // @see http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#RFC2617
 function authenticateByJwt (req) {
   if (!req.get('Authorization') && !req.query.access_token) return false;
-  if (req.get('Authorization') && req.query.access_token) throw tokenMethodError();
+  if (req.get('Authorization') && req.query.access_token || _.isArray(req.query.access_token)) throw tokenMethodError();
 
   const token = _(req.get('Authorization') || req.query.access_token)
     .split('Bearer ')
@@ -56,7 +56,7 @@ function authenticateByJwt (req) {
 
   try {
     const decoded = jwt.verify(token, security.jwt.secret, {issuer: app.name});
-    if (_(security.jwt.forbidenIds).includes(decoded.jti)) return false;
+    if (_.includes(_.get(security,'jwt.forbidenIds',[]),decoded.jti)) return false;
   } catch (err) {
     if (jwtErrors.includes(err.name)) {
       return false;

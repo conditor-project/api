@@ -19,7 +19,7 @@ security:
     forbidenIds: ~
   ip:
     inMemory:
-#      - 127.0.0.1
+      - 127.0.0.1
       - ::ffff:127.0.0.1 # supertest request ip
 
 nodejs:

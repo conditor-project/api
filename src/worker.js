@@ -5,7 +5,7 @@ const
   express            = require('express'),
   app                = express(),
   config             = require('config-component').get(),
-  {security}             = require('config-component').get(),
+  {security}         = require('config-component').get(),
   myColors           = require('../helpers/myColors'), // jshint ignore: line
   elasticContainer   = require('../helpers/clients/elastic'),
   logger             = require('../helpers/logger'),
@@ -17,7 +17,8 @@ const
   errorHandler       = require('../middlewares/errorHandler'),
   resConfig          = require('../middlewares/resConfig'),
   httpMethodsHandler = require('../middlewares/httpMethodsHandler'),
-  compression        = require('compression')
+  compression        = require('compression'),
+  _                  = require('lodash')
 ;
 
 elasticContainer.startAll();
@@ -49,7 +50,7 @@ server = app.listen(
 );
 app.set('etag', false);
 app.set('json spaces', 2);
-app.set('trust proxy', security.reverseProxy);
+app.set('trust proxy', _.get(security, 'reverseProxy', false));
 app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
 app.use(compression());

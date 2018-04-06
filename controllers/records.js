@@ -16,7 +16,7 @@ router.use(firewall);
 
 // /records(/{ALL})?scroll_id={SCROLL_ID}&scroll={DurationString}
 router.use('/records', (req, res, next) => {
-  if (!req.query.scroll_id) return next();
+  if (!req.query.scroll_id) return next('route');
 
   recordsManager
     .scroll(req.query)
@@ -116,7 +116,6 @@ function _isNumeric (n) {
 
 function _getResultHandler (res) {
   return ({result, resultCount, totalCount, scrollId, ...rest}) => {
-
     scrollId && res.set('Scroll-Id', scrollId);
     res.set('X-Total-Count', totalCount);
     res.set('X-Result-Count', resultCount);
