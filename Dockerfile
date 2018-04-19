@@ -14,6 +14,7 @@ RUN npm install
 
 # Bundle app source
 COPY . .
+RUN mkdir .jwt
 
 EXPOSE 63332
 ENV DEBUG *
