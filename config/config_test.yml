@@ -12,3 +12,9 @@ security:
   jwt:
     forbidenIds:
       - forbidThisId
+
+elastic:
+  clients:
+    main:
+      log: # Possible values: error, info, trace, warning, debug
+        - error

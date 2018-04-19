@@ -1,11 +1,13 @@
 'use strict';
 
-const express             = require('express'),
-      router              = express.Router(),
-      {logError} = require('../helpers/logger'),
-      recordsManager      = require('../src/manager/recordsManager'),
-      _                   = require('lodash'),
-      firewall            = require('../src/firewall')
+const express        = require('express'),
+      router         = express.Router(),
+      {logError}     = require('../helpers/logger'),
+      recordsManager = require('../src/manager/recordsManager'),
+      _              = require('lodash'),
+      firewall       = require('../src/firewall'),
+      archiver       = require('archiver'),
+      {Writable}     = require('stream')
 ;
 
 const IS_DUPLICATE     = 'duplicate',
@@ -14,8 +16,8 @@ const IS_DUPLICATE     = 'duplicate',
 
 router.use(firewall);
 
-// /records(/{ALL})?scroll_id={SCROLL_ID}&scroll={DurationString}
-router.use('/records', (req, res, next) => {
+// /records?scroll_id={SCROLL_ID}&scroll={DurationString}
+router.get('/records', (req, res, next) => {
   if (!req.query.scroll_id) return next('route');
 
   recordsManager
@@ -37,9 +39,59 @@ router.get(
       .filterByCriteria(criteria, req.query)
       .then(_getResultHandler(res))
       .then(({result}) => res.json(result))
-      .catch(_getErrorHandler(res));
+      .catch(_getErrorHandler(res))
+    ;
   });
 
+
+// /records(/json)
+router.get('/records(/json)?', (req, res) => {
+  recordsManager
+    .searchRecords(req.query)
+    .then(_getResultHandler(res))
+    .then(({result}) => res.json(result))
+    .catch(_getErrorHandler(res))
+  ;
+});
+
+// /records/zip
+router.get('/records/zip', (req, res) => {
+
+  recordsManager
+    .getScrollStream(req.query)
+    .then((scrollStream) => {
+      const archive = archiver('zip');
+
+      res.set('Content-type', 'application/zip');
+      res.set('Content-disposition', 'attachment; filename=corpus.zip');
+
+      const ws = new Writable({objectMode: true});
+
+      ws._write = function write (docObject, enc, next) {
+        write.count = write.count || 0;
+        console.log(docObject.idConditor)
+        archive
+          .append(JSON.stringify(docObject),
+                  {name: docObject.idConditor}
+          );
+        next();
+      };
+
+      ws.on('error', (error) => {
+        logError(error);
+        archive.finalize();
+      });
+      ws.on('finish', () => {archive.finalize();});
+
+      archive.pipe(res);
+
+      scrollStream
+        .pipe(ws);
+
+    })
+    .catch(_getErrorHandler(res))
+  ;
+});
 
 // /records/{idConditor}/tei
 router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
@@ -55,8 +107,8 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
   ;
 });
 
-// /records/{idConditor}
-router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
+// /records/{idConditor}(/json)
+router.get('/records/:idConditor([0-9A-Za-z_~]+)(/json)?', (req, res) => {
   recordsManager
     .getSingleHitByIdConditor(req.params.idConditor, req.query)
     .then(_getResultHandler(res))
@@ -79,14 +131,6 @@ router.get('/records', (req, res, next) => {
     .catch(_getErrorHandler(res));
 });
 
-// /records
-router.get('/records', (req, res) => {
-  recordsManager
-    .searchRecords(req.query)
-    .then(_getResultHandler(res))
-    .then(({result}) => res.json(result))
-    .catch(_getErrorHandler(res));
-});
 
 module.exports = router;
 
@@ -123,6 +167,7 @@ function _getResultHandler (res) {
     return _.assign({result, resultCount, totalCount, scrollId}, rest);
   };
 }
+
 function _getSingleResultErrorHandler (res) {
   return (err) => {
     if (err.name === 'NoResultException') return res.sendStatus(404);
