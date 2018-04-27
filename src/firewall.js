@@ -19,6 +19,8 @@ const jwtErrors =
           .value();
 
 function authenticate (req, res, next) {
+  req.isAuthenticated = false;
+
   try {
     if (
       authenticateByJwt(req)

@@ -8,7 +8,7 @@ parameters:
   CONDITOR_ES_HOSTS_DEV: 127.0.0.1:9200
 
 nodejs:
-  stackTracelimit: 20
+  stackTraceLimit: 20
 
 elastic:
   clients:

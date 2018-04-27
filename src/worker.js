@@ -1,33 +1,34 @@
 'use strict';
 
 const
-  cluster            = require('cluster'),
-  express            = require('express'),
-  app                = express(),
-  config             = require('config-component').get(),
-  {security}         = require('config-component').get(),
-  myColors           = require('../helpers/myColors'), // jshint ignore: line
-  elasticContainer   = require('../helpers/clients/elastic'),
-  logger             = require('../helpers/logger'),
-  logInfo            = logger.logInfo,
-  logError           = logger.logError,
-  helmet             = require('helmet'),
-  morgan             = require('../middlewares/morgan'),
-  semver             = require('semver'),
-  errorHandler       = require('../middlewares/errorHandler'),
-  resConfig          = require('../middlewares/resConfig'),
-  httpMethodsHandler = require('../middlewares/httpMethodsHandler'),
-  compression        = require('compression'),
-  _                  = require('lodash')
+  cluster             = require('cluster'),
+  express             = require('express'),
+  app                 = express(),
+  config              = require('config-component').get(),
+  {security}          = require('config-component').get(),
+  myColors            = require('../helpers/myColors'), // jshint ignore: line
+  elasticContainer    = require('../helpers/clients/elastic'),
+  logger              = require('../helpers/logger'),
+  {logInfo, logError} = logger,
+  helmet              = require('helmet'),
+  morgan              = require('../middlewares/morgan'),
+  semver              = require('semver'),
+  errorHandler        = require('../middlewares/errorHandler'),
+  resConfig           = require('../middlewares/resConfig'),
+  httpMethodsHandler  = require('../middlewares/httpMethodsHandler'),
+  compression         = require('compression'),
+  _                   = require('lodash')
 ;
 
 elasticContainer.startAll();
 
 const
+  // Routers
   root    = require('../controllers/root'),
   records = require('../controllers/records')
 ;
 
+const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
 let server;
 
 Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
@@ -36,13 +37,13 @@ module.exports = app;
 
 app._close = () => {
   server.close();
+  logInfo(clusterId.bold, `: server closed`);
 };
 
 server = app.listen(
   config.express.api.port,
   config.express.api.host,
   () => {
-    const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
     logInfo(clusterId.bold,
             `: server listening on `,
             `${config.express.api.host + ':' + config.express.api.port}`.bold.success);

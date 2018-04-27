@@ -23,7 +23,7 @@ security:
       - ::ffff:127.0.0.1 # supertest request ip
 
 nodejs:
-  stackTracelimit: 10
+  stackTraceLimit: 10
 
 log:
   path: %env(HOME)%%env(LOG_PATH)%

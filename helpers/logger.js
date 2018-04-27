@@ -3,6 +3,7 @@
 const
   _      = require('lodash'),
   trans  = require('./trans'),
+  config = require('config-component').get(),
   colors = require('./myColors') // jshint ignore:line
 ;
 

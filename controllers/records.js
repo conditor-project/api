@@ -1,13 +1,12 @@
 'use strict';
 
-const express        = require('express'),
-      router         = express.Router(),
-      {logError}     = require('../helpers/logger'),
-      recordsManager = require('../src/manager/recordsManager'),
-      _              = require('lodash'),
-      firewall       = require('../src/firewall'),
-      archiver       = require('archiver'),
-      {Writable}     = require('stream')
+const express             = require('express'),
+      router              = express.Router(),
+      {logError, logInfo} = require('../helpers/logger'),
+      recordsManager      = require('../src/manager/recordsManager'),
+      _                   = require('lodash'),
+      firewall            = require('../src/firewall'),
+      archiver            = require('archiver')
 ;
 
 const IS_DUPLICATE     = 'duplicate',
@@ -56,38 +55,52 @@ router.get('/records(/json)?', (req, res) => {
 
 // /records/zip
 router.get('/records/zip', (req, res) => {
-
   recordsManager
     .getScrollStream(req.query)
     .then((scrollStream) => {
       const archive = archiver('zip');
 
-      res.set('Content-type', 'application/zip');
-      res.set('Content-disposition', 'attachment; filename=corpus.zip');
+      scrollStream
+        .once('data', ()=>{
+          res.set('Content-type', 'application/zip');
+          res.set('Content-disposition', 'attachment; filename=corpus.zip');
+          res.set('X-Total-Count', _.get(scrollStream, '_total'));
+          res.set('X-Result-Count', _.get(scrollStream, '_total'));
+        })
+        .on('data', (docObject) => {
+          archive
+            .append(JSON.stringify(docObject),
+                    {name: docObject.idConditor}
+            );
+        })
+        .on('end', () => {
+          logInfo('Zip : Scroll stream  finished');
 
-      const ws = new Writable({objectMode: true});
+          archive.finalize();
+        })
+      ;
 
-      ws._write = function write (docObject, enc, next) {
-        write.count = write.count || 0;
-        console.log(docObject.idConditor)
-        archive
-          .append(JSON.stringify(docObject),
-                  {name: docObject.idConditor}
-          );
-        next();
-      };
 
-      ws.on('error', (error) => {
-        logError(error);
-        archive.finalize();
-      });
-      ws.on('finish', () => {archive.finalize();});
+      archive
+        .on('error', (error) => {
+          logError(error);
+          scrollStream.close();
+          archive.abort();
+        })
+        .on('progress', (progress) => {
+          if (_.get(scrollStream, '_total') === progress.entries.processed) {
+            logInfo(`Zip : archive finished ${progress.entries.processed}/${progress.entries.total}`);
+          }
+        })
+        .on('warning', (warning) => {
+          logError(warning);
+        });
+
+      res.on('finish', () => {logInfo('Zip : response finished');});
+      res.on('error', () => {logError('Zip :  error');});
+
 
       archive.pipe(res);
-
-      scrollStream
-        .pipe(ws);
-
     })
     .catch(_getErrorHandler(res))
   ;
@@ -139,7 +152,7 @@ function _routeParamsToCriteria (routeParams) {
   const reqParamsToCriteria = {
     source         : {},
     isDuplicate    : {mapValue: {[IS_DUPLICATE]: true, [IS_NOT_DUPLICATE]: false}},
-    publicationYear: {mapKey: 'datePubli.normalized'}
+    publicationYear: {mapKey: 'publicationDate.normalized'} // @Note Change to datePubli.normalized for backward compat
   };
 
   return _(routeParams)

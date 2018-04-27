@@ -5,9 +5,8 @@ const request  = require('supertest'),
       unzipper = require('unzipper')
 ;
 
-
 describe('GET /records', function() {
-  this.timeout(100000);
+  this.timeout(30000);
   after(function() {
     app._close();
   });
@@ -47,34 +46,37 @@ describe('GET /records', function() {
     });
   });
 
-  describe.only('/zip', function() {
+  describe.skip('/zip', function() {
     it('Should respond with a ZIP including all records.json', function(done) {
       request(app)
-        .get('/v1/records/zip?includes=idConditor&size=100')
+        .get('/v1/records/zip?includes=idConditor')
         .expect(200)
         .expect('Content-Type', 'application/zip')
         .buffer(true)
         .parse((res, cb) => {
-          const entries= [];
+          const entries = [];
+
           res
             .pipe(unzipper.Parse())
-            .on('error', (err)=>{
-              return cb(err);
+            .on('error', (err) => {
+              return cb(err, res);
             })
             .on('entry', (entry) => {
-              console.log('entry', entry.path)
-              //entries.push(entry.path || null);
+              entries.push(entry.path);
               entry.autodrain();
+              //console.log('\u001b[1A\u001b[1K\t' + entries.length);
+
             })
             .on('finish', function() {
+              console.log('finished')
               return cb(null, entries);
             })
           ;
         })
         .end(function(err, res) {
-          if (err) return done(err);
-          //console.dir(res.body)
+         console.dir(res)
           return done(err);
+
         });
     });
   });

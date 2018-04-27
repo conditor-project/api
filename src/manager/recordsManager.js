@@ -13,8 +13,7 @@ const
   moment              = require('moment'),
   _                   = require('lodash'),
   split               = require('lodash/fp/split'),
-  ScrollStream        = require('elasticsearch-scroll-stream'),
-  {Transform}         = require('stream')
+  ScrollStream        = require('elasticsearch-scroll-stream')
 ;
 
 
