@@ -8,7 +8,7 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: ## build localy docker image of API
-	docker-compose -f ./docker-compose.yml build
+	docker-compose -f ./docker-compose.build.yml build
 
 run-prod: ## run conditor-api with prod parameters
 	NODE_ENV=production docker-compose up -d

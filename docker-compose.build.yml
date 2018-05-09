@@ -8,12 +8,14 @@ services:
       args:
         - http_proxy
         - https_proxy
-    image: conditor/conditor-api:1.0.0-beta.2
+    image: conditor/conditor-api:1.0.0-beta.3
     environment :
       LOG_PATH: /var/log
       CONDITOR_API_HOST: 0.0.0.0
       CONDITOR_API_PORT: 63332
       CONDITOR_ES_HOSTS: ${CONDITOR_ES_HOSTS}
+      REVERSE_PROXY: ${REVERSE_PROXY}
+      JWT_KEY: ${JWT_KEY}
       NODE_ENV: ${NODE_ENV}
       CONDITOR_ES_VERSION: 6.x
 
@@ -23,6 +25,8 @@ services:
       - apinet
     volumes:
       - ${LOG_PATH}:/root/var/log
+      - ./bin:/app/bin
+      - ./.jwt:/app/.jwt
     restart: "on-failure:5"
 
 networks:
