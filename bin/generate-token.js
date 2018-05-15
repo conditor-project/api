@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict';
 
 const {security: {jwt: jwtConfig}} = require('config-component').get(),

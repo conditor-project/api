@@ -20,7 +20,6 @@ const jwtErrors =
 
 function authenticate (req, res, next) {
   req.isAuthenticated = false;
-
   try {
     if (
       authenticateByJwt(req)
