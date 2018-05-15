@@ -4,13 +4,5 @@
 imports:
   - resource: config.yml
 
-parameters:
-  CONDITOR_ES_HOSTS_DEV: 127.0.0.1:9200
-
 nodejs:
   stackTraceLimit: 20
-
-elastic:
-  clients:
-    main:
-      hosts:  %env(CONDITOR_ES_HOSTS_DEV)% # String, String[], Object[]

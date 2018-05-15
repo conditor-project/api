@@ -6,11 +6,11 @@ const request  = require('supertest'),
 ;
 
 describe('GET /records', function() {
-  this.timeout(30000);
+  this.timeout(100000);
   after(function() {
     app._close();
   });
-  describe('/{Source}?scroll={DurationString}&size={Number}', function() {
+  describe('?scroll={DurationString}&size={Number}', function() {
     it('Should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
       request(app)
         .get('/v1/records?scroll=5m&size=1000&includes=idConditor,titre&excludes=titre.value')
@@ -25,7 +25,7 @@ describe('GET /records', function() {
 
           (function scroll () {
             request(app)
-              .get(`/v1/records?scroll_id=${scrollId}&scroll=5m`)
+              .get(`/v1/scroll/${scrollId}?scroll=5m`)
               .expect(200)
               .expect('Content-Type', /json/)
               .expect('Scroll-Id', /[A-Za-z0-9]+/)

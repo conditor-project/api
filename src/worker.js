@@ -8,8 +8,7 @@ const
   {security}          = require('config-component').get(),
   myColors            = require('../helpers/myColors'), // jshint ignore: line
   elasticContainer    = require('../helpers/clients/elastic'),
-  logger              = require('../helpers/logger'),
-  {logInfo, logError} = logger,
+  {logInfo, logError} = require('../helpers/logger'),
   helmet              = require('helmet'),
   morgan              = require('../middlewares/morgan'),
   semver              = require('semver'),
@@ -25,7 +24,8 @@ elasticContainer.startAll();
 const
   // Routers
   root    = require('../controllers/root'),
-  records = require('../controllers/records')
+  records = require('../controllers/records'),
+  scroll  = require('../controllers/scroll')
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
@@ -55,6 +55,6 @@ app.set('trust proxy', _.get(security, 'reverseProxy', false));
 app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
 app.use(compression());
-app.use(`/v${semver.major(config.app.version)}`, root, records);
+app.use(`/v${semver.major(config.app.version)}`, root, scroll, records);
 app.use(errorHandler);
 
