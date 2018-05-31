@@ -2,18 +2,18 @@
 
 ## `GET` /<api_version>/records/json
 
-Route de récuperation d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000, pour récuperer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000, pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
 **Parametres d'url**
 
-1. `api_version` (string): La version majeur de l'API (ex: v1)  
+1. `api_version` (string): La version majeure de l'API (ex: v1)  
 
 **Arguments de la requête**
 
-1. `scroll` (durationString): Specifie combien de temps une representation consistante sera maintenue pour l'operation de scroll (max: 5m, unitées: d|h|m|s|ms|micros|nanos).
-2. `includes` (string): Une liste de champs à extraire et retourner dans le réponse.
-3. `excludes` (string): Une list de champs à exclure de la réponse.
-4. `size` (number): Nombre de resultat retourner (defaut: 10, max: 1000)
+1. `scroll` (durationString): Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
+2. `includes` (string): Une liste de champs à extraire et à retourner dans la réponse.
+3. `excludes` (string): Une liste de champs à exclure de la réponse.
+4. `size` (number): Nombre de résultats à retourner (défaut: 10, max: 1000)
 
 **Retourne**
 
@@ -27,7 +27,7 @@ Déclencher un scroll:
 ```url
 /v1/records/json?scroll=5m
 ```
-Filtre sur le champs authorRef:
+Filtre sur le champ authorRef:
 ```url
 /v1/records/json?includes=authorRef
 ```
@@ -35,11 +35,11 @@ Filtre sur les champs authorRef et idConditor:
 ```url
 /v1/records/json?includes=authorRef,idConditor
 ```
-Filtre sur le sous champs surname de authorRef:
+Filtre sur le sous champ surname de authorRef:
 ```url
 /v1/records/json?includes=authorRef.surname
 ```
-Exclusion du champs authorRef
+Exclusion du champ authorRef
 ```url
 /v1/records/json?excludes=authorRef
 ```
@@ -47,7 +47,7 @@ On peut cumuler excludes et includes
 ```url
 /v1/records/json?includes=authorRef&excludes=authorRef.surname
 ```
-Choix du nombre de résultat retourné
+Choix du nombre de résultats retournés
 ```url
 /v1/records/json?size=100
 ```
@@ -62,9 +62,9 @@ Alias de la route `GET` /<api_version>/records/json
 
 ## `GET`&nbsp;/<api_version>/records/\[\<source>]/\[\<year>]/<br />\[\<duplicate>]/json
 
-Route de récuperation d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000, pour récuperer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000, pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
-La collection peut être filtrée en fonction de différents parametres d'url facultatifs mais qui doivent respecter l'ordre decrit ci-contre.
+La collection peut être filtrée en fonction de différents paramètres d'url facultatifs mais qui doivent respecter l'ordre decrit ci-contre.
 
 **Parametres d'url**
 
