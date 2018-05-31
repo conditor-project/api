@@ -7,8 +7,7 @@ const express                                                          = require
       {getResultHandler, getErrorHandler, getSingleResultErrorHandler} = require('../src/resultHandler'),
       _                                                                = require('lodash'),
       firewall                                                         = require('../src/firewall'),
-      archiver                                                         = require('archiver'),
-cluster = require('cluster')
+      archiver                                                         = require('archiver')
 ;
 
 const IS_DUPLICATE     = 'duplicate',
@@ -17,7 +16,7 @@ const IS_DUPLICATE     = 'duplicate',
 
 router.use(firewall);
 
-// /records(/{source})(/{year})(/{DUPLICATE_FLAG})
+// /records(/{source})(/{year})(/{DUPLICATE_FLAG}(/json))
 router.get(
   `/records(/:source(hal|wos|sudoc))?(/:publicationYear(((18|19|20)[0-9]{2})))?(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?(/json)?`,
   (req, res, next) => {

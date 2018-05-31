@@ -3,13 +3,18 @@
 
 imports:
     - { resource: 'secret_parameters.yml' }
+    - resource: ../package.json
+      pick:
+        name: app.name
+        version: app.version
+    - resource: ../node_modules/co-config/es.js
+      pick:
+        index: indices.records.index
+        type: indices.records.type
+
 
 parameters:
   LOG_PATH: /var/log
-
-app:
-  name: conditor-api
-  version: 1.0.0
 
 security:
   reverseProxy: %env(REVERSE_PROXY)%
@@ -17,10 +22,8 @@ security:
     secret: %env(JWT_KEY)%
     expiresIn: 30 days # https://github.com/zeit/ms
     forbidenIds: ~
-  ip:
-    inMemory:
-      - 127.0.0.1
-      - ::ffff:127.0.0.1 # supertest request ip
+#    ip:
+#      inMemory: []
 
 nodejs:
   stackTraceLimit: 10

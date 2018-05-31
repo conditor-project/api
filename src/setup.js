@@ -3,8 +3,8 @@ const
   configComponent     = require('config-component'),
   config              = configComponent.get(),
   {logInfo, logError} = require('../helpers/logger'),
-  Joi                 = require('joi'),
-  configSchema        = require('./configSchema')
+  {validate}        = require('./configValidator'),
+  semver              = require('semver')
 ;
 
 exports.setup = setup;
@@ -20,11 +20,13 @@ function setup () {
       });
     })
     .then(() => {
-      return Joi.validate(config, configSchema, {allowUnknown: true});
+      return validate(config);
     })
     .then(() => {
       Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
       configComponent.view();
+      logInfo('Application semver : ', config.app.version);
+      logInfo('Application major semver : ', semver.major(config.app.version));
     })
     .catch((reason) => {
       logError(reason);

@@ -9,7 +9,8 @@ const
   queryBuilder        = require('../../helpers/queryBuilder'),
   _                   = require('lodash'),
   ScrollStream        = require('elasticsearch-scroll-stream'),
-  queryStringToParams = require('../queryStringToParams')
+  queryStringToParams = require('../queryStringToParams'),
+  {indices} = require('config-component').get()
 ;
 
 
@@ -17,7 +18,7 @@ const recordsManager = module.exports;
 
 const
   defaultParams = {
-    index     : 'records',
+    index     : indices.records.index,
     filterPath: ['hits.hits', 'hits.total', '_scroll_id']
   }
 ;

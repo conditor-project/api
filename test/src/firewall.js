@@ -75,7 +75,7 @@ describe('GET /records', function() {
     it('Should return status 200', function(done) {
       request(app)
         .get('/v1/records')
-        //.set('X-Forwarded-For','111.11.11.1') // We spoof our ip
+        .set('X-Forwarded-For','111.11.11.1') // We spoof our ip
         .expect(200)
         .end(done);
     });

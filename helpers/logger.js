@@ -1,10 +1,14 @@
 'use strict';
 
 const
-  _      = require('lodash'),
-  trans  = require('./trans'),
-  colors = require('./myColors') // jshint ignore:line
+  _           = require('lodash'),
+  trans       = require('./trans'),
+  colors      = require('./myColors'), // jshint ignore:line
+  packageJson = require('../package.json')
 ;
+
+
+const appName   = _.get(packageJson, 'name', 'myApp');
 
 module.exports.logInfo = logInfo;
 module.exports.logError = logError;
@@ -14,7 +18,7 @@ module.exports.logDebug = logDebug;
 function logError (err) {
   const message = typeof err === 'string' ? arguments : [err.message, err];
   console.error('%s: [%s]: %s',
-                'Conditor-api'.bold.danger,
+                appName.bold.danger,
                 new Date(Date.now()).toLocaleString(),
                 ...(_.map(message, trans))
   )
@@ -23,7 +27,7 @@ function logError (err) {
 
 function logInfo () {
   console.info('%s: [%s]:',
-               'Conditor-api'.bold.info,
+               appName.bold.info,
                new Date(Date.now()).toLocaleString(),
                ...(_.map(arguments, trans))
   );
@@ -31,16 +35,16 @@ function logInfo () {
 
 function logWarning () {
   console.warn('%s: [%s]:',
-               'Conditor-api'.bold.warning,
+               appName.bold.warning,
                new Date(Date.now()).toLocaleString(),
                ...(_.map(arguments, trans))
   );
 }
 
 function logDebug () {
-  if(process.NODE_ENV === 'production') return;
+  if (process.NODE_ENV === 'production') return;
   console.info('%s: [%s]:',
-               'Conditor-api'.bold.info,
+               appName.bold.primary,
                new Date(Date.now()).toLocaleString(),
                ...(_.map(arguments, trans))
   );

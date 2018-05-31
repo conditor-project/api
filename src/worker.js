@@ -55,6 +55,7 @@ app.set('trust proxy', _.get(security, 'reverseProxy', false));
 app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
 app.use(compression());
+app.get('/',(req,res)=>{res.redirect('/v1/');});
 app.use(`/v${semver.major(config.app.version)}`, root, scroll, records);
 app.use(errorHandler);
 

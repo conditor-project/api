@@ -4,11 +4,12 @@
   "description": "Main api of the Conditor-project",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_ENV=production forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a  -e ~/.forever/conditor-api.errors.log app.js",
+    "start": "export NODE_ENV=production; npx view-config; forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a  -e ~/.forever/conditor-api.errors.log app.js --no-color",
     "stop": "forever stop conditor-api",
-    "dev": "NODE_ENV=development nodemon app.js",
+    "dev": "export NODE_ENV=development; npx view-config; nodemon app.js",
     "test": "export NODE_ENV=test; npx view-config; mocha --recursive",
     "test:helpers": "export NODE_ENV=test; npx view-config; mocha test/helpers --recursive",
+    "validate-config": "npx view-config; node ./bin/validateConfig.js",
     "generate-token": "node ./bin/generate-token.js",
     "cleanup-registry": "node ./bin/cleanup-registry.js",
     "list-registry": "node ./bin/list-registry.js"
@@ -34,6 +35,7 @@
     "async": "^2.6.0",
     "bluebird": "^3.5.1",
     "bodybuilder": "^2.2.10",
+    "co-config": "git+https://github.com/conditor-project/co-config.git",
     "colors": "^1.2.1",
     "compression": "^1.7.2",
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",

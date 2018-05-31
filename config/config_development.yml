@@ -6,3 +6,8 @@ imports:
 
 nodejs:
   stackTraceLimit: 20
+
+security:
+  ip:
+    inMemory:
+      - 127.0.0.1
