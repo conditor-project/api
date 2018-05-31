@@ -2,7 +2,7 @@
 
 ## `GET` /<api_version>/records/json
 
-Route de récuperation d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000, pour récuperer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000, pour récuperer plus de notices vous devez utiliser l'API Scroll.
 
 **Parametres d'url**
 
