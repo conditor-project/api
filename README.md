@@ -100,12 +100,42 @@ The official, production version, of the Conditor API, is (or will be soon) avai
 
 All available URLs are listed and descripted on [this page](./doc/Records.md).
 
+## Access rights
+
 Access is restricted to authenticated and authorized users. Authentication is provided via a [JWT token](https://jwt.io/).
 
 There are 2 ways to use your JWT token :
 
 - Directly in your URL, via the `access_token` parameter (not very convenient)
-- In the header of your HTTP request (`Authorization: Bearer <token>`)
+- In the header of your HTTP request: `Authorization: Bearer <token>`
 
 To obtain a token, contact the Conditor team, they will give you a 31 days valid one
+
+## Token Management
+
+Currently, 3 commands can help you for managing tokens :
+
+### cleanup token registry
+
+`npm run cleanup-registry`
+
+Script available at [./bin/cleanup-registry.js](./bin/cleanup-registry.js)
+
+### generate a new token
+
+`npm run generate-token`
+
+Generate a new JWT token, valid during 31 days
+
+Script available at [./bin/generate-token.js](./bin/generate-token.js)
+
+### list-registry
+
+`npm run list-registry`
+
+List all avalaible JWT tokens, with validity ranges.
+
+Script available at [./bin/list-registry.js](./bin/list-registry.js)
+
+
 
