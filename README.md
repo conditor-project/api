@@ -43,7 +43,7 @@ For docker usage
 make build
 ```
 
-## Usage
+## Running the API
 
 Before launchig the following commands, you must set `LOG_PATH` and `CONDITOR_ES_HOSTS` environments variables. For example :
 
@@ -93,4 +93,19 @@ LOG_PATH="$HOME/var/log" \
 CONDITOR_ES_HOSTS="localhost:9200" \
 make run-prod
 ```
+
+## Querying the API
+
+The official, production version, of the Conditor API, is (or will be soon) available at https://api.conditor.fr
+
+All available URLs are listed and descripted on [this page](./doc/records.md).
+
+Access is restricted to authenticated and authorized users. Authentication is provided via a [JWT token](https://jwt.io/).
+
+There are 2 ways to use your JWT token :
+
+- Directly in your URL, via the `access_token` parameter (not very convenient)
+- In the header of your HTTP request (`Authorization: Bearer <token>`)
+
+To obtain a token, contact the Conditor team, they will give you a 31 days valid one
 
