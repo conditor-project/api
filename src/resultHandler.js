@@ -22,7 +22,7 @@ const httpHeadersMapping = {
 function _getResultHandler (res) {
   return (result) => {
     _.forOwn(result, (value, key) => {
-      if (_.has(httpHeadersMapping, key) && !_.isEmpty(value)) {
+      if (_.has(httpHeadersMapping, key) && !_.isNil(value) && !(_.isArrayLikeObject(value) && _.isEmpty(value))) {
         res.set(
           httpHeadersMapping[key].name(),
           _.invoke(httpHeadersMapping, `${key}.value`, value) || value
