@@ -2,15 +2,15 @@
 
 ## Authentification
 
-La plus part de operations sur l'API requières d'être authentifié. Pour se faire vous devez contacter l'equipe Conditor afin d'obtenir un jeton JWT.
+La plupart des opérations sur l'API requièrent d'être authentifié. Pour ce faire vous devez contacter l'équipe Conditor afin d'obtenir un jeton JWT.
 
 ### JWT
 
 L'API Conditor fonctionne avec un système d'authentification basé sur un jeton sécurisé, un JWT ou JSON Web Token.
 
-Un JWT token prend la forme d'une longue suite de caractères alpha numeriques.
+Un JWT token prend la forme d'une longue suite de caractères alphanumériques.
 
-Exemple:
+Exemple :
 
 ```JWT
 eyJzdWIiOiAiMTIzNDU2Nzg5MCIsIm5hbWUiOiAiSm9obiBEb2UiLCJpYXQiOiAxN
@@ -20,7 +20,7 @@ eyJzdWIiOiAiMTIzNDU2Nzg5MCIsIm5hbWUiOiAiSm9obiBEb2UiLCJpYXQiOiAxN
 
 Le token a une durée de vie limitée et devient automatiquement invalide. Vous devrez à ce moment là en demander un nouveau.
 
-**Invalidation manuel du token**
+**Invalidation manuelle du token**
 
 Pour une raison de sécurité, un token peut être invalidé à tout instant, aussi il est important que vous informiez l'hébergeur de l'API si vous jugez que votre token est compromis.  
 
@@ -40,7 +40,7 @@ curl -H "Authorization: Bearer eyJzdWIiOiAiMTI...AxN" https://api.conditor/v1/re
 
 
 
-**Via le parametre d'URL `access_token`**
+**Via le paramètre d'URL `access_token`**
 
 ```url
 https://api.conditor/v1/records?access_token=eyJzdWIiOiAiMTI...AxN
@@ -48,6 +48,7 @@ https://api.conditor/v1/records?access_token=eyJzdWIiOiAiMTI...AxN
 
 
 
-**Note** : La méthode via le header de la requête est prefèrable pour des raisons de sécurité. 
+**Note** : La méthode via le header de la requête est préférable pour des raisons de sécurité. 
 
 **Note** :  Les 2 méthodes ne doivent pas êtres utilisées simultanément.
+
