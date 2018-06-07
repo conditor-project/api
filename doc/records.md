@@ -64,7 +64,7 @@ Route de récupération de **l'intégralité des notices** de la base Conditor d
 
 **Paramètres d'URL**
 
-1. `includes` (string) : Une liste de champs à extraire et à retourner dans le réponse.
+1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
 
 **Retourne**
@@ -73,7 +73,7 @@ Route de récupération de **l'intégralité des notices** de la base Conditor d
 
 **Exemples**
 
-Récupérer toutes les notices dans une archive en incluant uniquement le titre et  la date de création.
+Récupérer toutes les notices dans une archive en incluant uniquement le titre et la date de création.
 
 ```url
 https://api-conditor.fr/v1/records/zip?includes=title,creationDate
@@ -85,7 +85,7 @@ https://api-conditor.fr/v1/records/zip?includes=title,creationDate
 
 Route de récupération d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
-La collection peut être filtrée en fonction de différents Arguments de la route facultatifs mais qui doivent respecter l'ordre décrit ci-dessous.
+La collection peut être filtrée en fonction de différents arguments de la route facultatifs mais qui doivent respecter l'ordre décrit ci-dessous.
 
 **Alias**
 
