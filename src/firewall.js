@@ -12,7 +12,7 @@ module.exports = firewall;
 
 firewall.use(authenticate, authorize);
 
-const jwtErrors =
+const jwtErrors = // List all JWT module defined errors
         _(jwt)
           .keys()
           .filter(includes('Error'))

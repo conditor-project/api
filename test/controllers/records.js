@@ -1,9 +1,10 @@
 'use strict';
 
-const request  = require('supertest'),
-      app      = require('../../src/worker'),
-      unzipper = require('unzipper'),
-      should   = require('should')
+const request             = require('supertest'),
+      yauzl               = require('yauzl'),
+      should              = require('should'), // jshint ignore:line
+      app                 = require('../../src/worker'),
+      {logInfo, logError} = require('../../helpers/logger')
 ;
 
 describe('GET /records', function() {
@@ -13,8 +14,10 @@ describe('GET /records', function() {
   });
   describe('?scroll={DurationString}&size={Number}', function() {
     it('Should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
+      const requestUrl = '/v1/records?scroll=5m&size=1000&includes=idConditor,titre&excludes=titre.value';
+      logInfo('Request on: ' + requestUrl);
       request(app)
-        .get('/v1/records?scroll=5m&size=1000&includes=idConditor,titre&excludes=titre.value')
+        .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
         .expect(200)
         .expect('Content-Type', /json/)
@@ -51,35 +54,57 @@ describe('GET /records', function() {
 
   describe('/zip', function() {
     this.timeout(300000);
-    it('Should respond with a ZIP including all records.json', function(done) {
+    it.only('Should respond with a ZIP including records.json', function(done) {
+      const requestUrl = '/v1/records/hal/duplicate/zip?includes=idConditor';
+      logInfo('Request on: ' + requestUrl);
       request(app)
-        .get('/v1/records/hal/duplicate/zip?includes=idConditor')
+        .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
         .expect(200)
         .expect('Content-Type', 'application/zip')
-        .buffer(true)
-        .parse((res, cb) => {
+        .buffer()
+        .parse(function binaryParser (res, cb) {
           const entries = [];
+          let print = 'RESPONSE STREAM: ';
+          let i = 0;
+          res.setEncoding('binary');
+          res.data = '';
+console.log(res.headers.warning)
           console.info('\n');
-          res
-            .pipe(unzipper.Parse())
-            .on('error', (err) => {
-              return cb(err, res);
-            })
-            .on('entry', (entry) => {
-              entries.push(entry.path);
-              const print = entries.length + '/' + res.headers['x-total-count'];
-              console.info('\u001b[1A\u001b[1K\t' + print);
-              entry.autodrain();
-            })
-            .on('finish', function() {
-              return cb(null, entries);
-            })
-          ;
+
+          res.on('data', function(chunk) {
+            if (i >= 10000) print += '-';
+            if (print.length >= 10) print = 'RESPONSE STREAM: ';
+            ++i;
+            console.info('\u001b[1A\u001b[1K\t' + print + i);
+            res.data += chunk;
+          });
+
+          res.on('end', function() {
+            yauzl.fromBuffer(
+              new Buffer(res.data, 'binary'),
+              {lazyEntries: true},
+              (err, zipfile) => {
+                if (err) return cb(err);
+
+                zipfile.readEntry();
+
+                zipfile.on('entry', (entry) => {
+                  entries.push(entry.path);
+                  const print = 'UNZIP: ' + entries.length + '/' + res.headers['x-total-count'];
+                  console.info('\u001b[1A\u001b[1K\t' + print);
+                  zipfile.readEntry();
+                });
+
+                zipfile.on('end', () => {
+                  cb(null, entries);
+                });
+
+              });
+          });
         })
         .end(function(err, res) {
-
-          (+res.get('X-total-count')).should.be.equal(res.body.length);
+          (res.body.length).should.be.equal(+res.get('X-total-count'));
           return done(err);
 
         });

@@ -10,7 +10,7 @@ const
   _                   = require('lodash'),
   ScrollStream        = require('elasticsearch-scroll-stream'),
   queryStringToParams = require('../queryStringToParams'),
-  {indices} = require('config-component').get()
+  {indices}           = require('config-component').get()
 ;
 
 
@@ -31,11 +31,14 @@ recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
 
 
-function getScrollStreamFilterByCriteria (criteria = {}, queryString = {}) {
+function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      queryString = _.pick(queryString, ['includes', 'excludes']);
+      const validOptions    = ['includes', 'excludes'],
+            _invalidOptions = _.difference(_.keys(options), validOptions);
+
+      options = _.pick(options, validOptions);
       const builder = bodybuilder();
 
       _.forOwn(criteria, (value, field) => {
@@ -44,7 +47,7 @@ function getScrollStreamFilterByCriteria (criteria = {}, queryString = {}) {
 
       const params = _.defaultsDeep(
         {body: builder.build()},
-        queryStringToParams(queryString),
+        queryStringToParams(options),
         defaultParams
       );
 
@@ -56,89 +59,121 @@ function getScrollStreamFilterByCriteria (criteria = {}, queryString = {}) {
         _.pull(params._sourceExclude, 'idConditor');
       }
 
-      return new ScrollStream(esClient,
-                              params,
-                              null,
-                              {objectMode: true}
+      const scrollStream = new ScrollStream(esClient,
+                                            params,
+                                            null,
+                                            {objectMode: true}
       );
+
+      scrollStream._invalidOptions = _invalidOptions;
+
+      return scrollStream;
     });
 
 
 }
 
 
-function filterByCriteria (criteria, queryString = {}) {
+function filterByCriteria (criteria = {}, options = {}) {
 
   return Promise
     .resolve()
     .then(() => {
+      const validOptions    = ['scroll', 'includes', 'excludes', 'size'],
+            _invalidOptions = _.difference(_.keys(options), validOptions);
+
+      options = _.pick(options, validOptions);
       const builder = bodybuilder();
 
       _.forOwn(criteria, (value, field) => {
         builder.filter('term', field, value);
       });
 
-      queryString = _.pick(queryString, ['scroll', 'includes', 'excludes', 'size']);
       const params =
               _.defaultsDeep(
-                {body: builder.build()},
-                queryStringToParams(queryString),
+                {'body': builder.build()},
+                queryStringToParams(options),
                 defaultParams);
 
       return esClient
         .search(params)
         .then(esResultFormat.getResult)
+        .then((result) => {
+          result._invalidOptions = _invalidOptions;
+          return result;
+        })
         ;
     });
 }
 
-function getSingleHitByIdConditor (idConditor, queryString) {
-
+function getSingleHitByIdConditor (idConditor, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      queryString = _.pick(queryString, ['includes', 'excludes']);
-      const searchBody = bodybuilder().filter('term', 'idConditor', idConditor).build(),
-            params     = _.defaultsDeep({
-                                          body: searchBody,
-                                          size: 2 // If hits count =/= 1 then an error is thrown
-                                        },
-                                        queryStringToParams(queryString),
-                                        defaultParams
-            );
+      const validOptions    = ['includes', 'excludes'],
+            _invalidOptions = _.difference(_.keys(options), validOptions);
+
+      options = _.pick(options, validOptions);
+      const builder = bodybuilder();
+
+      builder.filter('term', 'idConditor', idConditor);
+
+      const params = _.defaultsDeep({
+                                      body: builder.build(),
+                                      size: 2 // If hits count =/= 1 then an error is thrown
+                                    },
+                                    queryStringToParams(options),
+                                    defaultParams
+      );
 
       return esClient
         .search(params)
         .then(esResultFormat.getSingleResult)
+        .then((result) => {
+          result._invalidOptions = _invalidOptions;
+          return result;
+        })
         ;
     });
 }
 
-function searchRecords (queryString) {
+function searchRecords (options = {}) {
 
   return Promise
     .resolve()
     .then(() => {
-      queryString = _.pick(queryString, ['scroll', 'includes', 'excludes', 'size']);
+      const validOptions    = ['scroll', 'includes', 'excludes', 'size'],
+            _invalidOptions = _.difference(_.keys(options), validOptions);
+
+      options = _.pick(options, validOptions);
+
       const params = _.defaultsDeep(
-        queryStringToParams(queryString),
+        queryStringToParams(options),
         defaultParams
       );
 
       return esClient
         .search(params)
         .then(esResultFormat.getResult)
+        .then((result) => {
+          result._invalidOptions = _invalidOptions;
+          return result;
+        })
         ;
     });
 }
 
 
-function getSingleTeiByIdConditor (idConditor, queryString) {
+function getSingleTeiByIdConditor (idConditor, options = {}) {
 
   return Promise
     .resolve()
     .then(() => {
-      queryString = _.pick(queryString, []);
+      const validOptions    = [],
+            _invalidOptions = _.difference(_.keys(options), validOptions);
+      console.log(_invalidOptions)
+      options = _.pick(options, validOptions);
+
       const searchBody = bodybuilder().filter('term', 'idConditor', idConditor).build(),
             params     =
               _.defaultsDeep({
@@ -146,7 +181,7 @@ function getSingleTeiByIdConditor (idConditor, queryString) {
                                size          : 2, // If hits count =/= 1 then an error is thrown
                                _sourceInclude: 'teiBlob'
                              },
-                             queryStringToParams(queryString),
+                             queryStringToParams(options),
                              defaultParams
               );
 
@@ -155,14 +190,14 @@ function getSingleTeiByIdConditor (idConditor, queryString) {
         .then(esResultFormat.getSingleScalarResult)
         .then(({result, ...rest}) => {
           result = Buffer.from(result, 'base64');
-          return _.assign({result}, rest);
+          return _.assign({result}, rest, {'_invalidOptions': _invalidOptions});
         });
     });
 }
 
-function filterRecords (queryString) {
-  const searchBody = queryBuilder.filter(queryString.filter);
-  const params = _.defaultsDeep(queryStringToParams(queryString),
+function filterRecords (options = {}) {
+  const searchBody = queryBuilder.filter(options.filter);
+  const params = _.defaultsDeep(queryStringToParams(options),
                                 defaultParams
   );
   params.body = searchBody;

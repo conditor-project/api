@@ -1,19 +1,36 @@
 'use strict';
 const {logError, logInfo} = require('../helpers/logger'),
-      _                   = require('lodash')
+      _                   = require('lodash'),
+      {constant}          = require('lodash'),
+      {app}               = require('config-component').get()
 ;
 
 exports.getResultHandler = _getResultHandler;
 exports.getSingleResultErrorHandler = _getSingleResultErrorHandler;
 exports.getErrorHandler = _getErrorHandler;
 
-function _getResultHandler (res) {
-  return ({result, resultCount, totalCount, scrollId, ...rest}) => {
-    scrollId && res.set('Scroll-Id', scrollId);
-    res.set('X-Total-Count', totalCount);
-    res.set('X-Result-Count', resultCount);
+const httpHeadersMapping = {
+  scrollId       : {name: constant('Scroll-Id')},
+  totalCount     : {name: constant('X-Total-Count')},
+  resultCount    : {name: constant('X-Result-Count')},
+  _invalidOptions: {
+    name : constant('Warning'),
+    value: invalidParametersWarning
+  }
+};
 
-    return _.assign({result, resultCount, totalCount, scrollId}, rest);
+function _getResultHandler (res) {
+  return (result) => {
+    _.forOwn(result, (value, key) => {
+      if (_.has(httpHeadersMapping, key) && !_.isEmpty(value)) {
+        res.set(
+          httpHeadersMapping[key].name(),
+          _.invoke(httpHeadersMapping, `${key}.value`, value) || value
+        );
+      }
+    });
+
+    return result;
   };
 }
 
@@ -31,4 +48,13 @@ function _getErrorHandler (res) {
     logError(reason);
     res.sendStatus(status);
   };
+}
+
+function invalidParametersWarning (invalidFields) {
+  // @See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Warning
+  const warnCode  = 199,
+        warnAgent = app.name,
+        warnText  = `Invalid URL parameters: ${invalidFields}`;
+
+  return `${warnCode} ${warnAgent} "${warnText}"`;
 }

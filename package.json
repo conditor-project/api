@@ -49,7 +49,7 @@
     "ip-address": "^5.8.9",
     "joi": "^13.2.0",
     "jsonwebtoken": "^8.2.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.10",
     "lucene-query-parser": "^1.2.0",
     "mocha": "^5.0.5",
     "moment-duration-format": "^2.2.2",
@@ -58,7 +58,7 @@
     "semver": "^5.5.0",
     "should": "^13.2.1",
     "supertest": "^3.0.0",
-    "unzipper": "^0.8.12"
+    "yauzl": "^2.9.2"
   },
   "devDependencies": {
     "nodemon": "^1.17.2"

@@ -2,7 +2,7 @@
 
 const express                                                          = require('express'),
       router                                                           = express.Router(),
-      {logError, logDebug, logWarning}                                  = require('../helpers/logger'),
+      {logError, logDebug, logWarning}                                 = require('../helpers/logger'),
       recordsManager                                                   = require('../src/manager/recordsManager'),
       {getResultHandler, getErrorHandler, getSingleResultErrorHandler} = require('../src/resultHandler'),
       _                                                                = require('lodash'),
@@ -44,10 +44,15 @@ router.get(
 
         scrollStream
           .once('data', () => {
+            const result = {
+              totalCount     : _.get(scrollStream, '_total'),
+              resultCount    : _.get(scrollStream, '_total'),
+              _invalidOptions: _.get(scrollStream, '_invalidOptions')
+            };
+
             res.set('Content-type', 'application/zip');
             res.set('Content-disposition', 'attachment; filename=corpus.zip');
-            res.set('X-Total-Count', _.get(scrollStream, '_total'));
-            res.set('X-Result-Count', _.get(scrollStream, '_total'));
+            getResultHandler(res)(result);
           })
           .on('data', (docObject) => {
             if (archive._state.aborted || archive._state.finalized) return;
@@ -79,11 +84,11 @@ router.get(
           .on('warning', (warning) => {
             logWarning('Zip : Archiver warning ', warning);
           })
-          .on('end', () =>{
+          .on('end', () => {
             logDebug('Zip : Archiver closed');
           });
 
-        req.connection.on('close',function(){
+        req.connection.on('close', function() {
           logDebug('Zip: connection closed');
           scrollStream.close();
           archive.abort();
