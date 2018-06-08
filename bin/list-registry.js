@@ -3,8 +3,9 @@
 'use strict';
 
 const
-      fs                           = require('fs-extra'),
-      _                            = require('lodash')
+  {isExpiredOrInvalid} = require('../src/jwtToken'),
+  fs                   = require('fs-extra'),
+  _                    = require('lodash')
 ;
 
 const file = './.jwt/tokenRegistry.json';
@@ -12,7 +13,11 @@ const file = './.jwt/tokenRegistry.json';
 fs.readJson(file)
   .then((registry) => {
     if (!_.isArrayLikeObject(registry)) throw new Error('No registry');
-    console.dir(registry);
+    const [invalidTokens, validTokens] = _.partition(registry, ({token}) => isExpiredOrInvalid(token));
+    console.info('Invalid Tokens');
+    console.dir(invalidTokens);
+    console.info('valid Tokens');
+    console.dir(validTokens);
   })
   .catch((err) => {
     console.error(err);

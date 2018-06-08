@@ -3,6 +3,7 @@
 const express         = require('express'),
       firewall        = express.Router(),
       {security, app} = require('config-component').get(),
+      {verify}        = require('./jwtToken'),
       jwt             = require('jsonwebtoken'),
       _               = require('lodash'),
       includes        = require('lodash/fp/includes')
@@ -42,7 +43,7 @@ function authorize (req, res, next) {
 }
 
 function authenticateByIp (req) {
-  return _.get(security,'ip.inMemory',[]).includes(req.ip);
+  return _.get(security, 'ip.inMemory', []).includes(req.ip);
 }
 
 // @see http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#RFC2617
@@ -56,8 +57,8 @@ function authenticateByJwt (req) {
 
 
   try {
-    const decoded = jwt.verify(token, security.jwt.secret, {issuer: app.name});
-    if (_.includes(_.get(security,'jwt.forbidenIds',[]),decoded.jti)) return false;
+    const decoded = verify(token);
+    if (_.includes(_.get(security, 'jwt.forbidenIds', []), decoded.jti)) return false;
   } catch (err) {
     if (jwtErrors.includes(err.name)) {
       return false;

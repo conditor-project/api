@@ -1,4 +1,5 @@
 # Guide de l'API Conditor
 
-[TOC]
+* [Records](records.md "Records API")
+* [Sécurité](securite.md )
 

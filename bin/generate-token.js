@@ -2,10 +2,8 @@
 
 'use strict';
 
-const {security: {jwt: jwtConfig}} = require('config-component').get(),
-      jwt                          = require('jsonwebtoken'),
-      fs                           = require('fs-extra'),
-      {generate}                   = require('../src/jwtToken')
+const fs                 = require('fs-extra'),
+      {generate, verify} = require('../src/jwtToken')
 ;
 const file = './.jwt/tokenRegistry.json';
 
@@ -28,10 +26,7 @@ fs.readJson(file)
   });
 
 function _buildRegistration (token) {
-  const decoded = jwt.verify(
-    token,
-    jwtConfig.secret
-  );
+  const decoded = verify(token);
 
   return {
     token,

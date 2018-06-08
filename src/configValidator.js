@@ -18,7 +18,7 @@ configValidator.schema = Joi.object()
                                     elastic : {clients: {main: {hosts: [Joi.array(), Joi.string(), Joi.object()]}}},
                                     security: {
                                       ip : {inMemory: [Joi.array()]},
-                                      jwt: {secret: Joi.string().required()}
+                                      jwt: {secret: Joi.string().required(), algorithm: Joi.string().required()}
                                     }
                                   })
                             .requiredKeys('app','app.version')

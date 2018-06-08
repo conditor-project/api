@@ -19,6 +19,9 @@ parameters:
 security:
   reverseProxy: %env(REVERSE_PROXY)%
   jwt:
+    # Do not use "None" algortihm
+    # https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/
+    algorithm: HS512
     secret: %env(JWT_KEY)%
     expiresIn: 30 days # https://github.com/zeit/ms
     forbidenIds: ~
