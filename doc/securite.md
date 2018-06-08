@@ -48,6 +48,6 @@ https://api.conditor/v1/records?access_token=eyJzdWIiOiAiMTI...AxN
 
 
 
-**<u>Note</u>** : La méthode via le header de la requête est prefèrable pour des raisons de sécurité. 
+**<u>Note</u>** : La méthode via le header de la requête est préférable pour des raisons de sécurité. 
 
 **<u>Note</u>** :  Les 2 méthodes ne doivent pas êtres utilisées simultanément.
