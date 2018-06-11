@@ -19,7 +19,7 @@ services:
     networks:
       - apinet
     volumes:
-      - ${LOG_PATH}:/root/var/log
+      - ${LOG_PATH}:/var/log
       - ./bin:/app/bin
       - ./.jwt:/app/.jwt
     restart: "on-failure:5"
