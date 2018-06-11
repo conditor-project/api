@@ -3,7 +3,7 @@ services:
 
   conditorapi:
     container_name: conditor-api
-    image: conditor/conditor-api:1.0.0-beta.4
+    image: conditor/conditor-api:1.0.0-beta.5
     environment :
       LOG_PATH: /var/log
       CONDITOR_API_HOST: 0.0.0.0
@@ -19,7 +19,7 @@ services:
     networks:
       - apinet
     volumes:
-      - ${LOG_PATH}:/root/var/log
+      - ${LOG_PATH}:/var/log
       - ./bin:/app/bin
       - ./.jwt:/app/.jwt
     restart: "on-failure:5"
