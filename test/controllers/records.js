@@ -54,7 +54,7 @@ describe('GET /records', function() {
 
   describe('/zip', function() {
     this.timeout(300000);
-    it.only('Should respond with a ZIP including records.json', function(done) {
+    it('Should respond with a ZIP including records.json', function(done) {
       const requestUrl = '/v1/records/hal/duplicate/zip?includes=idConditor';
       logInfo('Request on: ' + requestUrl);
       request(app)
@@ -69,7 +69,6 @@ describe('GET /records', function() {
           let i = 0;
           res.setEncoding('binary');
           res.data = '';
-console.log(res.headers.warning)
           console.info('\n');
 
           res.on('data', function(chunk) {

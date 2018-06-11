@@ -1,5 +1,8 @@
 # Guide de l'API Conditor
 
-* [Records](records.md "Records API")
+* [Références](references.md )
 * [Sécurité](securite.md )
+* [Records API](records.md "Records API")
+* [Scroll API](scroll.md)
+
 

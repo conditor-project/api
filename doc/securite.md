@@ -1,5 +1,7 @@
 # Sécurité
 
+[TOC]
+
 ## Authentification
 
 La plupart des opérations sur l'API requièrent d'être authentifié. Pour ce faire vous devez contacter l'équipe Conditor afin d'obtenir un jeton JWT.

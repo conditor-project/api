@@ -56,6 +56,8 @@ Choix du nombre de résultats retournés :
 https://api-conditor.fr/v1/records?size=100
 ```
 
+------
+
 
 
 ## `GET` /records/zip
@@ -78,6 +80,8 @@ Récupérer toutes les notices dans une archive en incluant uniquement le titre 
 ```url
 https://api-conditor.fr/v1/records/zip?includes=title,creationDate
 ```
+
+------
 
 
 
@@ -122,6 +126,8 @@ Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 mar
 https://api-conditor.fr/v1/records/hal/2014/not_duplicate?includes=idConditor
 ```
 
+------
+
 
 
 ## `GET`&nbsp;/records/\[&lt;source&gt;]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/zip
@@ -157,6 +163,8 @@ Filtrer la réponse afin de récupérer une archive des notices de hal publiées
 https://api-conditor.fr/v1/records/hal/2015/duplicate/zip?includes=idConditor
 ```
 
+------
+
 
 
 ## `GET`&nbsp;/records/&lt;id_conditor&gt;
@@ -187,11 +195,13 @@ Récupérer une notice identifiée :
 ```url
 https://api-conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz
 ```
-Récupérer une notice identifiée et filtrée sur le champ title :
+Récupérer une notice identifiée et extraire le champ title :
 
 ```url
 https://api-conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?includes=title
 ```
+
+------
 
 
 

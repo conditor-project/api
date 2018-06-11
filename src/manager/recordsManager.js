@@ -171,7 +171,7 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
     .then(() => {
       const validOptions    = [],
             _invalidOptions = _.difference(_.keys(options), validOptions);
-      console.log(_invalidOptions)
+
       options = _.pick(options, validOptions);
 
       const searchBody = bodybuilder().filter('term', 'idConditor', idConditor).build(),
