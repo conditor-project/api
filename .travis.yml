@@ -21,6 +21,7 @@ notifications:
     recipients:
     - claude.niederlender@inist.fr
     - jean-baptiste.genicot@inist.fr
+    - jean-joffrey.parentin@inist.fr
     - conditordev@gmail.com
     on_success: change
 on_failure: always
