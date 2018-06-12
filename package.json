@@ -9,12 +9,14 @@
     "dev": "export NODE_ENV=development; npx view-config; nodemon app.js",
     "test": "export NODE_ENV=test; npx view-config; mocha --recursive",
     "test:helpers": "export NODE_ENV=test; npx view-config; mocha test/helpers --recursive",
+    "test:travis": "CONDITOR_ES_HOSTS=localhost:9200 npm test",
     "validate-config": "npx view-config; node ./bin/validateConfig.js",
     "generate-token": "node ./bin/generate-token.js",
     "cleanup-registry": "node ./bin/cleanup-registry.js",
     "list-registry": "node ./bin/list-registry.js",
     "insertversion:docker": "sed -i \"s#\\(image: conditor/conditor-api:\\)\\([-\\.a-z0-9]\\+\\)#\\1${npm_package_version}#g\" docker-compose.yml docker-compose.build.yml",
-    "version": "npm run insertversion:docker && git add docker-compose.yml docker-compose.build.yml"
+    "version": "npm run insertversion:docker && git add docker-compose.yml docker-compose.build.yml",
+    "install:travis": "npm install && unzip -P ${ZIP_PASSWORD}./test/data/records.zip -d ./test/data && npx elasticdump --input=./test/data/records.bkp.json --output=http://localhost:9200 --type=data"
   },
   "repository": {
     "type": "git",
@@ -41,6 +43,7 @@
     "colors": "^1.2.1",
     "compression": "^1.7.2",
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
+    "elasticdump": "^3.3.14",
     "elasticsearch": "^14.2.1",
     "elasticsearch-scroll-stream": "^1.1.3",
     "express": "^4.16.3",
