@@ -16,7 +16,7 @@
     "list-registry": "node ./bin/list-registry.js",
     "insertversion:docker": "sed -i \"s#\\(image: conditor/conditor-api:\\)\\([-\\.a-z0-9]\\+\\)#\\1${npm_package_version}#g\" docker-compose.yml docker-compose.build.yml",
     "version": "npm run insertversion:docker && git add docker-compose.yml docker-compose.build.yml",
-    "install:travis": "npm install && unzip -P ${ZIP_PASSWORD} ./test/data/records.zip -d ./test/data && curl -X PUT \"http://localhost:9200/records/_mapping\" -d ./test/data/mapping.json -H \"Content-Type: application/json\" && npx elasticdump --input=./test/data/records.bkp.json --output=http://localhost:9200 --type=data",
+    "install:travis": "npm install && unzip -P ${ZIP_PASSWORD} ./test/data/records.zip -d ./test/data && curl -X PUT \"http://localhost:9200/records\" -d ./test/data/mapping.json -H \"Content-Type: application/json\" && npx elasticdump --input=./test/data/records.bkp.json --output=http://localhost:9200 --type=data",
     "test:var": "unzip -P ${ZIP_PASSWORD} ./test/data/records.zip -d ./test/data"
   },
   "repository": {
