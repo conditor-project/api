@@ -29,31 +29,31 @@ Route de récupération d'une collection de notices au format JSON dont le nombr
 
 Déclencher un scroll :
 ```url
-https://api-conditor.fr/v1/records?scroll=5m
+https://api-integ.conditor.fr/v1/records?scroll=5m
 ```
 Filtre sur le champ authorRef :
 ```url
-https://api-conditor.fr/v1/records?includes=authorRef
+https://api-integ.conditor.fr/v1/records?includes=authorRef
 ```
 Filtre sur les champs authorRef et idConditor :
 ```url
-https://api-conditor.fr/v1/records?includes=authorRef,idConditor
+https://api-integ.conditor.fr/v1/records?includes=authorRef,idConditor
 ```
 Filtre sur le sous-champ surname de authorRef :
 ```url
-https://api-conditor.fr/v1/records?includes=authorRef.surname
+https://api-integ.conditor.fr/v1/records?includes=authorRef.surname
 ```
 Exclusion du champ authorRef :
 ```url
-https://api-conditor.fr/v1/records?excludes=authorRef
+https://api-integ.conditor.fr/v1/records?excludes=authorRef
 ```
 On peut cumuler excludes et includes :
 ```url
-https://api-conditor.fr/v1/records?includes=authorRef&excludes=authorRef.surname
+https://api-integ.conditor.fr/v1/records?includes=authorRef&excludes=authorRef.surname
 ```
 Choix du nombre de résultats retournés :
 ```url
-https://api-conditor.fr/v1/records?size=100
+https://api-integ.conditor.fr/v1/records?size=100
 ```
 
 ------
@@ -78,7 +78,7 @@ Route de récupération de **l'intégralité des notices** de la base Conditor d
 Récupérer toutes les notices dans une archive en incluant uniquement le titre et la date de création.
 
 ```url
-https://api-conditor.fr/v1/records/zip?includes=title,creationDate
+https://api-integ.conditor.fr/v1/records/zip?includes=title,creationDate
 ```
 
 ------
@@ -117,13 +117,13 @@ La collection peut être filtrée en fonction de différents arguments de la rou
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-conditor.fr/v1/records/hal/2014/not_duplicate
+https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate
 ```
 
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon en incluant uniquement l'idConditor :
 
 ```url
-https://api-conditor.fr/v1/records/hal/2014/not_duplicate?includes=idConditor
+https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate?includes=idConditor
 ```
 
 ------
@@ -154,13 +154,13 @@ Route de récupération d'une collection de notices dans une archive ZIP. Chaque
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-conditor.fr/v1/records/hal/2014/not_duplicate/zip
+https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate/zip
 ```
 
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2015 marquées comme doublon en incluant uniquement l'idConditor.
 
 ```url
-https://api-conditor.fr/v1/records/hal/2015/duplicate/zip?includes=idConditor
+https://api-integ.conditor.fr/v1/records/hal/2015/duplicate/zip?includes=idConditor
 ```
 
 ------
@@ -193,12 +193,12 @@ Route de récupération d'une notice identifiée par son idConditor.
 Récupérer une notice identifiée :
 
 ```url
-https://api-conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz
+https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz
 ```
 Récupérer une notice identifiée et extraire le champ title :
 
 ```url
-https://api-conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?includes=title
+https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?includes=title
 ```
 
 ------
@@ -222,5 +222,5 @@ Route de récupération du TEI d'une notice identifiée.
 Récupérer le TEI d'une notice identifiée :
 
 ```url
-https://api-conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei
+https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei
 ```

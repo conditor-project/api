@@ -1,6 +1,6 @@
 {
   "name": "conditor-api",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.6",
   "description": "Main api of the Conditor-project",
   "main": "app.js",
   "scripts": {
@@ -12,7 +12,10 @@
     "validate-config": "npx view-config; node ./bin/validateConfig.js",
     "generate-token": "node ./bin/generate-token.js",
     "cleanup-registry": "node ./bin/cleanup-registry.js",
-    "list-registry": "node ./bin/list-registry.js"
+    "list-registry": "node ./bin/list-registry.js",
+    "insertversion:docker": "sed -i \"s#\\(image: conditor/conditor-api:\\)\\([-\\.a-z0-9]\\+\\)#\\1${npm_package_version}#g\" docker-compose.yml docker-compose.build.yml",
+    "version": "npm run insertversion:docker && git add docker-compose.yml docker-compose.build.yml",
+    "install:travis": "npm install && unzip -P ${ZIP_PASSWORD} ./test/data/records.zip -d ./test/data && curl -X PUT \"http://localhost:9200/records\" -d @test/data/mapping.json -H \"Content-Type: application/json\" && npx elasticdump --input=./test/data/records.bkp.json --output=http://localhost:9200 --type=data"
   },
   "repository": {
     "type": "git",
@@ -41,6 +44,7 @@
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
     "elastic-builder": "^1.3.0",
     "elasticsearch": "^14.2.2",
+    "elasticdump": "^3.3.14",
     "elasticsearch-scroll-stream": "^1.1.3",
     "express": "^4.16.3",
     "file-stream-rotator": "^0.2.1",
