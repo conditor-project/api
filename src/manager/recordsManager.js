@@ -1,18 +1,21 @@
 'use strict';
 
 const
-  Buffer              = require('buffer').Buffer,
-  elasticContainer    = require('../../helpers/clients/elastic').get(),
-  esClient            = elasticContainer.main,
-  esResultFormat      = require('../../helpers/esResultFormat'),
-  bodybuilder         = require('bodybuilder'),
-  queryBuilder        = require('../../helpers/queryBuilder'),
-  _                   = require('lodash'),
-  ScrollStream        = require('elasticsearch-scroll-stream'),
-  queryStringToParams = require('../queryStringToParams'),
-  {indices}           = require('config-component').get()
+  Buffer                           = require('buffer').Buffer,
+  {main: esClient}                 = require('../../helpers/clients/elastic').startAll().get(),
+  {
+    elastic: {queryString: {allowLeadingWildcard, maxDeterminizedStates}},
+    indices
+  }                                = require('config-component').get(module),
+  esResultFormat                   = require('../../helpers/esResultFormat'),
+  bodybuilder                      = require('bodybuilder'),
+  esb                              = require('elastic-builder/src'),
+  _                                = require('lodash'),
+  ScrollStream                     = require('elasticsearch-scroll-stream'),
+  queryStringToParams              = require('../queryStringToParams'),
+  {logDebug, logError}             = require('../../helpers/logger'),
+  {buildFilterByCriteriaBoolQuery} = require('../repository/recordsRepository')
 ;
-
 
 const recordsManager = module.exports;
 
@@ -25,8 +28,8 @@ const
 
 recordsManager.getSingleHitByIdConditor = getSingleHitByIdConditor;
 recordsManager.getSingleTeiByIdConditor = getSingleTeiByIdConditor;
-recordsManager.filterRecords = filterRecords;
 recordsManager.searchRecords = searchRecords;
+recordsManager.searchAllRecords = searchAllRecords;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
 
@@ -35,18 +38,19 @@ function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['includes', 'excludes'],
+      const validOptions    = ['includes', 'excludes', 'q', 'access_token'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
-      const builder = bodybuilder();
 
-      _.forOwn(criteria, (value, field) => {
-        builder.filter('term', field, value);
-      });
+      const
+        requestBody =
+          esb.requestBodySearch()
+             .query(buildFilterByCriteriaBoolQuery(criteria, options.q))
+      ;
 
       const params = _.defaultsDeep(
-        {body: builder.build()},
+        {body: requestBody.toJSON()},
         queryStringToParams(options),
         defaultParams
       );
@@ -74,24 +78,24 @@ function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
 }
 
 
-function filterByCriteria (criteria = {}, options = {}) {
-
+function filterByCriteria (criteria, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['scroll', 'includes', 'excludes', 'size'],
+      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'access_token', 'q'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
-      const builder = bodybuilder();
 
-      _.forOwn(criteria, (value, field) => {
-        builder.filter('term', field, value);
-      });
+      const
+        requestBody =
+          esb.requestBodySearch()
+             .query(buildFilterByCriteriaBoolQuery(criteria, options.q))
+      ;
 
       const params =
               _.defaultsDeep(
-                {'body': builder.build()},
+                {'body': requestBody.toJSON()},
                 queryStringToParams(options),
                 defaultParams);
 
@@ -110,16 +114,19 @@ function getSingleHitByIdConditor (idConditor, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['includes', 'excludes'],
+      const validOptions    = ['includes', 'excludes', 'access_token'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
-      const builder = bodybuilder();
 
-      builder.filter('term', 'idConditor', idConditor);
+      const
+        requestBody =
+          esb.requestBodySearch()
+             .query(buildFilterByCriteriaBoolQuery({idConditor}))
+      ;
 
       const params = _.defaultsDeep({
-                                      body: builder.build(),
+                                      body: requestBody.toJSON(),
                                       size: 2 // If hits count =/= 1 then an error is thrown
                                     },
                                     queryStringToParams(options),
@@ -137,12 +144,49 @@ function getSingleHitByIdConditor (idConditor, options = {}) {
     });
 }
 
-function searchRecords (options = {}) {
+function getSingleTeiByIdConditor (idConditor, options = {}) {
 
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['scroll', 'includes', 'excludes', 'size'],
+      const validOptions    = [],
+            _invalidOptions = _.difference(_.keys(options), validOptions);
+
+      options = _.pick(options, validOptions);
+
+      const requestBody
+              = esb.requestBodySearch()
+                   .query(buildFilterByCriteriaBoolQuery({idConditor}))
+      ;
+
+      const params
+              = _.defaultsDeep({
+                                 body          : requestBody.toJSON(),
+                                 size          : 2, // If hits count =/= 1 then an error is thrown
+                                 _sourceInclude: 'teiBlob'
+                               },
+                               queryStringToParams(options),
+                               defaultParams
+            )
+      ;
+
+      return esClient
+        .search(params)
+        .then(esResultFormat.getSingleScalarResult)
+        .then(({result, ...rest}) => {
+          result = Buffer.from(result, 'base64');
+          return _.assign({result}, rest, {'_invalidOptions': _invalidOptions});
+        });
+    });
+}
+
+
+function searchAllRecords (options = {}) {
+
+  return Promise
+    .resolve()
+    .then(() => {
+      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'access_token'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
@@ -163,46 +207,34 @@ function searchRecords (options = {}) {
     });
 }
 
-
-function getSingleTeiByIdConditor (idConditor, options = {}) {
-
+function searchRecords (options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = [],
+      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'q', 'access_token'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
 
-      const searchBody = bodybuilder().filter('term', 'idConditor', idConditor).build(),
-            params     =
-              _.defaultsDeep({
-                               body          : searchBody,
-                               size          : 2, // If hits count =/= 1 then an error is thrown
-                               _sourceInclude: 'teiBlob'
-                             },
-                             queryStringToParams(options),
-                             defaultParams
-              );
+      const
+        requestBody =
+          esb.requestBodySearch()
+             .query(buildFilterByCriteriaBoolQuery({}, options.q))
+      ;
+
+      const params = _.defaultsDeep(
+        {body: requestBody.toJSON()},
+        queryStringToParams(options),
+        defaultParams
+      );
 
       return esClient
         .search(params)
-        .then(esResultFormat.getSingleScalarResult)
-        .then(({result, ...rest}) => {
-          result = Buffer.from(result, 'base64');
-          return _.assign({result}, rest, {'_invalidOptions': _invalidOptions});
-        });
+        .then(esResultFormat.getResult)
+        .then((result) => {
+          result._invalidOptions = _invalidOptions;
+          return result;
+        })
+        ;
     });
-}
-
-function filterRecords (options = {}) {
-  const searchBody = queryBuilder.filter(options.filter);
-  const params = _.defaultsDeep(queryStringToParams(options),
-                                defaultParams
-  );
-  params.body = searchBody;
-  return esClient
-    .search(params)
-    .then(esResultFormat.getResult)
-    ;
 }

@@ -1,7 +1,6 @@
 'use strict';
 
 const express                                                          = require('express'),
-      router                                                           = express.Router(),
       {logError, logDebug, logWarning}                                 = require('../helpers/logger'),
       recordsManager                                                   = require('../src/manager/recordsManager'),
       {getResultHandler, getErrorHandler, getSingleResultErrorHandler} = require('../src/resultHandler'),
@@ -10,108 +9,121 @@ const express                                                          = require
       archiver                                                         = require('archiver')
 ;
 
-const IS_DUPLICATE     = 'duplicate',
-      IS_NOT_DUPLICATE = 'not_duplicate'
+const IS_DUPLICATE          = 'duplicate',
+      IS_NOT_DUPLICATE      = 'not_duplicate',
+      IS_NEAR_DUPLICATE     = 'near_duplicate',
+      IS_NOT_NEAR_DUPLICATE = 'not_near_duplicate'
 ;
+
+const filterByCriteriaRouteTemplate = `(/:source(hal|wos|sudoc))?`
+                                      + `(/:publicationYear(((18|19|20)[0-9]{2})))?`
+                                      + `(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`
+                                      + `(/:isNearDuplicate(${IS_NEAR_DUPLICATE}|${IS_NOT_NEAR_DUPLICATE}))?`;
+
+const router = module.exports = express.Router();
 
 router.use(firewall);
 
-// /records(/{source})(/{year})(/{DUPLICATE_FLAG}(/json))
-router.get(
-  `/records(/:source(hal|wos|sudoc))?(/:publicationYear(((18|19|20)[0-9]{2})))?(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?(/json)?`,
-  (req, res, next) => {
-    const criteria = _routeParamsToCriteria(req.params);
-    if (_.isEmpty(criteria)) return next();
+// /records(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})(/json))
+router.get(`/records` + filterByCriteriaRouteTemplate + `(/json)?`,
+           (req, res, next) => {
+             const criteria = _routeParamsToCriteria(req.params);
+             if (_.isEmpty(criteria)) return next();
 
-    recordsManager
-      .filterByCriteria(criteria, req.query)
-      .then(getResultHandler(res))
-      .then(({result}) => res.json(result))
-      .catch(getErrorHandler(res))
-    ;
-  });
+             recordsManager
+               .filterByCriteria(criteria, req.query)
+               .then(getResultHandler(res))
+               .then(({result}) => res.json(result))
+               .catch(getErrorHandler(res))
+             ;
+           });
 
-// /records(/{source})(/{year})(/{DUPLICATE_FLAG}/zip)
-router.get(
-  `/records(/:source(hal|wos|sudoc))?(/:publicationYear(((18|19|20)[0-9]{2})))?(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?/zip`,
-  (req, res) => {
-    const criteria = _routeParamsToCriteria(req.params);
+// /records(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})/zip
+router.get(`/records` + filterByCriteriaRouteTemplate + `/zip`,
+           (req, res) => {
+             const criteria = _routeParamsToCriteria(req.params);
 
-    recordsManager
-      .getScrollStreamFilterByCriteria(criteria, req.query)
-      .then((scrollStream) => {
-        const archive = archiver('zip');
+             recordsManager
+               .getScrollStreamFilterByCriteria(criteria, req.query)
+               .then((scrollStream) => {
+                 const archive = archiver('zip');
 
-        scrollStream
-          .once('data', () => {
-            const result = {
-              totalCount     : _.get(scrollStream, '_total'),
-              resultCount    : _.get(scrollStream, '_total'),
-              _invalidOptions: _.get(scrollStream, '_invalidOptions')
-            };
+                 scrollStream
+                   .once('data', () => {
+                     _setHeaders();
+                   })
+                   .on('data', (docObject) => {
+                     if (archive._state.aborted || archive._state.finalized) return;
+                     archive
+                       .append(JSON.stringify(docObject),
+                               {name: docObject.idConditor}
+                       );
+                   })
+                   .on('end', () => {
+                     if (!res.headersSent) {
+                       _setHeaders();
+                     }
+                     logDebug('Zip : Scroll stream  finished');
+                     archive.finalize();
+                   })
+                   .on('error', (err) => {
+                     logError('Zip : Scroll stream  error \n', err);
+                   })
+                 ;
 
-            res.set('Content-type', 'application/zip');
-            res.set('Content-disposition', 'attachment; filename=corpus.zip');
-            getResultHandler(res)(result);
-          })
-          .on('data', (docObject) => {
-            if (archive._state.aborted || archive._state.finalized) return;
-            archive
-              .append(JSON.stringify(docObject),
-                      {name: docObject.idConditor}
-              );
-          })
-          .on('end', () => {
-            logDebug('Zip : Scroll stream  finished');
-            archive.finalize();
-          })
-          .on('error', (err) => {
-            logError('Zip : Scroll stream  error \n', err);
-          })
-        ;
+                 archive
+                   .on('error', (error) => {
+                     logError('Zip : Archiver error \n', error);
+                     scrollStream.close();
+                     archive.abort();
+                   })
+                   .on('progress', (progress) => {
+                     if (_.get(scrollStream, '_total') === progress.entries.processed) {
+                       logDebug(`Zip : archive finished ${progress.entries.processed}/${progress.entries.total}`);
+                     }
+                   })
+                   .on('warning', (warning) => {
+                     logWarning('Zip : Archiver warning ', warning);
+                   })
+                   .on('end', () => {
+                     logDebug('Zip : Archiver closed');
+                   });
 
-        archive
-          .on('error', (error) => {
-            logError('Zip : Archiver error \n', error);
-            scrollStream.close();
-            archive.abort();
-          })
-          .on('progress', (progress) => {
-            if (_.get(scrollStream, '_total') === progress.entries.processed) {
-              logDebug(`Zip : archive finished ${progress.entries.processed}/${progress.entries.total}`);
-            }
-          })
-          .on('warning', (warning) => {
-            logWarning('Zip : Archiver warning ', warning);
-          })
-          .on('end', () => {
-            logDebug('Zip : Archiver closed');
-          });
+                 req.connection.on('close', function() {
+                   logDebug('Zip: connection closed');
+                   scrollStream.close();
+                   archive.abort();
+                 });
 
-        req.connection.on('close', function() {
-          logDebug('Zip: connection closed');
-          scrollStream.close();
-          archive.abort();
-        });
+                 res
+                   .on('finish', () => {logDebug('Zip : response finished');})
+                   .on('error', (err) => {logError('Zip : response error \n', err);});
 
-        res
-          .on('finish', () => {logDebug('Zip : response finished');})
-          .on('error', (err) => {logError('Zip : response error \n', err);});
+                 archive.pipe(res);
 
-        archive.pipe(res);
-      })
-      .catch(getErrorHandler(res))
-    ;
-  });
+                 function _setHeaders () {
+                   const result = {
+                     totalCount     : _.get(scrollStream, '_total'),
+                     resultCount    : _.get(scrollStream, '_total'),
+                     _invalidOptions: _.get(scrollStream, '_invalidOptions')
+                   };
+                   res.set('Content-type', 'application/zip');
+                   res.set('Content-disposition', 'attachment; filename=corpus.zip');
+                   getResultHandler(res)(result);
+                 }
+               })
+               .catch(getErrorHandler(res))
+             ;
+           });
 
-// /records(/json)
+// /records?q=<queryLucene>
 router.get('/records(/json)?', (req, res) => {
+
   recordsManager
     .searchRecords(req.query)
     .then(getResultHandler(res))
     .then(({result}) => res.json(result))
-    .catch(getErrorHandler(res))
-  ;
+    .catch(getErrorHandler(res));
 });
 
 // /records/{idConditor}/tei
@@ -139,27 +151,12 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)(/json)?', (req, res) => {
   ;
 });
 
-// @todo Work in progress
-router.get('/records', (req, res, next) => {
-  return next(); // to remove
-
-  if (!req.query.filter) return next();
-
-  recordsManager
-    .filterRecords(req.query)
-    .then(getResultHandler(res))
-    .then(({result}) => res.json(result))
-    .catch(getErrorHandler(res));
-});
-
-
-module.exports = router;
-
 
 function _routeParamsToCriteria (routeParams) {
   const reqParamsToCriteria = {
     source         : {},
     isDuplicate    : {mapValue: {[IS_DUPLICATE]: true, [IS_NOT_DUPLICATE]: false}},
+    isNearDuplicate: {mapValue: {[IS_NEAR_DUPLICATE]: true, [IS_NOT_NEAR_DUPLICATE]: false}},
     publicationYear: {mapKey: 'publicationDate.normalized'} // @Note Change to datePubli.normalized for backward compat
   };
 

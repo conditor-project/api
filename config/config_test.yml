@@ -8,7 +8,7 @@ nodejs:
   stackTraceLimit: 20
 
 security:
-  reverseProxy: %env(REVERSE_PROXY)%, ::ffff:127.0.0.1 # we add supertest request ip so we can x-forward spoofed ip
+  reverseProxy: ::ffff:127.0.0.1 # we add supertest request ip so we can x-forward spoofed ip
   ip:
     inMemory:
       - 111.11.11.1

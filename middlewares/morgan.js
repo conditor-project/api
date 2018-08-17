@@ -1,6 +1,6 @@
 'use strict';
 const morgan            = require('morgan'),
-      config            = require('config-component').get(),
+      config            = require('config-component').get(module),
       fileStreamRotator = require('file-stream-rotator'),
       fs                = require('fs-extra'),
       path              = require('path')

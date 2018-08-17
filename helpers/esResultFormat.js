@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash')
-;
+ ;
 
 const responseFormat = module.exports;
 
@@ -31,7 +31,7 @@ responseFormat.getSingleScalarResult = (response) => {
 
 responseFormat.getResult = (response) => {
   return {
-    result     : _.map(response.hits.hits, _.iteratee('_source')),
+    result     : _.map(response.hits.hits,(hit)=>{return _.assign({}, hit._source, {score:hit._score});}),
     totalCount : _.get(response, 'hits.total', 0),
     resultCount: _.get(response, 'hits.hits.length', 0),
     scrollId   : _.get(response, '_scroll_id', null)

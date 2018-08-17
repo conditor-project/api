@@ -1,12 +1,12 @@
 'use strict';
 
-const express         = require('express'),
-      firewall        = express.Router(),
-      {security, app} = require('config-component').get(),
-      {verify}        = require('./jwtToken'),
-      jwt             = require('jsonwebtoken'),
-      _               = require('lodash'),
-      includes        = require('lodash/fp/includes')
+const express    = require('express'),
+      firewall   = express.Router(),
+      {security} = require('config-component').get(module),
+      {verify}   = require('./jwtToken'),
+      jwt        = require('jsonwebtoken'),
+      _          = require('lodash'),
+      includes   = require('lodash/fp/includes')
 ;
 
 module.exports = firewall;
@@ -18,6 +18,7 @@ const jwtErrors = // List all JWT module defined errors
           .keys()
           .filter(includes('Error'))
           .value();
+
 
 function authenticate (req, res, next) {
   req.isAuthenticated = false;
@@ -36,11 +37,16 @@ function authenticate (req, res, next) {
   next();
 }
 
+
 function authorize (req, res, next) {
-  if (!req.isAuthenticated) return res.sendStatus(401);
+  if (!req.isAuthenticated) {
+    res.set('WWW-Authenticate', 'Bearer');
+    return res.sendStatus(401);
+  }
 
   next();
 }
+
 
 function authenticateByIp (req) {
   return _.get(security, 'ip.inMemory', []).includes(req.ip);

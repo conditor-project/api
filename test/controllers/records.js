@@ -26,7 +26,7 @@ describe('GET /records', function() {
           if (err) return done(err);
           let scrollId = res.header['scroll-id'];
           let scrolledResultCount = +res.header['x-result-count'];
-          console.log('\tScrolled/Total\n');
+          console.info('\tScrolled/Total\n');
 
           (function scroll () {
             request(app)
@@ -55,7 +55,7 @@ describe('GET /records', function() {
   describe('/zip', function() {
     this.timeout(300000);
     it('Should respond with a ZIP including records.json', function(done) {
-      const requestUrl = '/v1/records/hal/duplicate/zip?includes=idConditor';
+      const requestUrl = '/v1/records/hal/2014/duplicate/near_duplicate/zip?q=author:jean&includes=idConditor';
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
@@ -105,7 +105,6 @@ describe('GET /records', function() {
         .end(function(err, res) {
           (res.body.length).should.be.equal(+res.get('X-total-count'));
           return done(err);
-
         });
     });
   });

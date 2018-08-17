@@ -1,8 +1,8 @@
 'use strict';
-const {logError, logInfo} = require('../helpers/logger'),
+const {logError} = require('../helpers/logger'),
       _                   = require('lodash'),
       {constant}          = require('lodash'),
-      {app}               = require('config-component').get()
+      {app}               = require('config-component').get(module)
 ;
 
 exports.getResultHandler = _getResultHandler;

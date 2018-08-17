@@ -4,8 +4,8 @@ const
   cluster             = require('cluster'),
   express             = require('express'),
   app                 = express(),
-  config              = require('config-component').get(),
-  {security}          = require('config-component').get(),
+  config              = require('config-component').get(module),
+  {security}          = require('config-component').get(module),
   myColors            = require('../helpers/myColors'), // jshint ignore: line
   elasticContainer    = require('../helpers/clients/elastic'),
   {logInfo, logError} = require('../helpers/logger'),
@@ -49,6 +49,7 @@ server = app.listen(
             `${config.express.api.host + ':' + config.express.api.port}`.bold.success);
   }
 );
+
 app.set('etag', false);
 app.set('json spaces', 2);
 app.set('trust proxy', _.get(security, 'reverseProxy', false));

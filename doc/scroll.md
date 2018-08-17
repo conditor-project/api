@@ -40,6 +40,10 @@ X-Total-Count:62075
 
 Pour obtenir la prochaine page de résultat, passez le `Scroll-Id` en paramètre de la route **/scroll** et repetez l'opération autant de fois que besoin.
 
+```Url
+/scroll/DnF1ZXJ5VGhlbkZldGNoBQAAAAAAe-PdFm11...TlXVVRmS3VLWlAwZWo0OGJ3
+```
+
 **Attention :** Il faut utiliser le Scroll-Id le plus récent à chaque fois car celui-ci est susceptible de changer à chaque requête.
 
 **Note :** Le Scrolling n'est pas conçu pour l'utilisation en temps réel mais plutôt pour récuperer de grandes quantités de données.

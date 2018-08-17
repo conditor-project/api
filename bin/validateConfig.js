@@ -1,15 +1,15 @@
 'use strict';
 
-const config     = require('config-component').get(),
-      {validate} = require('../src/configValidator'),
+const config              = require('config-component').get(module),
+      {validate}          = require('../src/configValidator'),
       {logInfo, logError} = require('../helpers/logger')
 ;
 
 validate(config)
-  .then(()=>{
+  .then(() => {
     logInfo('Config validation confirmed');
   })
-  .catch(logError)
+  .catch((error) => { logError('Config validation Error'.bold + '\n', error.annotate());})
 ;
 
 

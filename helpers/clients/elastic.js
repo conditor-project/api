@@ -1,6 +1,6 @@
 'use strict';
 
-const config           = require('config-component').get(),
+const config           = require('config-component').get(module),
       _                = require('lodash'),
       elasticsearch    = require('elasticsearch'),
       clientsContainer = {}

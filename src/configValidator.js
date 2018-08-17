@@ -9,19 +9,37 @@ const configValidator = module.exports;
 const customJoi = extend();
 
 configValidator.validate = function(config) {
-  return Joi.validate(config, configValidator.schema, {allowUnknown: true});
+  return Joi.validate(config, configValidator.schema, {allowUnknown: true, presence: 'required', abortEarly: false});
 };
 
-configValidator.schema = Joi.object()
+configValidator.schema = Joi.object(
+                            )
                             .keys({
-                                    app     : {version: customJoi.string().semver()},
-                                    elastic : {clients: {main: {hosts: [Joi.array(), Joi.string(), Joi.object()]}}},
+                                    app     : {
+                                      version: customJoi.string().semver()
+                                    },
+                                    elastic : {
+                                      queryString: {
+                                        allowLeadingWildcard: Joi.boolean().optional(),
+                                        maxDeterminizedStates: Joi.number().optional()
+                                      },
+                                      clients    : {
+                                        main: {
+                                          hosts: [Joi.array(), Joi.string(), Joi.object()]
+                                        }
+                                      }
+                                    },
                                     security: {
-                                      ip : {inMemory: [Joi.array()]},
-                                      jwt: {secret: Joi.string().required(), algorithm: Joi.string().required()}
+                                      ip : {
+                                        inMemory: Joi.array().optional()
+                                      },
+                                      jwt: {
+                                        secret   : Joi.string(),
+                                        algorithm: Joi.string()
+                                      }
                                     }
                                   })
-                            .requiredKeys('app','app.version')
+                            .optionalKeys('security.ip')
 ;
 
 

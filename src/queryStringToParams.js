@@ -1,7 +1,7 @@
 'use strict';
 
 const
-  config              = require('config-component').get(),
+  config              = require('config-component').get(module),
   moment              = require('moment'),
   _                   = require('lodash'),
   split               = require('lodash/fp/split')
@@ -15,7 +15,7 @@ function queryStringToParams (queryString) {
           scroll   : {
             isValid  : _validateScrollDuration,
             // @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
-            transform: (params, value, key, queryString) => {if (!queryString.scroll_id) {params.sort = ['_doc:asc'];}}
+            transform: (params, value, key, queryString) => {if (!queryString.scroll_id) {params.sort = ['_doc:asc'];params.trackScores=true;}}
           },
           includes : {
             mapKey  : _.constant('_sourceInclude'),

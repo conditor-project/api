@@ -2,7 +2,7 @@
 ---
 
 imports:
-    - { resource: 'secret_parameters.yml' }
+    - resource: 'secret_parameters.yml'
     - resource: ../package.json
       pick:
         name: app.name
@@ -25,8 +25,8 @@ security:
     secret: %env(JWT_KEY)%
     expiresIn: 30 days # https://github.com/zeit/ms
     forbidenIds: ~
-#    ip:
-#      inMemory: []
+  ip:
+    inMemory: [] # list authorized ips
 
 nodejs:
   stackTraceLimit: 10
@@ -42,6 +42,9 @@ express:
 elastic:
   maxScrollDuration: 300s # d|h|m|s|ms|micros|nanos
   maxSize: 1000
+  queryString:
+    allowLeadingWildcard: false
+    maxDeterminizedStates: 5000 # default:10000 protect against too-difficult queries
   clients:
     main:
       hosts: %env(CONDITOR_ES_HOSTS)% # String, String[], Object[]

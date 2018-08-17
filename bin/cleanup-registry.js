@@ -6,7 +6,8 @@
  */
 const {isExpiredOrInvalid} = require('../src/jwtToken'),
       fs                   = require('fs-extra'),
-      _                    = require('lodash')
+      _                    = require('lodash'),
+      myColors             = require('../helpers/myColors')
 ;
 
 const file = './.jwt/tokenRegistry.json';
@@ -18,8 +19,9 @@ fs.readJson(file)
   })
   .then(([invalidTokens, validTokens]) => {
   if(invalidTokens.length){
-    console.info('Rejected Tokens: ');
     console.dir(invalidTokens);
+  } else{
+    console.info('No invalid Tokens '.bold.info);
   }
     fs.outputJson(file, validTokens, {spaces: 2});
   })

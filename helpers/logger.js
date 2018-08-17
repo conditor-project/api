@@ -42,7 +42,7 @@ function logWarning () {
 }
 
 function logDebug () {
-  if (process.NODE_ENV === 'production') return;
+  if (process.env.NODE_ENV === 'production') return;
   console.info('%s: [%s]:',
                appName.bold.primary,
                new Date(Date.now()).toLocaleString(),

@@ -1,6 +1,6 @@
 'use strict';
 
-const {security: {jwt: jwtConfig}, app} = require('config-component').get(),
+const {security: {jwt: jwtConfig}, app} = require('config-component').get(module),
       jwt                               = require('jsonwebtoken'),
       nanoid                            = require('nanoid')
 ;

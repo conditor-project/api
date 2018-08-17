@@ -2,6 +2,7 @@
 
 const parser      = require('lucene-query-parser'),
       bodybuilder = require('bodybuilder'),
+      esb         = require('elastic-builder/src'),
       _           = require('lodash')
 ;
 
@@ -10,33 +11,73 @@ const queryBuilder = module.exports;
 
 queryBuilder.filter = filter;
 
+function filter (luceneQuery) {
+  const expressionTree = parser.parse(luceneQuery);
 
-const transformMapping = {
-  'left': {'method': {'name': 'filter'}}
+  return build(expressionTree).build();
+}
+
+const bodyBuilderMapping = {
+  'OR'        : {method: 'orFilter'},
+  'AND'       : {method: 'andFilter'},
+  '<implicit>': {method: 'orFilter'}
 };
 
-function filter (luceneQuery) {
-  const queryTree = parser.parse(luceneQuery);
-  console.log('------------------------------');
-  const builder = _transform(queryTree, bodybuilder());
-  const body = builder.build();
-  console.log('+++++++++++++++++++++++++++++');
-  console.dir(body, {depth:10});
+function build (expressionTree, _bodyBuilder = bodybuilder(), operator = '<implicit>') {
+  console.log('------  expression tree -------');
+  console.dir(expressionTree, {depth:10})
+
+
+  if (isNodeExpression(expressionTree)) {
+    if (_.has(expressionTree, 'left')) {
+      build(expressionTree.left, _bodyBuilder, expressionTree.operator);
+    }
+    if (_.has(expressionTree, 'right')) {
+      build(expressionTree.right, _bodyBuilder, expressionTree.operator);
+    }
+
+    return _bodyBuilder;
+  }
+  if (isFieldExpression(expressionTree)) {
+    _.invoke(_bodyBuilder,
+             _.get(bodyBuilderMapping, operator + '.method'),
+             'term',
+             expressionTree.field,
+             expressionTree.term
+    );
+
+    return _bodyBuilder;
+  }
+
+  return _bodyBuilder;
 }
 
-function _transform (queryTree, bodyBuilder) {
-  console.log('TREE --------------------------');
-  console.dir(queryTree)
-  console.log('------------------------------');
-   return _.transform(
-    queryTree,
-    (builder, value, key) => {
-      console.log(value, key);
-      const mapping = _.get(transformMapping, key, {});
-      _.invoke(builder, _.get(mapping, 'method.name'), 'term', value.field, value.term);
-      if (value.left) _transform(value, builder);
-    },
-    bodyBuilder)
-  ;
+function isFieldExpression (expressionTree) {
+  return _.chain(expressionTree)
+          .keys()
+          .intersection(['field', 'term'])
+          .size()
+          .gte(2)
+          .value()
+    ;
 }
 
+function isNodeExpression (expressionTree) {
+  return _.chain(expressionTree)
+          .keys()
+          .intersection(['left', 'operator', 'right'])
+          .size()
+          .gte(1)
+          .value()
+    ;
+}
+
+function isRangeExpression (expressionTree) {
+  return _.chain(expressionTree)
+          .keys()
+          .intersection(['field', 'term_min', 'term_max'])
+          .size()
+          .gte(3)
+          .value()
+    ;
+}
