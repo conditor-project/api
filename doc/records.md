@@ -6,40 +6,50 @@
 
 ## `GET` /records
 
-Route de récupération d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
-**Alias**
-
-`GET` /records/json
+Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Paramètres d'URL**
 
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
+
 2. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+
 3. `excludes` (string) : Une liste de champs à exclure de la réponse.
+
 4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
+
+5. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+
+     
 
 **Retourne**
 
 (jsonArray) : Retourne un tableau contenant les résultats sous forme d'objet.
 
-
 **Exemples**
+
+Faire une recherche sur un nom d'auteur :
+
+```url
+https://api-integ.conditor.fr/v1/records?q=author:bob
+```
 
 
 Déclencher un scroll :
 ```url
 https://api-integ.conditor.fr/v1/records?scroll=5m
 ```
-Filtre sur le champ authorRef :
+Renvoi uniquement le champ authorRef de chaque notice :
 ```url
 https://api-integ.conditor.fr/v1/records?includes=authorRef
 ```
-Filtre sur les champs authorRef et idConditor :
+Renvoi uniquement les champs authorRef et idConditor de chaque notice:
 ```url
 https://api-integ.conditor.fr/v1/records?includes=authorRef,idConditor
 ```
-Filtre sur le sous-champ surname de authorRef :
+Renvoi uniquement le sous-champ surname de authorRef de chaque notice :
 ```url
 https://api-integ.conditor.fr/v1/records?includes=authorRef.surname
 ```
@@ -62,12 +72,15 @@ https://api-integ.conditor.fr/v1/records?size=100
 
 ## `GET` /records/zip
 
-Route de récupération de **l'intégralité des notices** de la base Conditor dans une archive ZIP. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
+Route de récupération des notices de la base Conditor dans une **archive ZIP**. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
+
+Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Paramètres d'URL**
 
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
+3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
 **Retourne**
 
@@ -85,21 +98,21 @@ https://api-integ.conditor.fr/v1/records/zip?includes=title,creationDate
 
 
 
-## `GET`&nbsp;/records/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]
+## `GET`&nbsp;/records/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]
 
-Route de récupération d'une collection de notices au format JSON dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
-La collection peut être filtrée en fonction de différents arguments de la route facultatifs mais qui doivent respecter l'ordre décrit ci-dessous.
+La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
+Ce type de filtre n'impacte pas le **score de pertinence**.
 
-**Alias**
-
-`GET`&nbsp;/records/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]/json
+Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Arguments de la route**
 
 1. `source` (string) : Le nom d'un des corpus source de Conditor (ex: sudoc)
 2. `year` (string) : Année de publication (ex: 2014)
-3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon ou non-doublon (flag: duplicate|not_duplicate)
+3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: duplicate|not_duplicate)
+4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: near_duplicate|not_near_duplicate)
 
 **Paramètres d'URL**
 
@@ -107,6 +120,7 @@ La collection peut être filtrée en fonction de différents arguments de la rou
 2. `includes` (string) : Une liste de champs à extraire et retourner dans la réponse.
 3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
+5. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
 **Retourne**
 
@@ -126,24 +140,37 @@ Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 mar
 https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate?includes=idConditor
 ```
 
+Filtrer la réponse afin de récupérer les notices publiées en 2014 marquées comme doublon certain et doublon incertain en incluant uniquement l'idConditor et le titre. Le tout filtré par une recherche sur l'auteur :
+
+```url
+https://api-integ.conditor.fr/v1/records/2014/duplicate/near_duplicate?includes=idConditor,title&q=author:bob
+```
+
 ------
 
 
 
-## `GET`&nbsp;/records/\[&lt;source&gt;]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/zip
+## `GET`&nbsp;/records/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]<wbr>/zip
 
-Route de récupération d'une collection de notices dans une archive ZIP. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
+Route de récupération d'une collection de notices dans une **archive ZIP**. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
+
+La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
+Ce type de filtre n'impacte pas le **score de pertinence**.
+
+Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Arguments de la route**
 
 1. `source` (string) : Le nom d'un des corpus source de Conditor (ex: sudoc)
 2. `year` (string) : Année de publication (ex: 2014)
-3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon ou non-doublon (flag: duplicate|not_duplicate)
+3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: duplicate|not_duplicate)
+4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: near_duplicate|not_near_duplicate)
 
 **Paramètres d'URL**
 
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
+3. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
 **Retourne**
 
@@ -170,10 +197,6 @@ https://api-integ.conditor.fr/v1/records/hal/2015/duplicate/zip?includes=idCondi
 ## `GET`&nbsp;/records/&lt;id_conditor&gt;
 
 Route de récupération d'une notice identifiée par son idConditor.
-
-**Alias**
-
-`GET` /records/&lt;id_conditor&gt;/json
 
 **Arguments de la route**
 

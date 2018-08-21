@@ -14,18 +14,17 @@ const IS_DUPLICATE          = 'duplicate',
       IS_NEAR_DUPLICATE     = 'near_duplicate',
       IS_NOT_NEAR_DUPLICATE = 'not_near_duplicate'
 ;
-
 const filterByCriteriaRouteTemplate = `(/:source(hal|wos|sudoc))?`
                                       + `(/:publicationYear(((18|19|20)[0-9]{2})))?`
                                       + `(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`
-                                      + `(/:isNearDuplicate(${IS_NEAR_DUPLICATE}|${IS_NOT_NEAR_DUPLICATE}))?`;
-
+                                      + `(/:isNearDuplicate(${IS_NEAR_DUPLICATE}|${IS_NOT_NEAR_DUPLICATE}))?`
+;
 const router = module.exports = express.Router();
 
 router.use(firewall);
 
-// /records(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})(/json))
-router.get(`/records` + filterByCriteriaRouteTemplate + `(/json)?`,
+// /records(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})
+router.get(`/records` + filterByCriteriaRouteTemplate,
            (req, res, next) => {
              const criteria = _routeParamsToCriteria(req.params);
              if (_.isEmpty(criteria)) return next();
@@ -60,14 +59,16 @@ router.get(`/records` + filterByCriteriaRouteTemplate + `/zip`,
                        );
                    })
                    .on('end', () => {
+                     logDebug('Zip : Scroll stream  finished');
                      if (!res.headersSent) {
                        _setHeaders();
                      }
-                     logDebug('Zip : Scroll stream  finished');
                      archive.finalize();
                    })
                    .on('error', (err) => {
-                     logError('Zip : Scroll stream  error \n', err);
+                     logError('Zip : Scroll stream  error');
+                     archive.abort();
+                     getErrorHandler(res)(err);
                    })
                  ;
 
@@ -116,8 +117,8 @@ router.get(`/records` + filterByCriteriaRouteTemplate + `/zip`,
              ;
            });
 
-// /records?q=<queryLucene>
-router.get('/records(/json)?', (req, res) => {
+// /records
+router.get('/records', (req, res) => {
 
   recordsManager
     .searchRecords(req.query)
@@ -140,8 +141,8 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
   ;
 });
 
-// /records/{idConditor}(/json)
-router.get('/records/:idConditor([0-9A-Za-z_~]+)(/json)?', (req, res) => {
+// /records/{idConditor}
+router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
   recordsManager
     .getSingleHitByIdConditor(req.params.idConditor, req.query)
     .then(getResultHandler(res))

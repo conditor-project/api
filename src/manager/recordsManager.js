@@ -3,17 +3,12 @@
 const
   Buffer                           = require('buffer').Buffer,
   {main: esClient}                 = require('../../helpers/clients/elastic').startAll().get(),
-  {
-    elastic: {queryString: {allowLeadingWildcard, maxDeterminizedStates}},
-    indices
-  }                                = require('config-component').get(module),
+  {indices}                        = require('config-component').get(module),
   esResultFormat                   = require('../../helpers/esResultFormat'),
-  bodybuilder                      = require('bodybuilder'),
   esb                              = require('elastic-builder/src'),
   _                                = require('lodash'),
   ScrollStream                     = require('elasticsearch-scroll-stream'),
   queryStringToParams              = require('../queryStringToParams'),
-  {logDebug, logError}             = require('../../helpers/logger'),
   {buildFilterByCriteriaBoolQuery} = require('../repository/recordsRepository')
 ;
 

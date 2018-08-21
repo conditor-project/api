@@ -1,8 +1,8 @@
 'use strict';
 const {logError} = require('../helpers/logger'),
-      _                   = require('lodash'),
-      {constant}          = require('lodash'),
-      {app}               = require('config-component').get(module)
+      _          = require('lodash'),
+      {constant} = require('lodash'),
+      {app}      = require('config-component').get(module)
 ;
 
 exports.getResultHandler = _getResultHandler;
@@ -44,9 +44,11 @@ function _getSingleResultErrorHandler (res) {
 
 function _getErrorHandler (res) {
   return (reason) => {
-    let status = [400, 404].includes(reason.status) ? reason.status : 500;
     logError(reason);
-    res.sendStatus(status);
+    if (!res.headersSent) {
+      let status = [400, 404].includes(reason.status) ? reason.status : 500;
+      res.sendStatus(status);
+    }
   };
 }
 
