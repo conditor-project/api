@@ -41,27 +41,27 @@ Déclencher un scroll :
 ```url
 https://api-integ.conditor.fr/v1/records?scroll=5m
 ```
-Renvoi uniquement le champ authorRef de chaque notice :
+Renvoyer uniquement le champ authorRef de chaque notice :
 ```url
 https://api-integ.conditor.fr/v1/records?includes=authorRef
 ```
-Renvoi uniquement les champs authorRef et idConditor de chaque notice:
+Renvoyer uniquement les champs authorRef et idConditor de chaque notice :
 ```url
 https://api-integ.conditor.fr/v1/records?includes=authorRef,idConditor
 ```
-Renvoi uniquement le sous-champ surname de authorRef de chaque notice :
+Renvoyer uniquement le sous-champ surname de authorRef de chaque notice :
 ```url
 https://api-integ.conditor.fr/v1/records?includes=authorRef.surname
 ```
-Exclusion du champ authorRef :
+Exclure le champ authorRef :
 ```url
 https://api-integ.conditor.fr/v1/records?excludes=authorRef
 ```
-On peut cumuler excludes et includes :
+Cumuler les paramètres `excludes` et `includes` :
 ```url
 https://api-integ.conditor.fr/v1/records?includes=authorRef&excludes=authorRef.surname
 ```
-Choix du nombre de résultats retournés :
+Choisir nombre de résultats retournés :
 ```url
 https://api-integ.conditor.fr/v1/records?size=100
 ```
@@ -74,7 +74,7 @@ https://api-integ.conditor.fr/v1/records?size=100
 
 Route de récupération des notices de la base Conditor dans une **archive ZIP**. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
 
-Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
+Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Paramètres d'URL**
 
@@ -105,7 +105,7 @@ Route de récupération d'une collection de notices au format **JSON** dont le n
 La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
 Ce type de filtre n'impacte pas le **score de pertinence**.
 
-Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
+Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Arguments de la route**
 
@@ -157,7 +157,7 @@ Route de récupération d'une collection de notices dans une **archive ZIP**. Ch
 La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
 Ce type de filtre n'impacte pas le **score de pertinence**.
 
-Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
+Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Arguments de la route**
 
@@ -170,7 +170,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
-3. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
 **Retourne**
 
@@ -209,7 +209,7 @@ Route de récupération d'une notice identifiée par son idConditor.
 
 **Retourne**
 
-(jsonObject): Retourne une unique notice sous la forme d'un objet JSON .
+(jsonObject) : Retourne une unique notice sous la forme d'un objet JSON .
 
 **Exemples**
 
