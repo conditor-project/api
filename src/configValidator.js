@@ -12,15 +12,14 @@ configValidator.validate = function(config) {
   return Joi.validate(config, configValidator.schema, {allowUnknown: true, presence: 'required', abortEarly: false});
 };
 
-configValidator.schema = Joi.object(
-                            )
+configValidator.schema = Joi.object()
                             .keys({
                                     app     : {
                                       version: customJoi.string().semver()
                                     },
                                     elastic : {
                                       queryString: {
-                                        allowLeadingWildcard: Joi.boolean().optional(),
+                                        allowLeadingWildcard : Joi.boolean().optional(),
                                         maxDeterminizedStates: Joi.number().optional()
                                       },
                                       clients    : {

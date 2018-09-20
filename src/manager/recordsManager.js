@@ -9,7 +9,8 @@ const
   _                                = require('lodash'),
   ScrollStream                     = require('elasticsearch-scroll-stream'),
   queryStringToParams              = require('../queryStringToParams'),
-  {buildFilterByCriteriaBoolQuery} = require('../repository/recordsRepository')
+  {buildFilterByCriteriaBoolQuery} = require('../repository/recordsRepository'),
+  {build: buildAggregation}        = require('../../helpers/aggregationQueryBuilder')
 ;
 
 const recordsManager = module.exports;
@@ -17,14 +18,13 @@ const recordsManager = module.exports;
 const
   defaultParams = {
     index     : indices.records.index,
-    filterPath: ['hits.hits', 'hits.total', '_scroll_id']
+    filterPath: ['hits.hits', 'hits.total', '_scroll_id', 'aggregations']
   }
 ;
 
 recordsManager.getSingleHitByIdConditor = getSingleHitByIdConditor;
 recordsManager.getSingleTeiByIdConditor = getSingleTeiByIdConditor;
 recordsManager.searchRecords = searchRecords;
-recordsManager.searchAllRecords = searchAllRecords;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
 
@@ -33,7 +33,7 @@ function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['includes', 'excludes', 'q', 'access_token'],
+      const validOptions    = ['includes', 'excludes', 'q', 'access_token', 'size'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
@@ -64,9 +64,13 @@ function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
                                             {objectMode: true}
       );
 
+
       scrollStream._invalidOptions = _invalidOptions;
 
-      return scrollStream;
+      return scrollStream
+        .on('error', (err) => {
+          if (['TypeError'].includes(err.name)) {err.status = 400;}
+        });
     });
 
 
@@ -96,6 +100,7 @@ function filterByCriteria (criteria, options = {}) {
 
       return esClient
         .search(params)
+        .catch(clientErrorHandler)
         .then(esResultFormat.getResult)
         .then((result) => {
           result._invalidOptions = _invalidOptions;
@@ -130,6 +135,7 @@ function getSingleHitByIdConditor (idConditor, options = {}) {
 
       return esClient
         .search(params)
+        .catch(clientErrorHandler)
         .then(esResultFormat.getSingleResult)
         .then((result) => {
           result._invalidOptions = _invalidOptions;
@@ -167,6 +173,7 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
 
       return esClient
         .search(params)
+        .catch(clientErrorHandler)
         .then(esResultFormat.getSingleScalarResult)
         .then(({result, ...rest}) => {
           result = Buffer.from(result, 'base64');
@@ -176,37 +183,11 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
 }
 
 
-function searchAllRecords (options = {}) {
-
-  return Promise
-    .resolve()
-    .then(() => {
-      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'access_token'],
-            _invalidOptions = _.difference(_.keys(options), validOptions);
-
-      options = _.pick(options, validOptions);
-
-      const params = _.defaultsDeep(
-        queryStringToParams(options),
-        defaultParams
-      );
-
-      return esClient
-        .search(params)
-        .then(esResultFormat.getResult)
-        .then((result) => {
-          result._invalidOptions = _invalidOptions;
-          return result;
-        })
-        ;
-    });
-}
-
 function searchRecords (options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'q', 'access_token'],
+      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'q', 'aggs', 'access_token'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
@@ -217,6 +198,19 @@ function searchRecords (options = {}) {
              .query(buildFilterByCriteriaBoolQuery({}, options.q))
       ;
 
+      if (options.aggs) {
+        let aggs;
+        try {
+          aggs = buildAggregation(options.aggs);
+        } catch (err) {
+          if (['SyntaxError', 'ValidationError'].includes(err.name)) {
+            err.status = 400;
+          }
+          throw err;
+        }
+        requestBody.aggs(aggs);
+      }
+//console.dir(requestBody.toJSON())
       const params = _.defaultsDeep(
         {body: requestBody.toJSON()},
         queryStringToParams(options),
@@ -225,6 +219,7 @@ function searchRecords (options = {}) {
 
       return esClient
         .search(params)
+        .catch(clientErrorHandler)
         .then(esResultFormat.getResult)
         .then((result) => {
           result._invalidOptions = _invalidOptions;
@@ -232,4 +227,9 @@ function searchRecords (options = {}) {
         })
         ;
     });
+}
+
+function clientErrorHandler (err) {
+  if (['TypeError'].includes(err.name)) {err.status = 400;}
+  throw err;
 }

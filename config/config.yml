@@ -52,3 +52,15 @@ elastic:
       requestTimeout: 30000
       log: # Possible values: error, info, trace, warning, debug
         - error
+
+aggregation:
+  bucket:
+    terms:
+      validation:
+        invalid:
+          - idConditor
+          - doi.normalized
+          - idHal.normalized
+          - idProdinra.normalized
+
+

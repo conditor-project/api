@@ -13,6 +13,7 @@ smokeTest.run = function() {
     .resolve()
     .then(() => {
       logInfo(`Smoke test on ${'Elastic clients'.info}`);
+
       return testElasticClients();
     });
 };
