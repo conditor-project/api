@@ -111,8 +111,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 1. `source` (string) : Le nom d'un des corpus source de Conditor (ex: sudoc)
 2. `year` (string) : Année de publication (ex: 2014)
-3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: duplicate|not_duplicate)
-4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: near_duplicate|not_near_duplicate)
+3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: **duplicate**|**not_duplicate**)
+4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: **near_duplicate**|**not_near_duplicate**)
 
 **Paramètres d'URL**
 
@@ -163,8 +163,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 1. `source` (string) : Le nom d'un des corpus source de Conditor (ex: sudoc)
 2. `year` (string) : Année de publication (ex: 2014)
-3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: duplicate|not_duplicate)
-4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: near_duplicate|not_near_duplicate)
+3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: **duplicate**|**not_duplicate**)
+4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: **near_duplicate**|**not_near_duplicate**)
 
 **Paramètres d'URL**
 

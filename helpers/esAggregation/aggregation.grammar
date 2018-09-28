@@ -10,21 +10,23 @@ Start
   = Aggregations
 
 Aggregations
-  = Aggregation*
+  = agg:Aggregation { return [agg]; }
+  / _ "(" _ aggs:Aggregation* _ ")" _ { return aggs; }
 
 Aggregation
   = aggs:AggregationType _ subAggs:SubAggregations? { if(subAggs){aggs.aggs = subAggs}; return aggs; }
 
 SubAggregations
-  = ">" _ subAgg:SubAggregation { return [subAgg]; }
-  / ">" _ "(" _ aggs:Aggregations _ ")" { return aggs; }
-
-SubAggregation
-  = agg:Aggregation { return agg; }
+  = ">" _ aggs:Aggregations { return aggs; }
 
 AggregationType
   = TermsAgg
   / DateRangeAgg
+  / CardinalityAgg
+
+CardinalityAgg
+  = _ type:"cardinality"i _ ":" _ field:AggField _ options:AggOptions?
+   { return Object.assign({field, type:"cardinality"}, options); }
 
 TermsAgg
   = _ type:"terms"i _ ":" _ field:AggField _ options:AggOptions?
@@ -52,10 +54,14 @@ DateMath
 
 Date
   = (
-      yyyy "-" MM "-" dd " " HH ":" mm ":" ss
-      / yyyy "-" MM "-" dd
-      / Number
+      StrictDateHourMinuteSecond
+      / StrictDate
+      / StrictYear !Digit
+      / TimeStamp
     ) { return text(); }
+
+TimeStamp
+  = $(Minus? Digit+)
 
 NowFlag
   = "now"i
@@ -63,23 +69,24 @@ NowFlag
 DateMathExpr
   = $([0-9+\-yMwdhHms\/]*)
 
-yyyy
-  = $(Minus? Digit Digit? Digit? Digit?)
 
-MM
-  = $("0" [1-9] / "1" [0-2]/ Digit1_9)
+StrictDateHourMinuteSecond
+  = StrictDate (" "/"T"i) StrictHourMinuteSecond
 
-dd
-  = $("0" [1-9] / [1-2] [0-9] / "3" [0-1]/ Digit1_9 )
+StrictHourMinuteSecond
+  = $([0-1] [0-9] / "2" [0-3]) ":" $([0-5] [0-9]) ":" $([0-5] [0-9])
 
-HH
-  = $([0-1] [0-9] / "2" [0-4])
+StrictDate
+  = StrictYear "-" StrictMonth "-" StrictDay
 
-mm
-  = $([0-5] [0-9] / "60")
+StrictYear
+  = $(Minus? Digit Digit Digit Digit)
 
-ss
-  = $([0-5] [0-9] / "60")
+StrictMonth
+  = $("0" [1-9] / "1" [0-2])
+
+StrictDay
+  = $("0" [1-9] / [1-2] [0-9] / "3" [0-1])
 
 AggField
   = StringLiteral

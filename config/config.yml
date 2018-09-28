@@ -56,11 +56,9 @@ elastic:
 aggregation:
   bucket:
     terms:
-      validation:
-        invalid:
-          - idConditor
-          - doi.normalized
-          - idHal.normalized
-          - idProdinra.normalized
+      invalidFields:
+        - idConditor
+      maxSize: 1000
+
 
 

@@ -10,7 +10,7 @@ const
   ScrollStream                     = require('elasticsearch-scroll-stream'),
   queryStringToParams              = require('../queryStringToParams'),
   {buildFilterByCriteriaBoolQuery} = require('../repository/recordsRepository'),
-  {build: buildAggregation}        = require('../../helpers/aggregationQueryBuilder')
+  {build: buildAggregation}        = require('../../helpers/esAggregation/queryBuilder')
 ;
 
 const recordsManager = module.exports;
@@ -210,7 +210,6 @@ function searchRecords (options = {}) {
         }
         requestBody.aggs(aggs);
       }
-//console.dir(requestBody.toJSON())
       const params = _.defaultsDeep(
         {body: requestBody.toJSON()},
         queryStringToParams(options),
