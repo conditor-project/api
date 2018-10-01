@@ -2,7 +2,9 @@
 
 const parser = require('../../../helpers/esAggregation/parser'),
       should = require('should'), // jshint ignore:line
-      _      = require('lodash')
+      _      = require('lodash'),
+      request    = require('supertest'),
+      app        = require('../../../src/worker')
 ;
 
 
@@ -59,14 +61,29 @@ const expectedAst = [
 ];
 
 describe('parser#parse(aggsQuery)', () => {
-
   _.forEach(expectedAst, (test) => {
     describe(test.query, () => {
       it(test.message || 'Should return correct AST', () => {
         const ast = parser.parse(test.query);
         ast.should.deepEqual(test.expected);
       });
+
+      it(test.message || 'Should return correct AST', () => {
+        const requestUrl = `/v1/records?aggs=${test.query}`;
+        return request(app)
+          .get(requestUrl)
+          .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .then(response => {
+            const aggregations = JSON.parse(response.text).aggregations;
+            console.log(aggregations);
+          })
+      });
     });
   });
 
+  after(function() {
+    app._close();
+  });
 });
