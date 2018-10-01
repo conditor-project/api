@@ -49,15 +49,20 @@ const expectedAst = [
     expected: [{type: 'terms', field: 'source'}, {type: 'date_range', field: 'creationDate', ranges: [{from: '2018'}]}]
   },
   {
-    query   : 'terms:source date_range:creationDate:[2018]',
+    query   : 'terms:source date_range:creationDate:[2018] cardinality:author.normalized',
     message: 'Should accept first level multiple aggregations without bracket',
-    expected: [{type: 'terms', field: 'source'}, {type: 'date_range', field: 'creationDate', ranges: [{from: '2018'}]}]
+    expected: [{type: 'terms', field: 'source'}, {type: 'date_range', field: 'creationDate', ranges: [{from: '2018'}]}, {type:'cardinality', field:'author.normalized'}]
   },
   {
     query: 'terms:source > (terms:hasDoi cardinality:doi.normalized)',
     message: 'Should accept multiple sub aggregations',
     expected: [{type: 'terms', field: 'source', aggs:[{type:'terms', field:'hasDoi'},{type:'cardinality', field:'doi.normalized'}]}]
-  }
+  },
+  {
+    query   : 'terms:source>terms:author.normalized>cardinality:source:{name:sourceCount} date_range:creationDate:[2018] cardinality:author.normalized',
+    message: 'Should accept multiple sub aggregations',
+    expected: [{type: 'terms', field: 'source', aggs:[{type:'terms', field:'author.normalized', aggs:[{type:'cardinality', field:'source', name:'sourceCount'}]}]}, {type: 'date_range', field: 'creationDate', ranges: [{from: '2018'}]}, {type:'cardinality', field:'author.normalized'}]
+  },
 ];
 
 describe('parser#parse(aggsQuery)', () => {
