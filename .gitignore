@@ -151,5 +151,7 @@ fabric.properties
 
 
 # End of https://www.gitignore.io/api/node,linux,redis,webstorm
-
 *.env.sh
+
+# Visual Studio Code
+.vscode
