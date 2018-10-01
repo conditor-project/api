@@ -4,6 +4,7 @@ const request             = require('supertest'),
       yauzl               = require('yauzl'),
       should              = require('should'), // jshint ignore:line
       app                 = require('../../src/worker'),
+      parser              = require('../../helpers/esAggregation/parser'),
       {logInfo, logError} = require('../../helpers/logger')
 ;
 
@@ -50,6 +51,114 @@ describe('GET /records', function() {
           })();
         });
     });
+  });
+
+  describe('?aggs', function() {
+    it('should return aggregations by source', () => {
+      const requestUrl = '/v1/records?aggs=terms:source';
+      return request(app)
+        .get(requestUrl)
+        .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          const aggregations = JSON.parse(response.text).aggregations;
+          aggregations.should.have.key('TERMS_SOURCE');
+          aggregations['TERMS_SOURCE'].should.have.key('buckets');
+          aggregations['TERMS_SOURCE'].buckets.should.Array();
+          aggregations['TERMS_SOURCE'].buckets.map(bucket => {
+            bucket.should.have.keys('key', 'doc_count');
+          });
+        })
+    });
+
+    it('should return aggregations with a date range', () => {
+      const requestUrl = '/v1/records?aggs=date_range:creationDate:[2000 to 2018]';
+      return request(app)
+        .get(requestUrl)
+        .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          const aggregations = JSON.parse(response.text).aggregations;
+          aggregations.should.have.key('DATE_RANGE_CREATIONDATE');
+          aggregations['DATE_RANGE_CREATIONDATE'].should.have.key('buckets');
+          aggregations['DATE_RANGE_CREATIONDATE'].buckets.should.Array();
+          aggregations['DATE_RANGE_CREATIONDATE'].buckets.map(bucket => {
+            bucket.should.have.keys('key', 'from', 'from_as_string', 'to', 'to_as_string');
+          });
+        })
+    });
+
+    it('should return aggregations with multiple date range', () => {
+      const requestUrl = '/v1/records?aggs=date_range:creationDate:[2000 to 2013-05-05][2013-05-05 to 2018][2018 to now]';
+      return request(app)
+        .get(requestUrl)
+        .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          const aggregations = JSON.parse(response.text).aggregations;
+          aggregations.should.have.key('DATE_RANGE_CREATIONDATE');
+          aggregations['DATE_RANGE_CREATIONDATE'].should.have.key('buckets');
+          aggregations['DATE_RANGE_CREATIONDATE'].buckets.should.Array();
+          aggregations['DATE_RANGE_CREATIONDATE'].buckets.map(bucket => {
+            bucket.should.have.keys('key', 'from', 'from_as_string', 'to', 'to_as_string');
+          });
+        })
+    });
+
+    it('should return multiple aggregations', () => {
+      const requestUrl = '/v1/records?aggs=terms:source date_range:creationDate:[2018] cardinality:author.normalized';
+      return request(app)
+        .get(requestUrl)
+        .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          const aggregations = JSON.parse(response.text).aggregations;
+          aggregations.should.have.key('DATE_RANGE_CREATIONDATE');
+          aggregations['DATE_RANGE_CREATIONDATE'].should.have.key('buckets');
+          aggregations['DATE_RANGE_CREATIONDATE'].buckets.should.Array();
+          aggregations['DATE_RANGE_CREATIONDATE'].buckets.map(bucket => {
+            bucket.should.have.keys('key', 'from', 'from_as_string', 'to', 'to_as_string');
+          });
+          aggregations.should.have.key('TERMS_SOURCE');
+          aggregations['TERMS_SOURCE'].should.have.keys('buckets');
+          aggregations['TERMS_SOURCE'].buckets.should.Array();
+          aggregations['TERMS_SOURCE'].buckets.map(bucket => {
+            bucket.should.have.keys('key', 'doc_count');
+          });
+          aggregations.should.have.key('CARDINALITY_AUTHOR.NORMALIZED');
+          aggregations['CARDINALITY_AUTHOR.NORMALIZED'].should.have.keys('value');
+        })
+    });
+
+    it('should return nested aggregations', () => {
+      const requestUrl = '/v1/records?aggs=terms:source > (terms:hasDoi cardinality:doi.normalized)';
+      return request(app)
+        .get(requestUrl)
+        .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          const aggregations = JSON.parse(response.text).aggregations;
+          aggregations.should.have.key('TERMS_SOURCE');
+          aggregations['TERMS_SOURCE'].should.have.key('buckets');
+          aggregations['TERMS_SOURCE'].buckets.should.Array();
+          aggregations['TERMS_SOURCE'].buckets.map(bucket => {
+            bucket.should.have.keys('key', 'doc_count');
+            bucket.should.have.key('CARDINALITY_DOI.NORMALIZED');
+            bucket['CARDINALITY_DOI.NORMALIZED'].should.have.keys('value');
+            bucket.should.have.key('TERMS_HASDOI');
+            bucket['TERMS_HASDOI'].should.have.key('buckets');
+            bucket['TERMS_HASDOI'].buckets.map(bucket => {
+              bucket.should.have.keys('key', 'key_as_string', 'doc_count');
+            });
+          });
+        })
+    });
+
   });
 
   describe('/zip', function() {
