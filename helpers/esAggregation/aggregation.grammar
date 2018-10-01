@@ -6,15 +6,17 @@
         return range;
     };
 }
+
 Start
-  = Aggregations
+  = Aggregation+ // First level exception, no need brackets
+  / Aggregations
 
 Aggregations
   = agg:Aggregation { return [agg]; }
   / _ "(" _ aggs:Aggregation* _ ")" _ { return aggs; }
 
 Aggregation
-  = aggs:AggregationType _ subAggs:SubAggregations? { if(subAggs){aggs.aggs = subAggs}; return aggs; }
+  = aggs:AggregationType _ subAggs:SubAggregations? _ { if(subAggs){ aggs.aggs = subAggs; } return aggs; }
 
 SubAggregations
   = ">" _ aggs:Aggregations { return aggs; }

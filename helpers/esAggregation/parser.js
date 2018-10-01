@@ -6,6 +6,6 @@ const peg  = require('pegjs'),
 ;
 
 const aggsGrammar = fs.readFileSync(path.join(__dirname, 'aggregation.grammar'), 'utf8'),
-      parser      = peg.generate(aggsGrammar);
+      parser      = peg.generate(aggsGrammar, {trace: true});
 
 module.exports = parser;
