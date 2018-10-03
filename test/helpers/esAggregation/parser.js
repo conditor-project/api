@@ -64,7 +64,6 @@ const expectedAst = [
 ];
 
 describe('parser#parse(aggsQuery)', () => {
-
   _.forEach(expectedAst, (test) => {
     describe(test.query, () => {
       it(test.message || 'Should return correct AST', () => {
@@ -73,5 +72,4 @@ describe('parser#parse(aggsQuery)', () => {
       });
     });
   });
-
 });
