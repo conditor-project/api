@@ -10,7 +10,10 @@ responseFormat.getSingleResult = (response) => {
   if (response.hits.total > 1) throw nonUniqueResultException();
 
   const resultWrapper = responseFormat.getResult(response);
-  resultWrapper.result = _.find(resultWrapper.hits);
+
+  if (!_.has(resultWrapper,'result.aggregations')) {
+    resultWrapper.result = _.find(resultWrapper.hits);
+  }
 
   return resultWrapper;
 };

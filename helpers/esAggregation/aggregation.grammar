@@ -10,6 +10,7 @@
 Start
   = Aggregation+ // First level exception, no need brackets
   / Aggregations
+  / _ { return []; }
 
 Aggregations
   = agg:Aggregation { return [agg]; }
@@ -94,9 +95,9 @@ AggField
   = StringLiteral
 
 AggOptions
-  =  ":"  json:JsonText { return json; }
+  =  ":"  options:Object { return options; }
 
-// JSON Grammar
+// Laxe JSON Grammar
 // ============
 //
 

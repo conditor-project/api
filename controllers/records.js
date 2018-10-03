@@ -52,7 +52,7 @@ router.get(`/records` + filterByCriteriaRouteTemplate + `/zip`,
                      _setHeaders();
                    })
                    .on('data', (docObject) => {
-                     if (archive._state.aborted || archive._state.finalized) return;
+                     if (archive._state.aborted || archive._state.finalized || scrollStream._isClosed) return;
                      archive
                        .append(JSON.stringify(docObject),
                                {name: docObject.idConditor}
@@ -105,7 +105,7 @@ router.get(`/records` + filterByCriteriaRouteTemplate + `/zip`,
                  function _setHeaders () {
                    const result = {
                      totalCount     : _.get(scrollStream, '_total'),
-                     resultCount    : _.get(scrollStream, '_total'),
+                     resultCount    : _.get(scrollStream, '_resultCount'),
                      _invalidOptions: _.get(scrollStream, '_invalidOptions')
                    };
                    res.set('Content-type', 'application/zip');

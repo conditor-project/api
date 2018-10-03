@@ -1,16 +1,15 @@
 'use strict';
 
 const
-  Buffer                           = require('buffer').Buffer,
-  {main: esClient}                 = require('../../helpers/clients/elastic').startAll().get(),
-  {indices}                        = require('config-component').get(module),
-  esResultFormat                   = require('../../helpers/esResultFormat'),
-  esb                              = require('elastic-builder/src'),
-  _                                = require('lodash'),
-  ScrollStream                     = require('elasticsearch-scroll-stream'),
-  queryStringToParams              = require('../queryStringToParams'),
-  {buildFilterByCriteriaBoolQuery} = require('../repository/recordsRepository'),
-  {build: buildAggregation}        = require('../../helpers/esAggregation/queryBuilder')
+  Buffer                                             = require('buffer').Buffer,
+  {main: esClient}                                   = require('../../helpers/clients/elastic').startAll().get(),
+  {indices}                                          = require('config-component').get(module),
+  esResultFormat                                     = require('../../helpers/esResultFormat'),
+  esb                                                = require('elastic-builder/src'),
+  _                                                  = require('lodash'),
+  ScrollStream                                       = require('elasticsearch-scroll-stream'),
+  queryStringToParams                                = require('../queryStringToParams'),
+  {buildFilterByCriteriaBoolQuery, buildRequestBody} = require('../repository/recordsRepository')
 ;
 
 const recordsManager = module.exports;
@@ -29,26 +28,28 @@ recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
 
 
-function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
+function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['includes', 'excludes', 'q', 'access_token', 'size'],
+      const validOptions    = ['includes', 'excludes', 'q', 'access_token', 'limit'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
 
       const
-        requestBody =
-          esb.requestBodySearch()
-             .query(buildFilterByCriteriaBoolQuery(criteria, options.q))
+        requestBody = buildRequestBody(options.q, options.aggs, filterCriteria)
       ;
 
-      const params = _.defaultsDeep(
-        {body: requestBody.toJSON()},
-        queryStringToParams(options),
-        defaultParams
-      );
+      const params =
+              _.defaultsDeep(
+                {
+                  body: requestBody.toJSON(),
+                  size: 500
+                },
+                queryStringToParams(options),
+                defaultParams
+              );
 
       // idConditor is mandatory
       if (params._sourceInclude) {
@@ -67,6 +68,19 @@ function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
 
       scrollStream._invalidOptions = _invalidOptions;
 
+      if (options.limit) {
+        let recordsCount = 0;
+        const limit = scrollStream._resultCount = _.toSafeInteger(options.limit);
+        scrollStream
+          .on('data', () => {
+            ++recordsCount;
+            if (recordsCount > limit) {
+              scrollStream.close();
+              scrollStream._isClosed = true;
+            }
+          });
+      }
+
       return scrollStream
         .on('error', (err) => {
           if (['TypeError'].includes(err.name)) {err.status = 400;}
@@ -77,19 +91,17 @@ function getScrollStreamFilterByCriteria (criteria = {}, options = {}) {
 }
 
 
-function filterByCriteria (criteria, options = {}) {
+function filterByCriteria (filterCriteria, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'access_token', 'q'],
+      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'access_token', 'q', 'aggs'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
 
       const
-        requestBody =
-          esb.requestBodySearch()
-             .query(buildFilterByCriteriaBoolQuery(criteria, options.q))
+        requestBody = buildRequestBody(options.q, options.aggs, filterCriteria)
       ;
 
       const params =
@@ -100,7 +112,7 @@ function filterByCriteria (criteria, options = {}) {
 
       return esClient
         .search(params)
-        .catch(clientErrorHandler)
+        .catch(_clientErrorHandler)
         .then(esResultFormat.getResult)
         .then((result) => {
           result._invalidOptions = _invalidOptions;
@@ -114,15 +126,13 @@ function getSingleHitByIdConditor (idConditor, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['includes', 'excludes', 'access_token'],
+      const validOptions    = ['includes', 'excludes','aggs', 'access_token'],
             _invalidOptions = _.difference(_.keys(options), validOptions);
 
       options = _.pick(options, validOptions);
 
       const
-        requestBody =
-          esb.requestBodySearch()
-             .query(buildFilterByCriteriaBoolQuery({idConditor}))
+        requestBody = buildRequestBody('*', options.aggs, {idConditor})
       ;
 
       const params = _.defaultsDeep({
@@ -135,7 +145,7 @@ function getSingleHitByIdConditor (idConditor, options = {}) {
 
       return esClient
         .search(params)
-        .catch(clientErrorHandler)
+        .catch(_clientErrorHandler)
         .then(esResultFormat.getSingleResult)
         .then((result) => {
           result._invalidOptions = _invalidOptions;
@@ -160,20 +170,20 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
                    .query(buildFilterByCriteriaBoolQuery({idConditor}))
       ;
 
-      const params
-              = _.defaultsDeep({
-                                 body          : requestBody.toJSON(),
-                                 size          : 2, // If hits count =/= 1 then an error is thrown
-                                 _sourceInclude: 'teiBlob'
-                               },
-                               queryStringToParams(options),
-                               defaultParams
-            )
+      const params =
+              _.defaultsDeep({
+                               body          : requestBody.toJSON(),
+                               size          : 2, // If hits count =/= 1 then an error is thrown
+                               _sourceInclude: 'teiBlob'
+                             },
+                             queryStringToParams(options),
+                             defaultParams
+              )
       ;
 
       return esClient
         .search(params)
-        .catch(clientErrorHandler)
+        .catch(_clientErrorHandler)
         .then(esResultFormat.getSingleScalarResult)
         .then(({result, ...rest}) => {
           result = Buffer.from(result, 'base64');
@@ -193,23 +203,9 @@ function searchRecords (options = {}) {
       options = _.pick(options, validOptions);
 
       const
-        requestBody =
-          esb.requestBodySearch()
-             .query(buildFilterByCriteriaBoolQuery({}, options.q))
+        requestBody = buildRequestBody(options.q, options.aggs)
       ;
 
-      if (options.aggs) {
-        let aggs;
-        try {
-          aggs = buildAggregation(options.aggs);
-        } catch (err) {
-          if (['SyntaxError', 'ValidationError'].includes(err.name)) {
-            err.status = 400;
-          }
-          throw err;
-        }
-        requestBody.aggs(aggs);
-      }
       const params = _.defaultsDeep(
         {body: requestBody.toJSON()},
         queryStringToParams(options),
@@ -218,7 +214,7 @@ function searchRecords (options = {}) {
 
       return esClient
         .search(params)
-        .catch(clientErrorHandler)
+        .catch(_clientErrorHandler)
         .then(esResultFormat.getResult)
         .then((result) => {
           result._invalidOptions = _invalidOptions;
@@ -228,7 +224,7 @@ function searchRecords (options = {}) {
     });
 }
 
-function clientErrorHandler (err) {
+function _clientErrorHandler (err) {
   if (['TypeError'].includes(err.name)) {err.status = 400;}
   throw err;
 }

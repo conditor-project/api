@@ -81,6 +81,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
 
 **Retourne**
 
@@ -171,6 +172,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
 
 **Retourne**
 

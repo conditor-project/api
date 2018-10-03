@@ -4,7 +4,8 @@ const request             = require('supertest'),
       yauzl               = require('yauzl'),
       should              = require('should'), // jshint ignore:line
       app                 = require('../../src/worker'),
-      {logInfo, logError} = require('../../helpers/logger')
+      {logInfo, logError} = require('../../helpers/logger'),
+      _                   = require('lodash')
 ;
 
 describe('GET /records', function() {
@@ -55,7 +56,7 @@ describe('GET /records', function() {
   describe('/zip', function() {
     this.timeout(300000);
     it('Should respond with a ZIP including records.json', function(done) {
-      const requestUrl = '/v1/records/hal/2014/duplicate/near_duplicate/zip?q=author:jean&includes=idConditor';
+      const requestUrl = '/v1/records/hal/2014/duplicate/near_duplicate/zip?q=author:jean&includes=idConditor&limit=617';
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
@@ -73,9 +74,9 @@ describe('GET /records', function() {
 
           res.on('data', function(chunk) {
             if (i >= 10000) print += '-';
-            if (print.length >= 10) print = 'RESPONSE STREAM: ';
+            if (print.length >= 10) print = '  RESPONSE STREAM: ';
             ++i;
-            console.info('\u001b[1A\u001b[1K\t' + print + i);
+            console.info('\u001b[1A\u001b[1K\t' + print + i + '  ');
             res.data += chunk;
           });
 
@@ -90,7 +91,7 @@ describe('GET /records', function() {
 
                 zipfile.on('entry', (entry) => {
                   entries.push(entry.path);
-                  const print = 'UNZIP: ' + entries.length + '/' + res.headers['x-total-count'];
+                  const print = '  UNZIP: ' + entries.length + '/' + _.min([+res.headers['x-result-count'], +res.headers['x-total-count']]) + '  ';
                   console.info('\u001b[1A\u001b[1K\t' + print);
                   zipfile.readEntry();
                 });
@@ -103,7 +104,7 @@ describe('GET /records', function() {
           });
         })
         .end(function(err, res) {
-          (res.body.length).should.be.equal(+res.get('X-total-count'));
+          (res.body.length).should.be.equal(_.min([+res.get('X-result-count'), +res.get('X-total-count')]));
           return done(err);
         });
     });

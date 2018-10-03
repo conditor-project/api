@@ -12,9 +12,10 @@ const queryBuilder = module.exports;
 
 queryBuilder.build = build;
 
-function build (aggsQuery) {
-  const ast          = parser.parse(aggsQuery),
+function build (aggsQueryString) {
+  const ast          = parser.parse(aggsQueryString),
         validatedAst = Joi.attempt(ast, schema);
+
   return _buildAggs(validatedAst);
 }
 
