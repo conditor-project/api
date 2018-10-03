@@ -159,6 +159,14 @@ describe('GET /records', function() {
         })
     });
 
+    it('should return an 400 Bad request with a syntax error in aggregations', () => {
+      const requestUrl = '/v1/records?aggs=*$*$*$*$*$*$*$*$*$';
+      return request(app)
+        .get(requestUrl)
+        .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+        .expect(400);
+    });
+
   });
 
   describe('/zip', function() {
