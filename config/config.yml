@@ -16,6 +16,9 @@ imports:
 parameters:
   LOG_PATH: /var/log
 
+smokeTest:
+  doRun: true
+
 security:
   reverseProxy: %env(REVERSE_PROXY)%
   jwt:

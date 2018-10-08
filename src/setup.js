@@ -31,6 +31,9 @@ function setup () {
       configComponent.view();
       logInfo('Application semver : ', config.app.version);
       logInfo('Application major semver : ', semver.major(config.app.version));
+
+      if(!config.smokeTest.doRun) return;
+
       logInfo(`Run ${'smoke test'.bold.warning}:`);
       return smokeTest
         .run()

@@ -4,17 +4,18 @@ const {
       }                         = require('config-component').get(module),
       esb                       = require('elastic-builder/src'),
       _                         = require('lodash'),
-      {build: buildAggregation} = require('../../helpers/esAggregation/queryBuilder')
+      {build: buildAggregation} = require('../helpers/esAggregation/queryBuilder')
 ;
 
-const recordsRepository = module.exports;
+const documentQueryBuilder = module.exports;
 
-recordsRepository.buildTermQueriesByCriteria = buildTermQueriesByCriteria;
-recordsRepository.buildQueryStringQuery = buildQueryStringQuery;
-recordsRepository.buildFilterByCriteriaBoolQuery = buildFilterByCriteriaBoolQuery;
-recordsRepository.buildRequestBody = buildRequestBody;
+documentQueryBuilder.buildRequestBody = buildRequestBody;
 
-function buildRequestBody (luceneQueryString = '*', aggsQueryString = '', filterCriteria = {}) {
+
+function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = {}) {
+
+  luceneQueryString = _.isNil(luceneQueryString) ? '*' : luceneQueryString;
+  aggsQueryString = _.isNil(aggsQueryString) ? '' : aggsQueryString;
 
   return esb
     .requestBodySearch()
@@ -22,31 +23,17 @@ function buildRequestBody (luceneQueryString = '*', aggsQueryString = '', filter
       esb
         .boolQuery()
         .filter(
-          recordsRepository
-            .buildTermQueriesByCriteria(filterCriteria)
+          _buildTermQueriesByCriteria(filterCriteria)
         )
         .must(
-          recordsRepository
-            .buildQueryStringQuery(luceneQueryString)
+          _buildQueryStringQuery(luceneQueryString)
         )
     )
     .aggs(_buildAggregation(aggsQueryString))
     ;
 }
 
-function buildFilterByCriteriaBoolQuery (criteria, queryLucene) {
-  const boolQuery = esb.boolQuery();
-
-  boolQuery.filter(recordsRepository.buildTermQueriesByCriteria(criteria));
-
-  if (typeof queryLucene === 'string') {
-    boolQuery.must(recordsRepository.buildQueryStringQuery(queryLucene));
-  }
-
-  return boolQuery;
-}
-
-function buildTermQueriesByCriteria (criteria) {
+function _buildTermQueriesByCriteria (criteria) {
   return _.transform(criteria,
                      (filters, value, field) => {
                        filters.push(esb.termQuery(field, value));
@@ -54,7 +41,7 @@ function buildTermQueriesByCriteria (criteria) {
                      []);
 }
 
-function buildQueryStringQuery (queryLucene) {
+function _buildQueryStringQuery (queryLucene) {
   return esb
     .queryStringQuery(queryLucene)
     .allowLeadingWildcard(allowLeadingWildcard)

@@ -1,15 +1,14 @@
 'use strict';
 
 const
-  Buffer                                             = require('buffer').Buffer,
-  {main: esClient}                                   = require('../../helpers/clients/elastic').startAll().get(),
-  {indices}                                          = require('config-component').get(module),
-  esResultFormat                                     = require('../../helpers/esResultFormat'),
-  esb                                                = require('elastic-builder/src'),
-  _                                                  = require('lodash'),
-  ScrollStream                                       = require('elasticsearch-scroll-stream'),
-  queryStringToParams                                = require('../queryStringToParams'),
-  {buildFilterByCriteriaBoolQuery, buildRequestBody} = require('../repository/recordsRepository')
+  Buffer              = require('buffer').Buffer,
+  {main: esClient}    = require('../../helpers/clients/elastic').startAll().get(),
+  {indices}           = require('config-component').get(module),
+  esResultFormat      = require('../../helpers/esResultFormat'),
+  _                   = require('lodash'),
+  ScrollStream        = require('elasticsearch-scroll-stream'),
+  queryStringToParams = require('../queryStringToParams'),
+  {buildRequestBody}  = require('../documentQueryBuilder')
 ;
 
 const recordsManager = module.exports;
@@ -23,20 +22,15 @@ const
 
 recordsManager.getSingleHitByIdConditor = getSingleHitByIdConditor;
 recordsManager.getSingleTeiByIdConditor = getSingleTeiByIdConditor;
-recordsManager.searchRecords = searchRecords;
+recordsManager.search = search;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
 
-
+getScrollStreamFilterByCriteria.options = ['include', 'exclude', 'q', 'limit'];
 function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['includes', 'excludes', 'q', 'access_token', 'limit'],
-            _invalidOptions = _.difference(_.keys(options), validOptions);
-
-      options = _.pick(options, validOptions);
-
       const
         requestBody = buildRequestBody(options.q, options.aggs, filterCriteria)
       ;
@@ -66,8 +60,6 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
       );
 
 
-      scrollStream._invalidOptions = _invalidOptions;
-
       if (options.limit) {
         let recordsCount = 0;
         const limit = scrollStream._resultCount = _.toSafeInteger(options.limit);
@@ -86,20 +78,13 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
           if (['TypeError'].includes(err.name)) {err.status = 400;}
         });
     });
-
-
 }
 
-
+filterByCriteria.options = ['scroll', 'include', 'exclude', 'size', 'q', 'aggs'];
 function filterByCriteria (filterCriteria, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'access_token', 'q', 'aggs'],
-            _invalidOptions = _.difference(_.keys(options), validOptions);
-
-      options = _.pick(options, validOptions);
-
       const
         requestBody = buildRequestBody(options.q, options.aggs, filterCriteria)
       ;
@@ -114,25 +99,17 @@ function filterByCriteria (filterCriteria, options = {}) {
         .search(params)
         .catch(_clientErrorHandler)
         .then(esResultFormat.getResult)
-        .then((result) => {
-          result._invalidOptions = _invalidOptions;
-          return result;
-        })
         ;
     });
 }
 
+getSingleHitByIdConditor.options = ['include', 'exclude', 'aggs'];
 function getSingleHitByIdConditor (idConditor, options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['includes', 'excludes','aggs', 'access_token'],
-            _invalidOptions = _.difference(_.keys(options), validOptions);
-
-      options = _.pick(options, validOptions);
-
       const
-        requestBody = buildRequestBody('*', options.aggs, {idConditor})
+        requestBody = buildRequestBody(null, options.aggs, {idConditor})
       ;
 
       const params = _.defaultsDeep({
@@ -147,27 +124,18 @@ function getSingleHitByIdConditor (idConditor, options = {}) {
         .search(params)
         .catch(_clientErrorHandler)
         .then(esResultFormat.getSingleResult)
-        .then((result) => {
-          result._invalidOptions = _invalidOptions;
-          return result;
-        })
         ;
     });
 }
 
+getSingleTeiByIdConditor.options = [];
 function getSingleTeiByIdConditor (idConditor, options = {}) {
 
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = [],
-            _invalidOptions = _.difference(_.keys(options), validOptions);
-
-      options = _.pick(options, validOptions);
-
-      const requestBody
-              = esb.requestBodySearch()
-                   .query(buildFilterByCriteriaBoolQuery({idConditor}))
+      const
+        requestBody = buildRequestBody(null, null, {idConditor})
       ;
 
       const params =
@@ -187,21 +155,17 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
         .then(esResultFormat.getSingleScalarResult)
         .then(({result, ...rest}) => {
           result = Buffer.from(result, 'base64');
-          return _.assign({result}, rest, {'_invalidOptions': _invalidOptions});
+          return _.assign({result}, rest);
         });
     });
 }
 
 
-function searchRecords (options = {}) {
+search.options = ['scroll', 'include', 'exclude', 'size', 'q', 'aggs'];
+function search (options = {}) {
   return Promise
     .resolve()
     .then(() => {
-      const validOptions    = ['scroll', 'includes', 'excludes', 'size', 'q', 'aggs', 'access_token'],
-            _invalidOptions = _.difference(_.keys(options), validOptions);
-
-      options = _.pick(options, validOptions);
-
       const
         requestBody = buildRequestBody(options.q, options.aggs)
       ;
@@ -216,10 +180,6 @@ function searchRecords (options = {}) {
         .search(params)
         .catch(_clientErrorHandler)
         .then(esResultFormat.getResult)
-        .then((result) => {
-          result._invalidOptions = _invalidOptions;
-          return result;
-        })
         ;
     });
 }

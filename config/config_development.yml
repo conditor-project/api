@@ -7,6 +7,9 @@ imports:
 nodejs:
   stackTraceLimit: 20
 
+smokeTest:
+  doRun: false
+
 security:
   ip:
     inMemory:

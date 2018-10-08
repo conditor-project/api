@@ -17,11 +17,11 @@ function queryStringToParams (queryString) {
             // @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
             transform: (params, value, key, queryString) => {if (!queryString.scroll_id) {params.sort = ['_doc:asc'];params.trackScores=true;}}
           },
-          includes : {
+          include : {
             mapKey  : _.constant('_sourceInclude'),
             mapValue: split(',')
           },
-          excludes : {
+          exclude : {
             mapKey  : _.constant('_sourceExclude'),
             mapValue: split(',')
           },

@@ -21,6 +21,7 @@ const httpHeadersMapping = {
 
 function getResultHandler (res) {
   return (result) => {
+    result._invalidOptions = res.locals.invalidOptions;
     _.forOwn(result, (value, key) => {
       if (_.has(httpHeadersMapping, key) && !_.isNil(value) && !(_.isArrayLikeObject(value) && _.isEmpty(value))) {
         res.set(

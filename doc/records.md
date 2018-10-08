@@ -14,9 +14,9 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 
-2. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 
-3. `excludes` (string) : Une liste de champs à exclure de la réponse.
+3. `exclude` (string) : Une liste de champs à exclure de la réponse.
 
 4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
 
@@ -43,23 +43,23 @@ https://api-integ.conditor.fr/v1/records?scroll=5m
 ```
 Renvoyer uniquement le champ authorRef de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authorRef
+https://api-integ.conditor.fr/v1/records?include=authorRef
 ```
 Renvoyer uniquement les champs authorRef et idConditor de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authorRef,idConditor
+https://api-integ.conditor.fr/v1/records?include=authorRef,idConditor
 ```
 Renvoyer uniquement le sous-champ surname de authorRef de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authorRef.surname
+https://api-integ.conditor.fr/v1/records?include=authorRef.surname
 ```
 Exclure le champ authorRef :
 ```url
-https://api-integ.conditor.fr/v1/records?excludes=authorRef
+https://api-integ.conditor.fr/v1/records?exclude=authorRef
 ```
-Cumuler les paramètres `excludes` et `includes` :
+Cumuler les paramètres `exclude` et `include` :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authorRef&excludes=authorRef.surname
+https://api-integ.conditor.fr/v1/records?include=authorRef&exclude=authorRef.surname
 ```
 Choisir nombre de résultats retournés :
 ```url
@@ -78,8 +78,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 **Paramètres d'URL**
 
-1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
-2. `excludes` (string) : Une liste de champs à exclure de la réponse.
+1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `exclude` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
 
@@ -92,14 +92,14 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 Récupérer toutes les notices dans une archive en incluant uniquement le titre et la date de création.
 
 ```url
-https://api-integ.conditor.fr/v1/records/zip?includes=title,creationDate
+https://api-integ.conditor.fr/v1/records/zip?include=title,creationDate
 ```
 
 ------
 
 
 
-## `GET`&nbsp;/records/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]
+## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]
 
 Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
@@ -118,8 +118,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 **Paramètres d'URL**
 
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
-2. `includes` (string) : Une liste de champs à extraire et retourner dans la réponse.
-3. `excludes` (string) : Une liste de champs à exclure de la réponse.
+2. `include` (string) : Une liste de champs à extraire et retourner dans la réponse.
+3. `exclude` (string) : Une liste de champs à exclure de la réponse.
 4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
 5. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
@@ -138,20 +138,20 @@ https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon en incluant uniquement l'idConditor :
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate?includes=idConditor
+https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate?include=idConditor
 ```
 
 Filtrer la réponse afin de récupérer les notices publiées en 2014 marquées comme doublon certain et doublon incertain en incluant uniquement l'idConditor et le titre. Le tout filtré par une recherche sur l'auteur :
 
 ```url
-https://api-integ.conditor.fr/v1/records/2014/duplicate/near_duplicate?includes=idConditor,title&q=author:bob
+https://api-integ.conditor.fr/v1/records/2014/duplicate/near_duplicate?include=idConditor,title&q=author:bob
 ```
 
 ------
 
 
 
-## `GET`&nbsp;/records/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]<wbr>/zip
+## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]<wbr>/zip
 
 Route de récupération d'une collection de notices dans une **archive ZIP**. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
 
@@ -169,8 +169,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 **Paramètres d'URL**
 
-1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
-2. `excludes` (string) : Une liste de champs à exclure de la réponse.
+1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `exclude` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
 
@@ -189,7 +189,7 @@ https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate/zip
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2015 marquées comme doublon en incluant uniquement l'idConditor.
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2015/duplicate/zip?includes=idConditor
+https://api-integ.conditor.fr/v1/records/hal/2015/duplicate/zip?include=idConditor
 ```
 
 ------
@@ -206,8 +206,8 @@ Route de récupération d'une notice identifiée par son idConditor.
 
 **Paramètres d'URL**
 
-1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
-2. `excludes` (string) : Une liste de champs à exclure de la réponse.
+1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `exclude` (string) : Une liste de champs à exclure de la réponse.
 
 **Retourne**
 
@@ -223,7 +223,7 @@ https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz
 Récupérer une notice identifiée et extraire le champ title :
 
 ```url
-https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?includes=title
+https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?include=title
 ```
 
 ------

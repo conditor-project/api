@@ -15,7 +15,7 @@ describe('GET /records', function() {
   });
   describe('?scroll={DurationString}&size={Number}', function() {
     it('Should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
-      const requestUrl = '/v1/records?scroll=5m&size=1000&includes=idConditor,titre&excludes=titre.value';
+      const requestUrl = '/v1/records?scroll=5m&size=1000&include=idConditor,titre&exclude=titre.value';
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
@@ -172,7 +172,7 @@ describe('GET /records', function() {
   describe('/zip', function() {
     this.timeout(300000);
     it('Should respond with a ZIP including records.json', function(done) {
-      const requestUrl = '/v1/records/hal/2014/duplicate/near_duplicate/zip?q=author:jean&includes=idConditor&limit=617';
+      const requestUrl = '/v1/records/_filter/hal/2014/duplicate/near_duplicate/zip?q=author:jean&include=idConditor&limit=617';
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
