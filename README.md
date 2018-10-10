@@ -155,7 +155,6 @@ Script available at [./bin/list-registry.js](./bin/list-registry.js)
 <a name="api"></a>
 ## API Documentation
 
-The following is the documentation for api Conditor.
 * [Références](doc/references.md)
 * [Sécurité](doc/securite.md )
 * [Records API](doc/records.md)
