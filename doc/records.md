@@ -22,7 +22,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 5. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
-6. `aggs` (string) : Une [query](references#Aggrégations) qui permet d'obtenir des aggrégations et statistiques   
+6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques   
 
      
 
