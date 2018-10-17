@@ -5,6 +5,13 @@
 # Conditor api
 Main api of the conditor-project
 
+- **[Installation](#installation)**
+- **[Running the API](#running-the-api)**
+- **[Querying the API](#querying-the-api)**
+- **[Access rights](#access-rights)**
+- **[Token Management](#token-management)**
+- **[API Documentation](#api)**
+
 ## Description
 
 The API's goal is to expose deduplicated bibliographical records of "conditor platform".
@@ -28,6 +35,7 @@ Logs are managed with morgan, and written in the `$LOG_PATH/conditor-api.log` fi
 * Node v8+ / NPM5+ (tested with node 8.9.4)
 * docker & docker-compose for Docker deployment
 
+<a name="installation"></a>
 ## Installation
 
 ```bash
@@ -46,7 +54,7 @@ For docker usage
 ```bash
 make build
 ```
-
+<a name="running-the-api"></a>
 ## Running the API
 
 Before launchig the following commands, you must set `LOG_PATH` and `CONDITOR_ES_HOSTS` environments variables. For example :
@@ -98,12 +106,14 @@ CONDITOR_ES_HOSTS="localhost:9200" \
 make run-prod
 ```
 
+<a name="querying-the-api"></a>
 ## Querying the API
 
 The official, production version, of the Conditor API, is (or will be soon) available at https://api.conditor.fr
 
-All available URLs are listed and descripted on [this page](./doc/Records.md).
+All available URLs are listed and descripted on [this page](./doc/records.md).
 
+<a name="access-rights"></a>
 ## Access rights
 
 Access is restricted to authenticated and authorized users. Authentication is provided via a [JWT token](https://jwt.io/).
@@ -115,6 +125,7 @@ There are 2 ways to use your JWT token :
 
 To obtain a token, contact the Conditor team, they will give you a 31 days valid one
 
+<a name="token-management"></a>
 ## Token Management
 
 Currently, 3 commands can help you for managing tokens :
@@ -141,5 +152,11 @@ List all avalaible JWT tokens, with validity ranges.
 
 Script available at [./bin/list-registry.js](./bin/list-registry.js)
 
+<a name="api"></a>
+## API Documentation
 
+* [Références](doc/references.md)
+* [Sécurité](doc/securite.md )
+* [Records API](doc/records.md)
+* [Scroll API](doc/scroll.md)
 
