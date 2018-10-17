@@ -58,3 +58,26 @@ Liste non-exhaustive des champs du JSON:
 | duplicate   | Array   | La liste des `doublons certains`           |
 | teiBlob     | Binary  | La notice TEI Conditor encodée en `Base64` |
 
+
+
+## Aggrégations
+
+Des données d'aggrégations peuvent êtres obtenues sur certaines routes de l'API Conditor via le paramétre d'url `aggs`.
+
+Le fonctionnement de ces aggrégations se base entiérement sur celui d'[Elastic](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html), hormis en ce qui concerne la syntaxe qui elle a été adaptée pour les besoins de l'API.
+
+------
+
+Ex. d'aggrégation de type`terms`:
+
+`aggregationType : field : {options}`
+
+aggs=terms:source:{size:20, order:{_count:desc}}
+
+------
+
+Ex. d'aggrégation de type `date_range`:
+
+`aggregationType : field : [ranges] : {options}`
+
+aggs=date_range:publicationDate.date:[2008 TO now]
