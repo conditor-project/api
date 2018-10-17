@@ -11,6 +11,13 @@ module.exports.getSchema = () => schema;
 /**
  * Bucket Aggregations
  */
+const nestedAggsSchema = Joi.object()
+                            .keys({
+                                    type: Joi.string().valid('nested').required(),
+                                    path: Joi.string().required(),
+                                    aggs: Joi.lazy(() => {return schema;})
+                                  });
+
 const termsAggsSchema = Joi.object()
                            .keys({
                                    type                     : Joi.string().valid('terms').required(),
@@ -63,7 +70,7 @@ const cardinalityAggsSchema = Joi.object()
                                        })
 ;
 
-const bucketAggs = [termsAggsSchema, dateRangeAggsSchema];
+const bucketAggs = [termsAggsSchema, dateRangeAggsSchema, nestedAggsSchema];
 const metricsAggs = [cardinalityAggsSchema];
 
 const aggs = [].concat(bucketAggs, metricsAggs);

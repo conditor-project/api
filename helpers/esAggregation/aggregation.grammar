@@ -26,6 +26,10 @@ AggregationType
   = TermsAgg
   / DateRangeAgg
   / CardinalityAgg
+  / NestedAgg
+
+NestedAgg
+  = _ type:"nested"i _ ":" _ path:NestedField _ { return {path, type:"nested"}; }
 
 CardinalityAgg
   = _ type:"cardinality"i _ ":" _ field:AggField _ options:AggOptions?
@@ -49,7 +53,7 @@ From
   = DateMath
 
 To
-  = "to"i _ dateMath:DateMath { return dateMath; }
+  = "TO"i _ dateMath:DateMath { return dateMath; }
 
 DateMath
   = $(Date ("||" DateMathExpr)?)
@@ -90,6 +94,9 @@ StrictMonth
 
 StrictDay
   = $("0" [1-9] / [1-2] [0-9] / "3" [0-1])
+
+NestedField
+  = StringLiteral
 
 AggField
   = StringLiteral

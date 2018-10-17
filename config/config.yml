@@ -45,7 +45,10 @@ express:
 elastic:
   maxScrollDuration: 300s # d|h|m|s|ms|micros|nanos
   maxSize: 1000
+   # Lucene
+   # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
   queryString:
+    lenient: true
     allowLeadingWildcard: false
     maxDeterminizedStates: 5000 # default:10000 protect against too-difficult queries
   clients:

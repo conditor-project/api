@@ -1,29 +1,33 @@
 'use strict';
 
 const
-  config              = require('config-component').get(module),
-  moment              = require('moment'),
-  _                   = require('lodash'),
-  split               = require('lodash/fp/split')
+  config    = require('config-component').get(module),
+  moment    = require('moment'),
+  _         = require('lodash'),
+  trimChars = require('lodash/fp/trimChars')
 ;
 
 module.exports = queryStringToParams;
-
 
 function queryStringToParams (queryString) {
   const queryStringToParams = {
           scroll   : {
             isValid  : _validateScrollDuration,
             // @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
-            transform: (params, value, key, queryString) => {if (!queryString.scroll_id) {params.sort = ['_doc:asc'];params.trackScores=true;}}
+            transform: (params, value, key, queryString) => {
+              if (!queryString.scroll_id) {
+                params.sort = ['_doc:asc'];
+                params.trackScores = true;
+              }
+            }
           },
-          include : {
+          include  : {
             mapKey  : _.constant('_sourceInclude'),
-            mapValue: split(',')
+            mapValue: splitString
           },
-          exclude : {
+          exclude  : {
             mapKey  : _.constant('_sourceExclude'),
-            mapValue: split(',')
+            mapValue: splitString
           },
           size     : {
             isValid: _validateSize
@@ -33,6 +37,14 @@ function queryStringToParams (queryString) {
           }
         }
   ;
+
+  function splitString (value) {
+    return _(value)
+      .split(',')
+      .map(trimChars(' '))
+      .value()
+      ;
+  }
 
   return _(queryString)
     .pick(_.keys(queryStringToParams))

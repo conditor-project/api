@@ -1,6 +1,6 @@
 'use strict';
 const {
-        elastic: {queryString: {allowLeadingWildcard, maxDeterminizedStates}}
+        elastic: {queryString: {allowLeadingWildcard, maxDeterminizedStates, lenient}}
       }                         = require('config-component').get(module),
       esb                       = require('elastic-builder/src'),
       _                         = require('lodash'),
@@ -45,7 +45,9 @@ function _buildQueryStringQuery (queryLucene) {
   return esb
     .queryStringQuery(queryLucene)
     .allowLeadingWildcard(allowLeadingWildcard)
-    .maxDeterminizedStates(maxDeterminizedStates);
+    .maxDeterminizedStates(maxDeterminizedStates)
+    .lenient(lenient)
+    ;
 }
 
 

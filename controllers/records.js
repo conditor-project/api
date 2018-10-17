@@ -140,7 +140,6 @@ router.get('/records', (req, res) => {
 
 // /records/{idConditor}/tei
 router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
-
   _validateQueryString(req.query, records.getSingleTeiByIdConditor.options, 'access_token')
     .catch(_getInvalidOptionsHandler(res))
     .then(() => {
@@ -160,13 +159,17 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
 
 // /records/{idConditor}
 router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
-  records
-    .getSingleHitByIdConditor(req.params.idConditor, req.query)
-    .then(getResultHandler(res))
-    .then(({result}) => res.json(result))
-    .catch(getSingleResultErrorHandler(res))
-    .catch(getErrorHandler(res))
-  ;
+  _validateQueryString(req.query, records.getSingleTeiByIdConditor.options, 'access_token')
+    .catch(_getInvalidOptionsHandler(res))
+    .then(() => {
+      return records
+        .getSingleHitByIdConditor(req.params.idConditor, req.query)
+        .then(getResultHandler(res))
+        .then(({result}) => res.json(result))
+        .catch(getSingleResultErrorHandler(res))
+        .catch(getErrorHandler(res))
+        ;
+    });
 });
 
 function _validateQueryString (queryString, ...validFields) {

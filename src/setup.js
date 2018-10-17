@@ -28,7 +28,6 @@ function setup () {
     })
     .then(() => {
       Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
-      configComponent.view();
       logInfo('Application semver : ', config.app.version);
       logInfo('Application major semver : ', semver.major(config.app.version));
 

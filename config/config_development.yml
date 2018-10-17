@@ -14,3 +14,7 @@ security:
   ip:
     inMemory:
       - 127.0.0.1
+
+elastic:
+  queryString:
+    lenient: false
