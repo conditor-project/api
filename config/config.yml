@@ -15,6 +15,7 @@ imports:
 
 parameters:
   LOG_PATH: /var/log
+  FORBIDDEN_JWT_IDS: ~
 
 smokeTest:
   doRun: true
@@ -27,7 +28,7 @@ security:
     algorithm: HS512
     secret: %env(JWT_KEY)%
     expiresIn: 30 days # https://github.com/zeit/ms
-    forbidenIds: ~
+    forbiddenIds: %env(FORBIDDEN_JWT_IDS)%
   ip:
     inMemory: [] # list authorized ips
 

@@ -64,7 +64,7 @@ function authenticateByJwt (req) {
 
   try {
     const decoded = verify(token);
-    if (_.includes(_.get(security, 'jwt.forbidenIds', []), decoded.jti)) return false;
+    if (_.includes(_.get(security, 'jwt.forbiddenIds', []), decoded.jti)) return false;
   } catch (err) {
     if (jwtErrors.includes(err.name)) {
       return false;

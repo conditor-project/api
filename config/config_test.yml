@@ -13,7 +13,7 @@ security:
     inMemory:
       - 111.11.11.1
   jwt:
-    forbidenIds:
+    forbiddenIds:
       - forbidThisId
 
 elastic:

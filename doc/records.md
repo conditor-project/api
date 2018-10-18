@@ -22,7 +22,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 5. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
-6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques   
+6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
 
      
 
@@ -124,6 +124,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
 4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
 5. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques. 
 
 **Retourne**
 
@@ -210,6 +211,7 @@ Route de récupération d'une notice identifiée par son idConditor.
 
 1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `exclude` (string) : Une liste de champs à exclure de la réponse.
+3. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
 
 **Retourne**
 
