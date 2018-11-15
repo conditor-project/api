@@ -43,18 +43,18 @@ function _buildAgg (agg, index = 0, collection = []) {
 
 function _computeAggName (agg, index, collection) {
   if (agg.name) return agg.name;
-
   const hasNameCollision = collection.length > 1
-                           && _.find(collection, {'type': agg.type, 'field': agg.field}) !== agg;
-  return _buildAggName(agg.type, agg.field, hasNameCollision ? index : null);
+                           && _(collection).filter({'type': agg.type, 'field': agg.field}).size() > 1;
+
+  return _buildAggName(agg.type, agg.field, hasNameCollision ? index.toString() : null);
 }
 
 function _buildAggName (type, field, namePostfix = null) {
-  const tokens = [_.snakeCase(type), field];
-  if (namePostfix !== null) tokens.push(namePostfix);
+  const tokens = [_.snakeCase(type), _.snakeCase(field), namePostfix];
 
-  return tokens.join('_')
-               .toUpperCase();
+  return _.compact(tokens)
+          .join('_')
+          .toUpperCase();
 }
 
 const argsMapping = {

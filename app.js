@@ -7,14 +7,15 @@ const
 
 const
   setup  = require('./src/setup').setup,
-  nbCpus = require('os').cpus().length
+  nbCpus = require('os').cpus().length,
+  state  = require('./helpers/state')
 ;
 
 setup()
   .then(() => {
     cluster.setupMaster({exec: './src/worker.js'});
     for (let i = 0; i < nbCpus; ++i) {
-      cluster.fork();
+      cluster.fork({state:JSON.stringify(state.get())});
     }
   })
   .catch((reason) => {throw reason;})

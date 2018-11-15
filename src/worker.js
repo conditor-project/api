@@ -16,10 +16,14 @@ const
   resConfig           = require('../middlewares/resConfig'),
   httpMethodsHandler  = require('../middlewares/httpMethodsHandler'),
   compression         = require('compression'),
-  _                   = require('lodash')
+  _                   = require('lodash'),
+  state               = require('../helpers/state')
 ;
 
 elasticContainer.startAll();
+
+// We get app state from the master
+state.assign(process.env.state || {});
 
 const
   // Routers
@@ -56,7 +60,7 @@ app.set('trust proxy', _.get(security, 'reverseProxy', false));
 app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
 app.use(compression());
-app.get('/',(req,res)=>{res.redirect('/v1/');});
+app.get('/', (req, res) => {res.redirect(`/v${semver.major(config.app.version)}`);});
 app.use(`/v${semver.major(config.app.version)}`, root, scroll, records);
 app.use(errorHandler);
 

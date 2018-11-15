@@ -5,8 +5,12 @@ const request   = require('supertest'),
       should    = require('should'), // jshint ignore:line
       app       = require('../../src/worker'),
       {logInfo} = require('../../helpers/logger'),
-      _         = require('lodash')
+      _         = require('lodash'),
+      semver    = require('semver'),
+      config    = require('config-component').get(module)
 ;
+
+const apiVersion = `v${semver.major(config.app.version)}`;
 
 describe('GET /records', function() {
   this.timeout(100000);
@@ -15,7 +19,7 @@ describe('GET /records', function() {
   });
   describe('?scroll={DurationString}&size={Number}', function() {
     it('Should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
-      const requestUrl = '/v1/records?scroll=5m&size=1000&include=idConditor,titre&exclude=titre.value';
+      const requestUrl = `/${apiVersion}/records/_filter/sudoc?scroll=5m&include=idConditor,titre&exclude=titre.value`;
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
@@ -31,7 +35,7 @@ describe('GET /records', function() {
 
           (function scroll () {
             request(app)
-              .get(`/v1/scroll/${scrollId}?scroll=5m`)
+              .get(`/${apiVersion}/scroll/${scrollId}?scroll=5m`)
               .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
               .expect(200)
               .expect('Content-Type', /json/)
@@ -55,7 +59,7 @@ describe('GET /records', function() {
 
   describe('?aggs', function() {
     it('should return aggregations by source', () => {
-      const requestUrl = '/v1/records?aggs=terms:source';
+      const requestUrl = `/${apiVersion}/records?aggs=terms:source`;
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
@@ -73,7 +77,7 @@ describe('GET /records', function() {
     });
 
     it('should return aggregations with a date range', () => {
-      const requestUrl = '/v1/records?aggs=date_range:creationDate:[2000 to 2018]';
+      const requestUrl = `/${apiVersion}/records?aggs=date_range:creationDate:[2000 to 2018]`;
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
@@ -81,17 +85,17 @@ describe('GET /records', function() {
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
-          aggregations.should.have.key('DATE_RANGE_CREATIONDATE');
-          aggregations['DATE_RANGE_CREATIONDATE'].should.have.key('buckets');
-          aggregations['DATE_RANGE_CREATIONDATE'].buckets.should.Array();
-          aggregations['DATE_RANGE_CREATIONDATE'].buckets.map(bucket => {
+          aggregations.should.have.key('DATE_RANGE_CREATION_DATE');
+          aggregations['DATE_RANGE_CREATION_DATE'].should.have.key('buckets');
+          aggregations['DATE_RANGE_CREATION_DATE'].buckets.should.Array();
+          aggregations['DATE_RANGE_CREATION_DATE'].buckets.map(bucket => {
             bucket.should.have.keys('key', 'from', 'from_as_string', 'to', 'to_as_string');
           });
         });
     });
 
     it('should return aggregations with multiple date range', () => {
-      const requestUrl = '/v1/records?aggs=date_range:creationDate:[2000 to 2013-05-05][2013-05-05 to 2018][2018 to now]';
+      const requestUrl = `/${apiVersion}/records?aggs=date_range:creationDate:[2000 to 2013-05-05][2013-05-05 to 2018][2018 to now]`;
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
@@ -99,17 +103,17 @@ describe('GET /records', function() {
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
-          aggregations.should.have.key('DATE_RANGE_CREATIONDATE');
-          aggregations['DATE_RANGE_CREATIONDATE'].should.have.key('buckets');
-          aggregations['DATE_RANGE_CREATIONDATE'].buckets.should.Array();
-          aggregations['DATE_RANGE_CREATIONDATE'].buckets.map(bucket => {
+          aggregations.should.have.key('DATE_RANGE_CREATION_DATE');
+          aggregations['DATE_RANGE_CREATION_DATE'].should.have.key('buckets');
+          aggregations['DATE_RANGE_CREATION_DATE'].buckets.should.Array();
+          aggregations['DATE_RANGE_CREATION_DATE'].buckets.map(bucket => {
             bucket.should.have.keys('key', 'from', 'from_as_string', 'to', 'to_as_string');
           });
         });
     });
 
     it('should return multiple aggregations', () => {
-      const requestUrl = '/v1/records?aggs=terms:source date_range:creationDate:[2018] cardinality:author.normalized';
+      const requestUrl = `/${apiVersion}/records?aggs=terms:source date_range:creationDate:[2018] cardinality:author.normalized`;
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
@@ -117,10 +121,10 @@ describe('GET /records', function() {
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
-          aggregations.should.have.key('DATE_RANGE_CREATIONDATE');
-          aggregations['DATE_RANGE_CREATIONDATE'].should.have.key('buckets');
-          aggregations['DATE_RANGE_CREATIONDATE'].buckets.should.Array();
-          aggregations['DATE_RANGE_CREATIONDATE'].buckets.map(bucket => {
+          aggregations.should.have.key('DATE_RANGE_CREATION_DATE');
+          aggregations['DATE_RANGE_CREATION_DATE'].should.have.key('buckets');
+          aggregations['DATE_RANGE_CREATION_DATE'].buckets.should.Array();
+          aggregations['DATE_RANGE_CREATION_DATE'].buckets.map(bucket => {
             bucket.should.have.keys('key', 'from', 'from_as_string', 'to', 'to_as_string');
           });
           aggregations.should.have.key('TERMS_SOURCE');
@@ -129,13 +133,13 @@ describe('GET /records', function() {
           aggregations['TERMS_SOURCE'].buckets.map(bucket => {
             bucket.should.have.keys('key', 'doc_count');
           });
-          aggregations.should.have.key('CARDINALITY_AUTHOR.NORMALIZED');
-          aggregations['CARDINALITY_AUTHOR.NORMALIZED'].should.have.keys('value');
+          aggregations.should.have.key('CARDINALITY_AUTHOR_NORMALIZED');
+          aggregations['CARDINALITY_AUTHOR_NORMALIZED'].should.have.keys('value');
         });
     });
 
     it('should return nested aggregations', () => {
-      const requestUrl = '/v1/records?aggs=terms:source > (terms:hasDoi cardinality:doi.normalized)';
+      const requestUrl = `/${apiVersion}/records?aggs=terms:source > (terms:hasDoi cardinality:doi.normalized)`;
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
@@ -148,11 +152,11 @@ describe('GET /records', function() {
           aggregations['TERMS_SOURCE'].buckets.should.Array();
           aggregations['TERMS_SOURCE'].buckets.map(bucket => {
             bucket.should.have.keys('key', 'doc_count');
-            bucket.should.have.key('CARDINALITY_DOI.NORMALIZED');
-            bucket['CARDINALITY_DOI.NORMALIZED'].should.have.keys('value');
-            bucket.should.have.key('TERMS_HASDOI');
-            bucket['TERMS_HASDOI'].should.have.key('buckets');
-            bucket['TERMS_HASDOI'].buckets.map(bucket => {
+            bucket.should.have.key('CARDINALITY_DOI_NORMALIZED');
+            bucket['CARDINALITY_DOI_NORMALIZED'].should.have.keys('value');
+            bucket.should.have.key('TERMS_HAS_DOI');
+            bucket['TERMS_HAS_DOI'].should.have.key('buckets');
+            bucket['TERMS_HAS_DOI'].buckets.map(bucket => {
               bucket.should.have.keys('key', 'key_as_string', 'doc_count');
             });
           });
@@ -160,7 +164,7 @@ describe('GET /records', function() {
     });
 
     it('should return an 400 Bad request with a syntax error in aggregations', () => {
-      const requestUrl = '/v1/records?aggs=*$*$*$*$*$*$*$*$*$';
+      const requestUrl = `/${apiVersion}/records?aggs=*$*$*$*$*$*$*$*$*$`;
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
@@ -172,7 +176,7 @@ describe('GET /records', function() {
   describe('/zip', function() {
     this.timeout(300000);
     it('Should respond with a ZIP including records.json', function(done) {
-      const requestUrl = '/v1/records/_filter/hal/2014/duplicate/near_duplicate/zip?q=author:jean&include=idConditor&limit=617';
+      const requestUrl = `/${apiVersion}/records/_filter/hal/2014/duplicate/near_duplicate/zip?q=author:jean&include=idConditor&limit=617`;
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)

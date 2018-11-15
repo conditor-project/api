@@ -80,7 +80,7 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
     });
 }
 
-filterByCriteria.options = ['scroll', 'include', 'exclude', 'size', 'q', 'aggs'];
+filterByCriteria.options = ['scroll', 'include', 'exclude', 'page','page_size', 'q', 'aggs'];
 function filterByCriteria (filterCriteria, options = {}) {
   return Promise
     .resolve()
@@ -95,10 +95,13 @@ function filterByCriteria (filterCriteria, options = {}) {
                 queryStringToParams(options),
                 defaultParams);
 
+      const paginate = _.curryRight(esResultFormat.paginate,3)(params.size)(params.from);
+
       return esClient
         .search(params)
         .catch(_clientErrorHandler)
         .then(esResultFormat.getResult)
+        .then(paginate)
         ;
     });
 }
@@ -161,7 +164,7 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
 }
 
 
-search.options = ['scroll', 'include', 'exclude', 'size', 'q', 'aggs'];
+search.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs'];
 function search (options = {}) {
   return Promise
     .resolve()
@@ -175,14 +178,17 @@ function search (options = {}) {
         queryStringToParams(options),
         defaultParams
       );
+      const paginate = _.curryRight(esResultFormat.paginate,3)(params.size)(params.from);
 
       return esClient
         .search(params)
         .catch(_clientErrorHandler)
         .then(esResultFormat.getResult)
+        .then(paginate)
         ;
     });
 }
+
 
 function _clientErrorHandler (err) {
   if (['TypeError'].includes(err.name)) {err.status = 400;}

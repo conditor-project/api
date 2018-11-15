@@ -2,10 +2,12 @@
 
 const request    = require('supertest'),
       app        = require('../../src/worker'),
-      {generate} = require('../../src/jwtToken')
-
+      {generate} = require('../../src/jwtToken'),
+      semver    = require('semver'),
+      config    = require('config-component').get(module)
 ;
 
+const apiVersion = `v${semver.major(config.app.version)}`;
 
 describe('GET /records', function() {
   after(function() {
@@ -15,7 +17,7 @@ describe('GET /records', function() {
     it('Should return status 200', function(done) {
       const token = generate();
       request(app)
-        .get('/v1/records')
+        .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
@@ -27,7 +29,7 @@ describe('GET /records', function() {
     it('Should return status 401', function(done) {
       const token = generate();
       request(app)
-        .get('/v1/records')
+        .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
         .set('Authorization', `Bearer ${token}invalid`)
         .expect(401)
@@ -39,7 +41,7 @@ describe('GET /records', function() {
     it('Should return status 401', function(done) {
       const token = generate({jwtId:'forbidThisId'});
       request(app)
-        .get('/v1/records')
+        .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
         .set('Authorization', `Bearer ${token}`)
         .expect(401)
@@ -51,7 +53,7 @@ describe('GET /records', function() {
     it('Should return status 200', function(done) {
       const token = generate();
       request(app)
-        .get(`/v1/records?access_token=${token}`)
+        .get(`/${apiVersion}/records?access_token=${token}`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
         .expect(200)
         .end(done);
@@ -63,7 +65,7 @@ describe('GET /records', function() {
     it('Should return status 400', function(done) {
       const token = generate();
       request(app)
-        .get(`/v1/records?access_token=${token}`)
+        .get(`/${apiVersion}/records?access_token=${token}`)
         .set('Authorization', `Bearer ${token}invalid`)
         .expect(400)
         .end(done);
@@ -74,7 +76,7 @@ describe('GET /records', function() {
   describe('With valid IP', function() {
     it('Should return status 200', function(done) {
       request(app)
-        .get('/v1/records')
+        .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','111.11.11.1') // We spoof our ip
         .expect(200)
         .end(done);

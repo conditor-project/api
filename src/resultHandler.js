@@ -1,8 +1,11 @@
 'use strict';
-const {logError, logInfo} = require('../helpers/logger'),
-      _                   = require('lodash'),
-      {constant}          = require('lodash'),
-      {app}               = require('config-component').get(module)
+const {logError, logInfo}    = require('../helpers/logger'),
+      _                      = require('lodash'),
+      {constant}             = require('lodash'),
+      {app}                  = require('config-component').get(module),
+      formatter              = require('format-link-header'),
+      path                   = require('path'),
+      {URL, URLSearchParams} = require('url')
 ;
 
 exports.getResultHandler = getResultHandler;
@@ -16,20 +19,47 @@ const httpHeadersMapping = {
   _invalidOptions: {
     name : constant('Warning'),
     value: _invalidParametersWarning
+  },
+  links          : {
+    name : constant('link'),
+    value: (links, key, result) => {
+      links = _.mapValues(links,
+                          (link) => {
+                            const url          = new URL(result.url),
+                                  searchParams = _(result.query)
+                                    .omit(['page', 'page_size'])
+                                    .set('page', link.page)
+                                    .set('page_size', link.page_size)
+                                    .value(),
+                                  search       = new URLSearchParams(searchParams)
+                            ;
+                            url.search = search;
+                            link.url = url.toString();
+                            return link;
+                          });
+
+      return formatter(links);
+    }
   }
 };
 
 function getResultHandler (res) {
   return (result) => {
+
     result._invalidOptions = res.locals.invalidOptions;
-    _.forOwn(result, (value, key) => {
+    result.url = res.req.protocol + '://' + path.join(res.req.get('host'), res.req.baseUrl, res.req.path);
+    result.query = res.req.query;
+
+    _.forEach(result, (value, key) => {
       if (_.has(httpHeadersMapping, key) && !_.isNil(value) && !(_.isArrayLikeObject(value) && _.isEmpty(value))) {
         res.set(
           httpHeadersMapping[key].name(),
-          _.invoke(httpHeadersMapping, `${key}.value`, value) || value
+          _.invoke(httpHeadersMapping, `${key}.value`, value, key, result) || value
         );
       }
     });
+
+    res.status(_.get(result, 'status', 200));
 
     return result;
   };

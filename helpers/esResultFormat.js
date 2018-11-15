@@ -1,6 +1,7 @@
 'use strict';
 
-const _ = require('lodash')
+const _     = require('lodash'),
+      state = require('./state')
 ;
 
 const responseFormat = module.exports;
@@ -11,7 +12,7 @@ responseFormat.getSingleResult = (response) => {
 
   const resultWrapper = responseFormat.getResult(response);
 
-  if (!_.has(resultWrapper,'result.aggregations')) {
+  if (!_.has(resultWrapper, 'result.aggregations')) {
     resultWrapper.result = _.find(resultWrapper.hits);
   }
 
@@ -33,7 +34,7 @@ responseFormat.getSingleScalarResult = (response) => {
 };
 
 responseFormat.getResult = (response) => {
-  const hits         = _.map(response.hits.hits, (hit) => {return _.assign({}, hit._source, {score: hit._score});}),
+  const hits         = _.map(response.hits.hits, (hit) => {return _.assign({}, hit._source, {_score: hit._score});}),
         aggregations = _.get(response, 'aggregations', null)
   ;
 
@@ -49,6 +50,44 @@ responseFormat.getResult = (response) => {
   };
 };
 
+responseFormat.paginate = (result, from = 0, size = 10) => {
+  if (size === 0) return result;
+
+  const page     = Math.floor(from / Math.max(size, 1) + 1),
+        lastPage = _.max([_.chain([result.totalCount,
+                                   state.get('indices.records.cachedSettings.maxResultWindow', 10000)])
+                           .min()
+                           .divide(size)
+                           .floor()
+                           .value(), 1]),
+        links    = {}
+  ;
+
+  if (page > 1) {
+    links.first = {page: 1, page_size: size, rel: 'first'};
+    if (page <= lastPage) {
+      links.prev = {page: page - 1, page_size: size, rel: 'prev'};
+    }
+  }
+
+  if (page < lastPage) {
+    links.next = {page: page + 1, page_size: size, rel: 'next'};
+  }
+
+  if (lastPage > 1) {
+    links.last = {page: lastPage, page_size: size, rel: 'last'};
+  }
+
+  if (_.size(links)) {
+    result.links = links;
+  }
+
+  if(result.resultCount < size){
+    result.status = 206;
+  }
+
+  return result;
+};
 
 function nonUniqueResultException () {
   let err = new Error('NonUniqueResultException');

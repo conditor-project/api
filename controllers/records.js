@@ -6,7 +6,8 @@ const express                                                          = require
       {getResultHandler, getErrorHandler, getSingleResultErrorHandler} = require('../src/resultHandler'),
       _                                                                = require('lodash'),
       firewall                                                         = require('../src/firewall'),
-      archiver                                                         = require('archiver')
+      archiver                                                         = require('archiver'),
+      isNumeric                                                        = require('../helpers/isNumeric')
 ;
 
 const IS_DUPLICATE          = 'duplicate',
@@ -14,11 +15,13 @@ const IS_DUPLICATE          = 'duplicate',
       IS_NEAR_DUPLICATE     = 'near_duplicate',
       IS_NOT_NEAR_DUPLICATE = 'not_near_duplicate'
 ;
+
 const filterByCriteriaRouteTemplate = `(/:source(hal|wos|sudoc))?`
                                       + `(/:publicationYear(((18|19|20)[0-9]{2})))?`
                                       + `(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`
                                       + `(/:isNearDuplicate(${IS_NEAR_DUPLICATE}|${IS_NOT_NEAR_DUPLICATE}))?`
 ;
+
 const router = module.exports = express.Router();
 
 router.use(firewall);
@@ -135,7 +138,6 @@ router.get('/records', (req, res) => {
     })
     .catch(getErrorHandler(res))
   ;
-
 });
 
 // /records/{idConditor}/tei
@@ -159,7 +161,7 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
 
 // /records/{idConditor}
 router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
-  _validateQueryString(req.query, records.getSingleTeiByIdConditor.options, 'access_token')
+  _validateQueryString(req.query, records.getSingleHitByIdConditor.options, 'access_token')
     .catch(_getInvalidOptionsHandler(res))
     .then(() => {
       return records
@@ -208,7 +210,7 @@ function _routeParamsToCriteria (routeParams) {
   };
 
   return _(routeParams)
-    .omitBy((value, key) => { return _isNumeric(key); })
+    .omitBy((value, key) => { return isNumeric(key); })
     .omitBy(_.isUndefined)
     .transform((accu, value, key) => {
                  value = _.get(reqParamsToCriteria, [key, 'mapValue', _.toLower(value)], value);
@@ -217,8 +219,4 @@ function _routeParamsToCriteria (routeParams) {
                },
                {})
     .value();
-}
-
-function _isNumeric (n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
 }

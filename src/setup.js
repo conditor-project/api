@@ -5,7 +5,9 @@ const
   {logInfo, logError} = require('../helpers/logger'),
   {validate}          = require('./configValidator'),
   semver              = require('semver'),
-  smokeTest           = require('./smokeTest')
+  smokeTest           = require('./smokeTest'),
+  state               = require('../helpers/state'),
+  indexManager        = require('./manager/indexManager')
 ;
 
 exports.setup = setup;
@@ -18,6 +20,11 @@ function setup () {
       process.on('unhandledRejection', (reason, p) => {
         logError('Unhandled Rejection at:', p, 'reason:', reason);
       });
+      return indexManager
+        .getSettings(config.indices.records.index, 'index.max_result_window')
+        .then((settings) => {
+          state.set('indices.records.cachedSettings.maxResultWindow', settings.max_result_window);
+        });
     })
     .then(() => {
       return validate(config)
@@ -31,12 +38,12 @@ function setup () {
       logInfo('Application semver : ', config.app.version);
       logInfo('Application major semver : ', semver.major(config.app.version));
 
-      if(!config.smokeTest.doRun) return;
+      if (!config.smokeTest.doRun) return;
 
       logInfo(`Run ${'smoke test'.bold.warning}:`);
       return smokeTest
         .run()
-        .then(()=>{
+        .then(() => {
           logInfo(`Smoke test ${'succeded'.bold.success}`);
         })
         .catch((reason) => {

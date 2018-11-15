@@ -13,9 +13,11 @@ module.exports.getSchema = () => schema;
  */
 const nestedAggsSchema = Joi.object()
                             .keys({
-                                    type: Joi.string().valid('nested').required(),
-                                    path: Joi.string().required(),
-                                    aggs: Joi.lazy(() => {return schema;})
+                                    type           : Joi.string().valid('nested').required(),
+                                    path           : Joi.string().required(),
+                                    aggs           : Joi.lazy(() => {return schema;}),
+                                    field          : Joi.forbidden().default(Joi.ref('path')),
+                                    name           : Joi.string()
                                   });
 
 const termsAggsSchema = Joi.object()
@@ -50,8 +52,7 @@ const dateRangeAggsSchema = Joi.object()
                                        missing: Joi.string(),
                                        ranges : Joi.array().items(range).min(1),
                                        keyed  : Joi.boolean(),
-                                       format : Joi.string()
-                                                   .forbidden()
+                                       format : Joi.forbidden()
                                                    .default(
                                                      'yyy-MM-dd HH:mm:ss||strict_date_hour_minute_second||strict_date||strict_year||epoch_millis'),
                                        aggs   : Joi.lazy(() => {return schema;})

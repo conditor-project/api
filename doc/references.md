@@ -70,7 +70,7 @@ Le fonctionnement de ces aggrégations se base entiérement sur celui d'[Elastic
 
 Ex. de syntaxe d'aggrégation de type`terms`:
 
-`aggregationType : field : {options}`
+`aggregationType : field : {options}?`
 
 aggs=terms:source:{size:20, order:{_count:desc}}
 
@@ -78,6 +78,6 @@ aggs=terms:source:{size:20, order:{_count:desc}}
 
 Ex. de syntaxe d'aggrégation de type `date_range`:
 
-`aggregationType : field : [ranges] : {options}`
+`aggregationType : field : [ranges]+ : {options}?`
 
 aggs=date_range:publicationDate.date:[2008 TO now]
