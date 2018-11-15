@@ -24,7 +24,6 @@ describe('GET /records', function() {
       request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-        .expect(200)
         .expect('Content-Type', /json/)
         .expect('Scroll-Id', /[A-Za-z0-9]+/)
         .end(function(err, res) {
@@ -37,7 +36,6 @@ describe('GET /records', function() {
             request(app)
               .get(`/${apiVersion}/scroll/${scrollId}?scroll=5m`)
               .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-              .expect(200)
               .expect('Content-Type', /json/)
               .expect('Scroll-Id', /[A-Za-z0-9]+/)
               .then(function(res) {
@@ -63,7 +61,6 @@ describe('GET /records', function() {
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-        .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
@@ -81,7 +78,6 @@ describe('GET /records', function() {
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-        .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
@@ -99,7 +95,6 @@ describe('GET /records', function() {
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-        .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
@@ -117,7 +112,6 @@ describe('GET /records', function() {
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-        .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
@@ -143,7 +137,6 @@ describe('GET /records', function() {
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-        .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
@@ -181,7 +174,6 @@ describe('GET /records', function() {
       request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
-        .expect(200)
         .expect('Content-Type', 'application/zip')
         .buffer()
         .parse(function binaryParser (res, cb) {

@@ -20,7 +20,6 @@ describe('GET /records', function() {
         .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
         .end(done);
     });
   });
@@ -55,7 +54,6 @@ describe('GET /records', function() {
       request(app)
         .get(`/${apiVersion}/records?access_token=${token}`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
-        .expect(200)
         .end(done);
 
     });
@@ -78,7 +76,6 @@ describe('GET /records', function() {
       request(app)
         .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','111.11.11.1') // We spoof our ip
-        .expect(200)
         .end(done);
     });
   });
