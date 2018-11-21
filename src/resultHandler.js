@@ -48,7 +48,9 @@ function getResultHandler (res) {
     if (_.has(res, 'locals.invalidOptions')) {
       result.addWarning({text: `Invalid URL parameters: ${res.locals.invalidOptions}`});
     }
-    result.url = res.req.protocol + '://' + path.join(res.req.get('host'), res.req.baseUrl, res.req.path);
+    
+    const protocol = (new URL(res.req.protocol + '://' +res.req.get('host'))).port === ''?'https':'http';
+    result.url = protocol + '://' + path.join(res.req.get('host'), res.req.baseUrl, res.req.path);
     result.query = res.req.query;
 
     _.forEach(result, (value, key) => {
