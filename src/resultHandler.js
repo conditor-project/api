@@ -13,14 +13,14 @@ exports.getSingleResultErrorHandler = getSingleResultErrorHandler;
 exports.getErrorHandler = getErrorHandler;
 
 const httpHeadersMapping = {
-  scrollId       : {name: constant('Scroll-Id')},
-  totalCount     : {name: constant('X-Total-Count')},
-  resultCount    : {name: constant('X-Result-Count')},
-  _invalidOptions: {
+  scrollId   : {name: constant('Scroll-Id')},
+  totalCount : {name: constant('X-Total-Count')},
+  resultCount: {name: constant('X-Result-Count')},
+  _warnings  : {
     name : constant('Warning'),
-    value: _invalidParametersWarning
+    value: _headerWarningBuilder
   },
-  links          : {
+  links      : {
     name : constant('link'),
     value: (links, key, result) => {
       links = _.mapValues(links,
@@ -45,8 +45,9 @@ const httpHeadersMapping = {
 
 function getResultHandler (res) {
   return (result) => {
-
-    result._invalidOptions = res.locals.invalidOptions;
+    if (_.has(res, 'locals.invalidOptions')) {
+      result.addWarning({text: `Invalid URL parameters: ${res.locals.invalidOptions}`});
+    }
     result.url = res.req.protocol + '://' + path.join(res.req.get('host'), res.req.baseUrl, res.req.path);
     result.query = res.req.query;
 
@@ -81,11 +82,12 @@ function getErrorHandler (res) {
   };
 }
 
-function _invalidParametersWarning (invalidFields) {
-  // @See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Warning
-  const warnCode  = 199,
-        warnAgent = app.name,
-        warnText  = `Invalid URL parameters: ${invalidFields}`;
-
-  return `${warnCode} ${warnAgent} "${warnText}"`;
+function _headerWarningBuilder (warnings) {
+  return _(warnings)
+    .transform(
+      (accu, warn) => {
+        accu.push(`${warn.code || 199} ${app.name} "${warn.text}"`);
+      })
+    .join(',')
+    ;
 }

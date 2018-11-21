@@ -46,7 +46,8 @@ responseFormat.getResult = (response) => {
     totalCount  : _.get(response, 'hits.total', 0),
     resultCount : _.get(response, 'hits.hits.length', 0),
     scrollId    : _.get(response, '_scroll_id', null),
-    aggregations: aggregations
+    aggregations: aggregations,
+    addWarning : addWarning
   };
 };
 
@@ -58,7 +59,7 @@ responseFormat.paginate = (result, from = 0, size = 10) => {
                                    state.get('indices.records.cachedSettings.maxResultWindow', 10000)])
                            .min()
                            .divide(size)
-                           .floor()
+                           .ceil()
                            .value(), 1]),
         links    = {}
   ;
@@ -74,7 +75,7 @@ responseFormat.paginate = (result, from = 0, size = 10) => {
     links.next = {page: page + 1, page_size: size, rel: 'next'};
   }
 
-  if (lastPage > 1) {
+  if (lastPage > 1 && lastPage !== page) {
     links.last = {page: lastPage, page_size: size, rel: 'last'};
   }
 
@@ -89,6 +90,13 @@ responseFormat.paginate = (result, from = 0, size = 10) => {
   return result;
 };
 
+function addWarning(warning){
+  const warnings = _.get(this, '_warnings', []);
+  warnings.push(warning);
+  this._warnings = warnings;
+
+  return this;
+}
 function nonUniqueResultException () {
   let err = new Error('NonUniqueResultException');
   err.name = 'NonUniqueResultException';

@@ -26,7 +26,7 @@ const router = module.exports = express.Router();
 
 router.use(firewall);
 
-// /records(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})
+// /records/_filter(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})
 router.get(`/records/_filter` + filterByCriteriaRouteTemplate,
            (req, res) => {
              _validateQueryString(req.query, records.filterByCriteria.options, 'access_token')
@@ -42,10 +42,10 @@ router.get(`/records/_filter` + filterByCriteriaRouteTemplate,
                .catch(getErrorHandler(res));
            });
 
-// /records/_filter/(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})/zip
-router.get(`/records/_filter` + filterByCriteriaRouteTemplate + `/zip`,
+// /records/_filter(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})/zip
+router.get(`/records(/_filter` + filterByCriteriaRouteTemplate + `)?/zip`,
            (req, res) => {
-             _validateQueryString(req.query, records.filterByCriteria.options, 'access_token')
+             _validateQueryString(req.query, records.getScrollStreamFilterByCriteria.options, 'access_token')
                .catch(_getInvalidOptionsHandler(res))
                .then(() => {
                  const criteria = _routeParamsToCriteria(req.params);
@@ -113,7 +113,8 @@ router.get(`/records/_filter` + filterByCriteriaRouteTemplate + `/zip`,
                      function _setHeaders () {
                        const result = {
                          totalCount : _.get(scrollStream, '_total'),
-                         resultCount: _.get(scrollStream, '_resultCount')
+                         resultCount: _.get(scrollStream, '_resultCount'),
+                         addWarning : addWarning
                        };
                        res.set('Content-type', 'application/zip');
                        res.set('Content-disposition', 'attachment; filename=corpus.zip');
@@ -124,6 +125,15 @@ router.get(`/records/_filter` + filterByCriteriaRouteTemplate + `/zip`,
                })
                .catch(getErrorHandler(res));
            });
+
+// @todo code result builder or find more elegant
+function addWarning(warning){
+  const warnings = _.get(this, '_warnings', []);
+  warnings.push(warning);
+  this._warnings = warnings;
+
+  return this;
+}
 
 // /records
 router.get('/records', (req, res) => {
@@ -157,6 +167,62 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
         ;
     });
 
+});
+
+// /records/{idConditor}/duplicate
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate', (req,res)=>{
+  _validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token')
+    .catch(_getInvalidOptionsHandler(res))
+    .then(() => {
+      return records
+        .getDuplicatesByIdConditor(req.params.idConditor, req.query)
+        .then(getResultHandler(res))
+        .then(({result}) => res.json(result))
+        .catch(getErrorHandler(res))
+        ;
+    });
+});
+
+// /records/{idConditor}/duplicate/and_self
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate/and_self', (req,res)=>{
+  _validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token')
+    .catch(_getInvalidOptionsHandler(res))
+    .then(() => {
+      return records
+        .getDuplicatesByIdConditor(req.params.idConditor, req.query, 'and_self')
+        .then(getResultHandler(res))
+        .then(({result}) => res.json(result))
+        .catch(getErrorHandler(res))
+        ;
+    });
+});
+
+// /records/{idConditor}/near_duplicate
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate', (req,res)=>{
+  _validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token')
+    .catch(_getInvalidOptionsHandler(res))
+    .then(() => {
+      return records
+        .getNearDuplicatesByIdConditor(req.params.idConditor, req.query)
+        .then(getResultHandler(res))
+        .then(({result}) => res.json(result))
+        .catch(getErrorHandler(res))
+        ;
+    });
+});
+
+// /records/{idConditor}/near_duplicate/and_self
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate/and_self', (req,res)=>{
+  _validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token')
+    .catch(_getInvalidOptionsHandler(res))
+    .then(() => {
+      return records
+        .getNearDuplicatesByIdConditor(req.params.idConditor, req.query, 'and_self')
+        .then(getResultHandler(res))
+        .then(({result}) => res.json(result))
+        .catch(getErrorHandler(res))
+        ;
+    });
 });
 
 // /records/{idConditor}

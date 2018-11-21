@@ -14,7 +14,7 @@ describe('GET /records', function() {
     app._close();
   });
   describe('With valid JWT Authorization Request Header Field', function() {
-    it('Should return status 200', function(done) {
+    it('Should return status 2xx', function(done) {
       const token = generate();
       request(app)
         .get(`/${apiVersion}/records`)
@@ -49,7 +49,7 @@ describe('GET /records', function() {
   });
 
   describe('With valid JWT URI query parameter', function() {
-    it('Should return status 200', function(done) {
+    it('Should return status 2xx', function(done) {
       const token = generate();
       request(app)
         .get(`/${apiVersion}/records?access_token=${token}`)
@@ -72,7 +72,7 @@ describe('GET /records', function() {
   });
 
   describe('With valid IP', function() {
-    it('Should return status 200', function(done) {
+    it('Should return status 2xx', function(done) {
       request(app)
         .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','111.11.11.1') // We spoof our ip

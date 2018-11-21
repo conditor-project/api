@@ -25,6 +25,8 @@ recordsManager.getSingleTeiByIdConditor = getSingleTeiByIdConditor;
 recordsManager.search = search;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
+recordsManager.getDuplicatesByIdConditor = getDuplicatesByIdConditor;
+recordsManager.getNearDuplicatesByIdConditor = getNearDuplicatesByIdConditor;
 
 getScrollStreamFilterByCriteria.options = ['include', 'exclude', 'q', 'limit'];
 function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
@@ -80,7 +82,7 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
     });
 }
 
-filterByCriteria.options = ['scroll', 'include', 'exclude', 'page','page_size', 'q', 'aggs'];
+filterByCriteria.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs'];
 function filterByCriteria (filterCriteria, options = {}) {
   return Promise
     .resolve()
@@ -95,7 +97,7 @@ function filterByCriteria (filterCriteria, options = {}) {
                 queryStringToParams(options),
                 defaultParams);
 
-      const paginate = _.curryRight(esResultFormat.paginate,3)(params.size)(params.from);
+      const paginate = _.curryRight(esResultFormat.paginate, 3)(params.size)(params.from);
 
       return esClient
         .search(params)
@@ -178,7 +180,7 @@ function search (options = {}) {
         queryStringToParams(options),
         defaultParams
       );
-      const paginate = _.curryRight(esResultFormat.paginate,3)(params.size)(params.from);
+      const paginate = _.curryRight(esResultFormat.paginate, 3)(params.size)(params.from);
 
       return esClient
         .search(params)
@@ -189,7 +191,134 @@ function search (options = {}) {
     });
 }
 
+getDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q'];
+function getDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
+  const AND_SELF = 'and_self';
 
+  return Promise
+    .resolve()
+    .then(() => {
+      const
+        requestBody = buildRequestBody(null, null, {idConditor})
+      ;
+      const params = _.defaultsDeep({
+                                      body: requestBody.toJSON(),
+                                      size: 2 // If hits count =/= 1 then an error is thrown
+                                    },
+                                    queryStringToParams({include: 'duplicate.idConditor'}),
+                                    defaultParams
+      );
+
+      return esClient
+        .search(params)
+        .catch(_clientErrorHandler)
+        .then(esResultFormat.getSingleResult)
+        .then((result) => {
+          const idConditors = _.chain(result)
+                               .get('result.duplicate', [])
+                               .transform((accu, duplicate) => {
+                                 accu.push(_.get(duplicate, 'idConditor', ''));
+                               })
+                               .value()
+          ;
+
+          if (flag === AND_SELF) idConditors.push(idConditor);
+
+          const
+            requestBody = buildRequestBody(options.q, options.aggs, {idConditor: idConditors})
+          ;
+          const params = _.defaultsDeep({
+                                          body: requestBody.toJSON()
+                                        },
+                                        queryStringToParams(options),
+                                        defaultParams
+          );
+          const paginate = _.curryRight(esResultFormat.paginate, 3)(params.size || idConditors.length)(params.from);
+
+          return esClient
+            .search(params)
+            .catch(_clientErrorHandler)
+            .then(esResultFormat.getResult)
+            .then(paginate)
+            .then((result) => {
+              if (!options.q && result.totalCount < idConditors.length) {
+                result.addWarning({
+                                    code: 199,
+                                    text: `Expected nested duplicate total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
+                                  });
+              }
+              return result;
+            })
+            ;
+        })
+        ;
+    });
+}
+
+
+getNearDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q'];
+function getNearDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
+  const AND_SELF = 'and_self';
+
+  return Promise
+    .resolve()
+    .then(() => {
+      const
+        requestBody = buildRequestBody(null, null, {idConditor})
+      ;
+      const params = _.defaultsDeep({
+                                      body: requestBody.toJSON(),
+                                      size: 2 // If hits count =/= 1 then an error is thrown
+                                    },
+                                    queryStringToParams({include: 'nearDuplicate.idConditor'}),
+                                    defaultParams
+      );
+
+      return esClient
+        .search(params)
+        .catch(_clientErrorHandler)
+        .then(esResultFormat.getSingleResult)
+        .then((result) => {
+          const idConditors = _.chain(result)
+                               .get('result.nearDuplicate', [])
+                               .transform((accu, duplicate) => {
+                                 accu.push(_.get(duplicate, 'idConditor', ''));
+                               })
+                               .value()
+          ;
+
+          if (flag === AND_SELF) idConditors.push(idConditor);
+
+          const
+            requestBody = buildRequestBody(options.q, options.aggs, {idConditor: idConditors})
+          ;
+          const params = _.defaultsDeep({
+                                          body: requestBody.toJSON()
+                                        },
+                                        queryStringToParams(options),
+                                        defaultParams
+          );
+          const paginate = _.curryRight(esResultFormat.paginate, 3)(params.size || idConditors.length)(params.from);
+
+          return esClient
+            .search(params)
+            .catch(_clientErrorHandler)
+            .then(esResultFormat.getResult)
+            .then(paginate)
+            .then((result) => {
+              if (!options.q && result.totalCount < idConditors.length) {
+                result.addWarning({
+                                    code: 199,
+                                    text: `Expected nested nearDuplicate total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
+                                  });
+              }
+              return result;
+            })
+            ;
+        })
+        ;
+    });
+}
 function _clientErrorHandler (err) {
   if (['TypeError'].includes(err.name)) {err.status = 400;}
   throw err;

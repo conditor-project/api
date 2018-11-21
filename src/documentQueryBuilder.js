@@ -36,6 +36,9 @@ function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = 
 function _buildTermQueriesByCriteria (criteria) {
   return _.transform(criteria,
                      (filters, value, field) => {
+                       if (_.isArray(value)) {
+                         return filters.push(esb.termsQuery(field, value));
+                       }
                        filters.push(esb.termQuery(field, value));
                      },
                      []);
