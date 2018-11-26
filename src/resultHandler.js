@@ -1,5 +1,5 @@
 'use strict';
-const {logError, logInfo}    = require('../helpers/logger'),
+const {logError}    = require('../helpers/logger'),
       _                      = require('lodash'),
       {constant}             = require('lodash'),
       {app}                  = require('config-component').get(module),
@@ -11,6 +11,7 @@ const {logError, logInfo}    = require('../helpers/logger'),
 exports.getResultHandler = getResultHandler;
 exports.getSingleResultErrorHandler = getSingleResultErrorHandler;
 exports.getErrorHandler = getErrorHandler;
+exports.gethttpHeadersMapping = () => httpHeadersMapping;
 
 const httpHeadersMapping = {
   scrollId   : {name: constant('Scroll-Id')},
@@ -21,7 +22,7 @@ const httpHeadersMapping = {
     value: _headerWarningBuilder
   },
   links      : {
-    name : constant('link'),
+    name : constant('Link'),
     value: (links, key, result) => {
       links = _.mapValues(links,
                           (link) => {
@@ -48,8 +49,10 @@ function getResultHandler (res) {
     if (_.has(res, 'locals.invalidOptions')) {
       result.addWarning({text: `Invalid URL parameters: ${res.locals.invalidOptions}`});
     }
-    
-    const protocol = (new URL(res.req.protocol + '://' +res.req.get('host'))).port === ''?'https':'http';
+
+    // INIST reverse proxy doesn't forward protocol, so we try to guess.
+    const protocol = (new URL(res.req.protocol + '://' + res.req.get('host'))).port === '' ? 'https' : 'http';
+
     result.url = protocol + '://' + path.join(res.req.get('host'), res.req.baseUrl, res.req.path);
     result.query = res.req.query;
 
