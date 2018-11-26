@@ -1,11 +1,9 @@
 'use strict';
-
-
-const express = require('express'),
-      router  = express.Router();
+const pkg = require('../package.json');
+const router = require('express').Router();
 
 router.get('/', (req, res) => {
-  res.send('Bienvenue sur l\'API Conditor');
+  res.send(`Bienvenue sur l\'API Conditor - ${pkg.version}`);
 });
 
 
