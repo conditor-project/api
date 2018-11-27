@@ -4,12 +4,10 @@ const express                             = require('express'),
       router                              = express.Router(),
       records                             = require('../src/manager/scrollManager'),
       {getResultHandler, getErrorHandler} = require('../src/resultHandler'),
-      firewall                            = require('../src/firewall'),
       validateQueryString                 = require('../helpers/validateQueryString'),
       getInvalidOptionsHandler            = require('../src/getInvalidOptionsHandler')
 ;
 
-router.use(firewall);
 
 module.exports = router;
 

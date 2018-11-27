@@ -27,9 +27,10 @@ state.assign(process.env.state || {});
 
 const
   // Routers
-  root    = require('../controllers/root'),
-  records = require('../controllers/records'),
-  scroll  = require('../controllers/scroll')
+  root     = require('../controllers/root'),
+  records  = require('../controllers/records'),
+  scroll   = require('../controllers/scroll'),
+  firewall = require('./firewall')
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
@@ -61,6 +62,6 @@ app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
 app.use(compression());
 app.get('/', (req, res) => {res.redirect(`/v${semver.major(config.app.version)}`);});
-app.use(`/v${semver.major(config.app.version)}`, root, scroll, records);
+app.use(`/v${semver.major(config.app.version)}`, root, firewall, scroll, records);
 app.use(errorHandler);
 

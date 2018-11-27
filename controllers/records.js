@@ -5,7 +5,6 @@ const express                                                          = require
       records                                                          = require('../src/manager/recordsManager'),
       {getResultHandler, getErrorHandler, getSingleResultErrorHandler} = require('../src/resultHandler'),
       _                                                                = require('lodash'),
-      firewall                                                         = require('../src/firewall'),
       archiver                                                         = require('archiver'),
       isNumeric                                                        = require('../helpers/isNumeric'),
       validateQueryString                                              = require('../helpers/validateQueryString'),
@@ -26,7 +25,6 @@ const filterByCriteriaRouteTemplate = `(/:source(hal|wos|sudoc))?`
 
 const router = module.exports = express.Router();
 
-router.use(firewall);
 
 // /records/_filter(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})
 router.get(`/records/_filter` + filterByCriteriaRouteTemplate,
