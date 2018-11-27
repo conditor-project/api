@@ -20,7 +20,7 @@ const
 
 scrollManager.scroll = scroll;
 
-
+scroll.options = ['scroll'];
 function scroll (scrollId, queryString = {}) {
   return Promise
     .resolve()

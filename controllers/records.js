@@ -7,7 +7,9 @@ const express                                                          = require
       _                                                                = require('lodash'),
       firewall                                                         = require('../src/firewall'),
       archiver                                                         = require('archiver'),
-      isNumeric                                                        = require('../helpers/isNumeric')
+      isNumeric                                                        = require('../helpers/isNumeric'),
+      validateQueryString                                              = require('../helpers/validateQueryString'),
+      getInvalidOptionsHandler                                         = require('../src/getInvalidOptionsHandler')
 ;
 
 const IS_DUPLICATE          = 'duplicate',
@@ -29,12 +31,14 @@ router.use(firewall);
 // /records/_filter(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})
 router.get(`/records/_filter` + filterByCriteriaRouteTemplate,
            (req, res) => {
-             _validateQueryString(req.query, records.filterByCriteria.options, 'access_token')
-               .catch(_getInvalidOptionsHandler(res))
-               .then(() => {
-                 const criteria = _routeParamsToCriteria(req.params);
+             validateQueryString(req.query, records.filterByCriteria.options, 'access_token')
+               .then(getInvalidOptionsHandler(res))
+               .then((query) => {
+                 const
+                   criteria = _routeParamsToCriteria(req.params);
+
                  return records
-                   .filterByCriteria(criteria, req.query)
+                   .filterByCriteria(criteria, query)
                    .then(getResultHandler(res))
                    .then(({result}) => res.json(result))
                    ;
@@ -45,13 +49,13 @@ router.get(`/records/_filter` + filterByCriteriaRouteTemplate,
 // /records/_filter(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})/zip
 router.get(`/records(/_filter` + filterByCriteriaRouteTemplate + `)?/zip`,
            (req, res) => {
-             _validateQueryString(req.query, records.getScrollStreamFilterByCriteria.options, 'access_token')
-               .catch(_getInvalidOptionsHandler(res))
-               .then(() => {
+             validateQueryString(req.query, records.getScrollStreamFilterByCriteria.options, 'access_token')
+               .then(getInvalidOptionsHandler(res))
+               .then((query) => {
                  const criteria = _routeParamsToCriteria(req.params);
 
                  return records
-                   .getScrollStreamFilterByCriteria(criteria, req.query)
+                   .getScrollStreamFilterByCriteria(criteria, query)
                    .then((scrollStream) => {
                      const archive = archiver('zip');
 
@@ -127,7 +131,7 @@ router.get(`/records(/_filter` + filterByCriteriaRouteTemplate + `)?/zip`,
            });
 
 // @todo code result builder or find more elegant
-function addWarning(warning){
+function addWarning (warning) {
   const warnings = _.get(this, '_warnings', []);
   warnings.push(warning);
   this._warnings = warnings;
@@ -137,11 +141,11 @@ function addWarning(warning){
 
 // /records
 router.get('/records', (req, res) => {
-  _validateQueryString(req.query, records.search.options, 'access_token')
-    .catch(_getInvalidOptionsHandler(res))
-    .then(() => {
+  validateQueryString(req.query, records.search.options, 'access_token')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
       return records
-        .search(req.query)
+        .search(query)
         .then(getResultHandler(res))
         .then(({result}) => res.json(result))
         ;
@@ -152,11 +156,11 @@ router.get('/records', (req, res) => {
 
 // /records/{idConditor}/tei
 router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
-  _validateQueryString(req.query, records.getSingleTeiByIdConditor.options, 'access_token')
-    .catch(_getInvalidOptionsHandler(res))
-    .then(() => {
+  validateQueryString(req.query, records.getSingleTeiByIdConditor.options, 'access_token')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
       return records
-        .getSingleTeiByIdConditor(req.params.idConditor, req.query)
+        .getSingleTeiByIdConditor(req.params.idConditor, query)
         .then(getResultHandler(res))
         .then(({result}) => {
           res.set('Content-Type', 'application/xml');
@@ -170,12 +174,12 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res) => {
 });
 
 // /records/{idConditor}/duplicate
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate', (req,res)=>{
-  _validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token')
-    .catch(_getInvalidOptionsHandler(res))
-    .then(() => {
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate', (req, res) => {
+  validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
       return records
-        .getDuplicatesByIdConditor(req.params.idConditor, req.query)
+        .getDuplicatesByIdConditor(req.params.idConditor, query)
         .then(getResultHandler(res))
         .then(({result}) => res.json(result))
         .catch(getErrorHandler(res))
@@ -184,12 +188,12 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate', (req,res)=>{
 });
 
 // /records/{idConditor}/duplicate/and_self
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate/and_self', (req,res)=>{
-  _validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token')
-    .catch(_getInvalidOptionsHandler(res))
-    .then(() => {
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate/and_self', (req, res) => {
+  validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
       return records
-        .getDuplicatesByIdConditor(req.params.idConditor, req.query, 'and_self')
+        .getDuplicatesByIdConditor(req.params.idConditor, query, 'and_self')
         .then(getResultHandler(res))
         .then(({result}) => res.json(result))
         .catch(getErrorHandler(res))
@@ -198,12 +202,12 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate/and_self', (req,res)=
 });
 
 // /records/{idConditor}/near_duplicate
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate', (req,res)=>{
-  _validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token')
-    .catch(_getInvalidOptionsHandler(res))
-    .then(() => {
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate', (req, res) => {
+  validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
       return records
-        .getNearDuplicatesByIdConditor(req.params.idConditor, req.query)
+        .getNearDuplicatesByIdConditor(req.params.idConditor, query)
         .then(getResultHandler(res))
         .then(({result}) => res.json(result))
         .catch(getErrorHandler(res))
@@ -212,12 +216,12 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate', (req,res)=>{
 });
 
 // /records/{idConditor}/near_duplicate/and_self
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate/and_self', (req,res)=>{
-  _validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token')
-    .catch(_getInvalidOptionsHandler(res))
-    .then(() => {
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate/and_self', (req, res) => {
+  validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
       return records
-        .getNearDuplicatesByIdConditor(req.params.idConditor, req.query, 'and_self')
+        .getNearDuplicatesByIdConditor(req.params.idConditor, query, 'and_self')
         .then(getResultHandler(res))
         .then(({result}) => res.json(result))
         .catch(getErrorHandler(res))
@@ -227,11 +231,11 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate/and_self', (req,
 
 // /records/{idConditor}
 router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
-  _validateQueryString(req.query, records.getSingleHitByIdConditor.options, 'access_token')
-    .catch(_getInvalidOptionsHandler(res))
-    .then(() => {
+  validateQueryString(req.query, records.getSingleHitByIdConditor.options, 'access_token')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
       return records
-        .getSingleHitByIdConditor(req.params.idConditor, req.query)
+        .getSingleHitByIdConditor(req.params.idConditor, query)
         .then(getResultHandler(res))
         .then(({result}) => res.json(result))
         .catch(getSingleResultErrorHandler(res))
@@ -240,32 +244,6 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)', (req, res) => {
     });
 });
 
-function _validateQueryString (queryString, ...validFields) {
-  return Promise
-    .resolve()
-    .then(() => {
-      validFields = _.flattenDeep(validFields);
-      const invalidOptions = _.difference(_.keys(queryString), validFields);
-      if (invalidOptions.length) throw invalidOptionsException(invalidOptions);
-    });
-}
-
-function invalidOptionsException (invalidOptions) {
-  let err = new Error('InvalidOptionsException');
-  err.name = 'InvalidOptionsException';
-  err.invalidOptions = invalidOptions;
-  return err;
-}
-
-function _getInvalidOptionsHandler (res) {
-  return (err) => {
-    if (err.name === 'InvalidOptionsException') {
-      res.locals.invalidOptions = err.invalidOptions;
-      return; // Keep going cause its only a Warning
-    }
-    throw err;
-  };
-}
 
 function _routeParamsToCriteria (routeParams) {
   const reqParamsToCriteria = {

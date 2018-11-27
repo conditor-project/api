@@ -56,7 +56,6 @@ const paramsValidation = {
 
 function queryStringToParams (queryString) {
   const priorKeys = _(paramsMapping).pickBy((mapping) => mapping.hasPriority === true).keys().value();
-
   // First pass for mapping with hasPriority = true
   let params = _(queryString)
     .pick(priorKeys)

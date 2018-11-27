@@ -26,8 +26,8 @@ const httpHeadersMapping = {
     value: (links, key, result) => {
       links = _.mapValues(links,
                           (link) => {
-                            const url          = new URL(result.url),
-                                  searchParams = _(result.query)
+                            const url          = new URL(result._url),
+                                  searchParams = _(result._query)
                                     .omit(['page', 'page_size'])
                                     .set('page', link.page)
                                     .set('page_size', link.page_size)
@@ -53,8 +53,8 @@ function getResultHandler (res) {
     // INIST reverse proxy doesn't forward protocol, so we try to guess.
     const protocol = (new URL(res.req.protocol + '://' + res.req.get('host'))).port === '' ? 'https' : 'http';
 
-    result.url = protocol + '://' + path.join(res.req.get('host'), res.req.baseUrl, res.req.path);
-    result.query = res.req.query;
+    result._url = protocol + '://' + path.join(res.req.get('host'), res.req.baseUrl, res.req.path);
+    result._query = res.locals.validatedQuery;
 
     _.forEach(result, (value, key) => {
       if (_.has(httpHeadersMapping, key) && !_.isNil(value) && !(_.isArrayLikeObject(value) && _.isEmpty(value))) {
