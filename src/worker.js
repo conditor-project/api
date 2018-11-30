@@ -1,10 +1,13 @@
 'use strict';
 
+const config = require('config-component').get(module);
+
+Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
+
 const
   cluster             = require('cluster'),
   express             = require('express'),
   app                 = express(),
-  config              = require('config-component').get(module),
   {security}          = require('config-component').get(module),
   myColors            = require('../helpers/myColors'), // jshint ignore: line
   elasticContainer    = require('../helpers/clients/elastic'),
@@ -36,7 +39,6 @@ const
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
 let server;
 
-Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
 
 module.exports = app;
 

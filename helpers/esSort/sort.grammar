@@ -1,108 +1,37 @@
 {
-    function buildRange(from, to){
-        const range = {};
-        if(from){ range.from = from; }
-        if(to){ range.to = to; }
-        return range;
-    };
+    function buildSort(field, order, mode){
+        const sort= {field};
+        if(order){sort.order = order};
+        if(mode){sort.mode = mode};
+
+        return sort;
+    }
 }
 
 Start
-  = Aggregation+ // First level exception, no need round brackets
-  / Aggregations
+  =
+  Sorts
   / _ { return []; }
 
-Aggregations
-  = agg:Aggregation { return [agg]; }
-  / _ "(" _ aggs:Aggregation* _ ")" _ { return aggs; }
-
-Aggregation
-  = aggs:AggregationType _ subAggs:SubAggregations? _ { if(subAggs){ aggs.aggs = subAggs; } return aggs; }
-
-SubAggregations
-  = ">" _ aggs:Aggregations { return aggs; }
-
-AggregationType
-  = TermsAgg
-  / DateRangeAgg
-  / CardinalityAgg
-  / NestedAgg
-
-NestedAgg
-  = _ type:"nested"i _ ":" _ path:NestedField _ { return {path, type:"nested"}; }
-
-CardinalityAgg
-  = _ type:"cardinality"i _ ":" _ field:AggField _ options:AggOptions?
-   { return Object.assign({field, type:"cardinality"}, options); }
-
-TermsAgg
-  = _ type:"terms"i _ ":" _ field:AggField _ options:AggOptions?
-   { return Object.assign({field, type:"terms"}, options); }
-
-DateRangeAgg
-  = _ type:"date_range"i _ ":" _ field:AggField _ ranges:Ranges _ options:AggOptions?
-   { return Object.assign({type:"date_range", field, ranges}, options); }
-
-Ranges
-  = ":" _ range:Range* { return range; }
-
-Range
-  =  _ "[" _ from:From? _ to:To? _ "]" _ { return buildRange(from, to); }
-
-From
-  = DateMath
-
-To
-  = "TO"i _ dateMath:DateMath { return dateMath; }
-
-DateMath
-  = $(Date ("||" DateMathExpr)?)
-  / (NowFlag dateMathExpr:DateMathExpr? {return "now" +  dateMathExpr})
-
-Date
-  = (
-      StrictDateHourMinuteSecond
-      / StrictDate
-      / StrictYear !Digit
-      / TimeStamp
-    ) { return text(); }
-
-TimeStamp
-  = $(Minus? Digit+)
-
-NowFlag
-  = "now"i
-
-DateMathExpr
-  = $([0-9+\-yMwdhHms\/]*)
+Sorts
+  =
+  sort:Sort { return [sort]; }
 
 
-StrictDateHourMinuteSecond
-  = StrictDate (" "/"T"i) StrictHourMinuteSecond
+Sort
+  =
+  _ field:StringLiteral _ order:Order? _ mode:Mode? _ options:Options? _ { return Object.assign(buildSort(field, order, mode), options); }
 
-StrictHourMinuteSecond
-  = $([0-1] [0-9] / "2" [0-3]) ":" $([0-5] [0-9]) ":" $([0-5] [0-9])
+Order
+  =
+  ":" _ order:("asc"i / "desc"i) { return order.toLowerCase(); }
 
-StrictDate
-  = StrictYear "-" StrictMonth "-" StrictDay
+Mode
+  =
+  ":" _ mode:("min"i / "max"i / "sum"i / "avg"i / "median"i) { return mode.toLowerCase(); }
 
-StrictYear
-  = $(Minus? Digit Digit Digit Digit)
-
-StrictMonth
-  = $("0" [1-9] / "1" [0-2])
-
-StrictDay
-  = $("0" [1-9] / [1-2] [0-9] / "3" [0-1])
-
-NestedField
-  = StringLiteral
-
-AggField
-  = StringLiteral
-
-AggOptions
-  =  ":"  options:Object { return options; }
+Options
+  =  ":" _ options:Object { return options; }
 
 // Laxe JSON Grammar
 // ============
@@ -218,7 +147,7 @@ StringLiteral "string"
   = '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
   / "'" chars:SingleStringCharacter* "'" { return chars.join("") }
   /  chars:IdentifierCharacter* { return chars.join(""); }
-  
+
 DoubleStringCharacter
   = $Char
 
@@ -227,7 +156,7 @@ SingleStringCharacter
 
 IdentifierCharacter
   = [A-Za-z0-9_\-.]
-  
+
 Char
   = Unescaped
   / Escape

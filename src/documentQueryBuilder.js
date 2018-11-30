@@ -4,7 +4,8 @@ const {
       }                         = require('config-component').get(module),
       esb                       = require('elastic-builder/src'),
       _                         = require('lodash'),
-      {build: buildAggregation} = require('../helpers/esAggregation/queryBuilder')
+      {build: buildAggregation} = require('../helpers/esAggregation/queryBuilder'),
+      {build: buildSort}        = require('../helpers/esSort/queryBuilder')
 ;
 
 const documentQueryBuilder = module.exports;

@@ -65,7 +65,7 @@ const expectedAst = [
 
 describe('parser#parse(aggsQuery)', () => {
   _.forEach(expectedAst, (test) => {
-    describe(test.query, () => {
+    describe(`"${test.query}"`, () => {
       it(test.message || 'Should return correct AST', () => {
         const ast = parser.parse(test.query);
         ast.should.deepEqual(test.expected);
