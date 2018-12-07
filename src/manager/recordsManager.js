@@ -16,7 +16,7 @@ const recordsManager = module.exports;
 const
   defaultParams = {
     index     : indices.records.index,
-    filterPath: ['hits.hits._source', 'hits.hits._score', 'hits.hits.sort', 'hits.total', '_scroll_id', 'aggregations']
+    filterPath: ['hits.hits','hits.hits._source', 'hits.hits._score', 'hits.hits.sort', 'hits.total', '_scroll_id', 'aggregations']
   }
 ;
 
