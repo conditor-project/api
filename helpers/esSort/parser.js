@@ -6,7 +6,8 @@ const peg  = require('pegjs'),
 ;
 
 const sortGrammar = fs.readFileSync(path.join(__dirname, 'sort.grammar'), 'utf8'),
-      parser      = peg.generate(sortGrammar);
+     laxeJsonGrammar = fs.readFileSync(path.join(__dirname, '../laxeJson/laxeJson.grammar'), 'utf8'),
+      parser      = peg.generate(sortGrammar + '\n' + laxeJsonGrammar);
 
 module.exports.parse = _parse;
 
