@@ -1,5 +1,5 @@
 'use strict';
-const {logError}    = require('../helpers/logger'),
+const {logError}             = require('../helpers/logger'),
       _                      = require('lodash'),
       {constant}             = require('lodash'),
       {app}                  = require('config-component').get(module),
@@ -83,9 +83,46 @@ function getErrorHandler (res) {
   return (reason) => {
     let status = [400, 404].includes(reason.status) ? reason.status : 500;
     logError(reason);
+    if (_.has(res, 'req.query.debug') && res.req.query.debug !== 'false' && status === 400) {
+      return res.status(status).send(_format(reason));
+    }
     res.sendStatus(status);
   };
 }
+
+const errorMessagesMapping = [
+  {
+    predicate: (reason) => reason.isPeg,
+    format   : (reason) => reason.message
+  },
+  {
+    predicate: (reason) => reason.isJoi,
+    format   : (reason) => _.get(reason, 'details.0.message'),
+    details  : (reason) => _.get(reason, 'details.0.context.value'),
+    label    : (reason) => _.get(reason, 'details.0.context.label')
+  }
+];
+
+const statusNamesMapping = {
+  400: 'Bad Request'
+
+};
+
+function _format (reason) {
+  const mapping = _.find(errorMessagesMapping, ({predicate}) => predicate(reason));
+
+  const error = {
+    status : reason.status,
+    statusName: _.get(statusNamesMapping, reason.status),
+    name   : reason.name || 'Error',
+    label  : _.invoke(mapping, 'label', reason),
+    message: _.invoke(mapping, 'format', reason) || reason.message,
+    details: _.invoke(mapping, 'details', reason)
+  };
+
+  return error;
+}
+
 
 function _headerWarningBuilder (warnings) {
   return _(warnings)

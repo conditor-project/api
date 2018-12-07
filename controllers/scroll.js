@@ -13,7 +13,7 @@ module.exports = router;
 
 // /scroll/scroll_id={SCROLL_ID}?scroll={DurationString}
 router.get('/scroll/:scrollId', (req, res) => {
-  validateQueryString(req.query, records.scroll.options, 'access_token')
+  validateQueryString(req.query, records.scroll.options, 'access_token', 'debug')
     .then(getInvalidOptionsHandler(res))
     .then((query) => {
       records

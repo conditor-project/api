@@ -20,7 +20,7 @@ const nestedAggsSchema = Joi.object()
                                     name           : Joi.string()
                                   });
 
-const termsAggsSchema = Joi.object()
+const termsAggsSchema = Joi.object().label('Terms aggregation')
                            .keys({
                                    type                     : Joi.string().valid('terms').required(),
                                    field                    : Joi.string()
@@ -76,4 +76,4 @@ const metricsAggs = [cardinalityAggsSchema];
 
 const aggs = [].concat(bucketAggs, metricsAggs);
 
-schema = Joi.array().items(...aggs);
+schema = Joi.array().label('Aggregation').items(...aggs);
