@@ -4,8 +4,8 @@ const {
       }                         = require('config-component').get(module),
       esb                       = require('elastic-builder/src'),
       _                         = require('lodash'),
-      {build: buildAggregation} = require('../helpers/esAggregation/queryBuilder'),
-      {build: buildSort}        = require('../helpers/esSort/queryBuilder')
+      {build: buildAggregations} = require('../helpers/esAggregation/queryBuilder'),
+      {build: buildSorts}        = require('../helpers/esSort/queryBuilder')
 ;
 
 const documentQueryBuilder = module.exports;
@@ -13,7 +13,7 @@ const documentQueryBuilder = module.exports;
 documentQueryBuilder.buildRequestBody = buildRequestBody;
 
 
-function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = {}) {
+function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = {}, sortQuery = '') {
 
   luceneQueryString = _.isNil(luceneQueryString) ? '*' : luceneQueryString;
   aggsQueryString = _.isNil(aggsQueryString) ? '' : aggsQueryString;
@@ -30,7 +30,10 @@ function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = 
           _buildQueryStringQuery(luceneQueryString)
         )
     )
-    .aggs(_buildAggregation(aggsQueryString))
+    .sorts(
+      _buildSorts(sortQuery)
+    )
+    .aggs(_buildAggregations(aggsQueryString))
     ;
 }
 
@@ -54,10 +57,22 @@ function _buildQueryStringQuery (queryLucene) {
     ;
 }
 
-
-function _buildAggregation (aggsQueryString) {
+function _buildSorts (sortQuery) {
   try {
-    return buildAggregation(aggsQueryString);
+    return buildSorts(sortQuery);
+  } catch (err) {
+    if ((err.name === 'SyntaxError' && err.isPeg === true)
+        || (err.name === 'ValidationError' && err.isJoi === true)
+    ) {
+      err.status = 400;
+    }
+    throw err;
+  }
+}
+
+function _buildAggregations (aggsQueryString) {
+  try {
+    return buildAggregations(aggsQueryString);
   } catch (err) {
     if ((err.name === 'SyntaxError' && err.isPeg === true)
         || (err.name === 'ValidationError' && err.isJoi === true)

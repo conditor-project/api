@@ -15,8 +15,7 @@ Start
 
 Sorts
   =
-  sort:Sort { return [sort]; }
-
+  sort:Sort+ { return sort; }
 
 Sort
   =
@@ -146,7 +145,7 @@ Zero
 StringLiteral "string"
   = '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
   / "'" chars:SingleStringCharacter* "'" { return chars.join("") }
-  /  chars:IdentifierCharacter* { return chars.join(""); }
+  /  chars:IdentifierCharacter+ { return chars.join(""); }
 
 DoubleStringCharacter
   = $Char

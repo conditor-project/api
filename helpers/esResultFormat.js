@@ -34,7 +34,7 @@ responseFormat.getSingleScalarResult = (response) => {
 };
 
 responseFormat.getResult = (response) => {
-  const hits         = _.map(response.hits.hits, (hit) => {return _.assign({}, hit._source, {_score: hit._score});}),
+  const hits         = _.map(response.hits.hits, (hit) => {return _.assign({}, hit._source, {_score: hit._score, _sort: hit.sort});}),
         aggregations = _.get(response, 'aggregations', null)
   ;
 

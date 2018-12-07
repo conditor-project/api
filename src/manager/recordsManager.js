@@ -16,7 +16,7 @@ const recordsManager = module.exports;
 const
   defaultParams = {
     index     : indices.records.index,
-    filterPath: ['hits.hits', 'hits.total', '_scroll_id', 'aggregations']
+    filterPath: ['hits.hits._source', 'hits.hits._score', 'hits.hits.sort', 'hits.total', '_scroll_id', 'aggregations']
   }
 ;
 
@@ -28,13 +28,13 @@ recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria
 recordsManager.getDuplicatesByIdConditor = getDuplicatesByIdConditor;
 recordsManager.getNearDuplicatesByIdConditor = getNearDuplicatesByIdConditor;
 
-getScrollStreamFilterByCriteria.options = ['include', 'exclude', 'q', 'limit'];
-function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
+getScrollStreamFilterByCriteria.options = ['include', 'exclude', 'q', 'limit', 'sort'];
+function getScrollStreamFilterByCriteria (filterCriteria = {}, {q, sort, limit, ...options} = {}) {
   return Promise
     .resolve()
     .then(() => {
       const
-        requestBody = buildRequestBody(options.q, options.aggs, filterCriteria)
+        requestBody = buildRequestBody(q, null, filterCriteria, sort)
       ;
 
       const params =
@@ -57,14 +57,14 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
 
       const scrollStream = new ScrollStream(esClient,
                                             params,
-                                            null,
+                                            ['_score'],
                                             {objectMode: true}
       );
 
 
-      if (options.limit) {
+      if (limit) {
         let recordsCount = 0;
-        const limit = scrollStream._resultCount = _.toSafeInteger(options.limit);
+        limit = scrollStream._resultCount = _.toSafeInteger(limit);
         scrollStream
           .on('data', () => {
             ++recordsCount;
@@ -82,13 +82,13 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, options = {}) {
     });
 }
 
-filterByCriteria.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs'];
-function filterByCriteria (filterCriteria, options = {}) {
+filterByCriteria.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs', 'sort'];
+function filterByCriteria (filterCriteria, {q, aggs, sort, ...options} = {}) {
   return Promise
     .resolve()
     .then(() => {
       const
-        requestBody = buildRequestBody(options.q, options.aggs, filterCriteria)
+        requestBody = buildRequestBody(q, aggs, filterCriteria, sort)
       ;
 
       const params =
@@ -109,12 +109,12 @@ function filterByCriteria (filterCriteria, options = {}) {
 }
 
 getSingleHitByIdConditor.options = ['include', 'exclude', 'aggs'];
-function getSingleHitByIdConditor (idConditor, options = {}) {
+function getSingleHitByIdConditor (idConditor, {aggs, ...options} = {}) {
   return Promise
     .resolve()
     .then(() => {
       const
-        requestBody = buildRequestBody(null, options.aggs, {idConditor})
+        requestBody = buildRequestBody(null, aggs, {idConditor})
       ;
 
       const params = _.defaultsDeep({
@@ -166,13 +166,14 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
 }
 
 
-search.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs'];
-function search (options = {}) {
+search.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs', 'sort'];
+function search ({q, aggs, sort, ...options}) {
+
   return Promise
     .resolve()
     .then(() => {
       const
-        requestBody = buildRequestBody(options.q, options.aggs)
+        requestBody = buildRequestBody(q, aggs, null, sort)
       ;
 
       const params = _.defaultsDeep(
@@ -191,8 +192,8 @@ function search (options = {}) {
     });
 }
 
-getDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q'];
-function getDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
+getDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q', 'sort'];
+function getDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}, flag = '') {
   const AND_SELF = 'and_self';
 
   return Promise
@@ -225,7 +226,7 @@ function getDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
           if (flag === AND_SELF) idConditors.push(idConditor);
 
           const
-            requestBody = buildRequestBody(options.q, options.aggs, {idConditor: idConditors})
+            requestBody = buildRequestBody(q, aggs, {idConditor: idConditors}, sort)
           ;
           const params = _.defaultsDeep({
                                           body: requestBody.toJSON()
@@ -241,7 +242,7 @@ function getDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
             .then(esResultFormat.getResult)
             .then(paginate)
             .then((result) => {
-              if (!options.q && result.totalCount < idConditors.length) {
+              if (!q && result.totalCount < idConditors.length) {
                 result.addWarning({
                                     code: 199,
                                     text: `Expected nested duplicate total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
@@ -256,8 +257,8 @@ function getDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
 }
 
 
-getNearDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q'];
-function getNearDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
+getNearDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q', 'sort'];
+function getNearDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}, flag = '') {
   const AND_SELF = 'and_self';
 
   return Promise
@@ -290,7 +291,7 @@ function getNearDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
           if (flag === AND_SELF) idConditors.push(idConditor);
 
           const
-            requestBody = buildRequestBody(options.q, options.aggs, {idConditor: idConditors})
+            requestBody = buildRequestBody(q, aggs, {idConditor: idConditors}, sort)
           ;
           const params = _.defaultsDeep({
                                           body: requestBody.toJSON()
@@ -306,7 +307,7 @@ function getNearDuplicatesByIdConditor (idConditor, options = {}, flag = '') {
             .then(esResultFormat.getResult)
             .then(paginate)
             .then((result) => {
-              if (!options.q && result.totalCount < idConditors.length) {
+              if (!q && result.totalCount < idConditors.length) {
                 result.addWarning({
                                     code: 199,
                                     text: `Expected nested nearDuplicate total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
