@@ -139,7 +139,7 @@ function maxResultWindowException (resultWindow, maxResultWindow) {
 }
 
 function invalidType (key, value, expectedType) {
-  let err = new Error(`The "${key}" parameter expect a ${expectedType} but get ${JSON.stringify(value)}`);
+  let err = new Error(`The '${key}' parameter expect a ${expectedType} but get ${JSON.stringify(value)}`);
   err.name = 'invalideType';
   err.status = 400;
   return err;

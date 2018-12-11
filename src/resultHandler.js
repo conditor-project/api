@@ -84,7 +84,7 @@ function getErrorHandler (res) {
     let status = [400, 404].includes(reason.status) ? reason.status : 500;
     logError(reason);
     if (_.has(res, 'req.query.debug') && res.req.query.debug !== 'false' && status === 400) {
-      return res.status(status).send(_format(reason));
+      return res.status(status).send(_format(reason, res.locals.invalidOptions));
     }
     res.sendStatus(status);
   };
@@ -108,19 +108,27 @@ const statusNamesMapping = {
 
 };
 
-function _format (reason) {
+function _format (reason, invalidOptions = []) {
   const mapping = _.find(errorMessagesMapping, ({predicate}) => predicate(reason));
-
-  const error = {
-    status : reason.status,
-    statusName: _.get(statusNamesMapping, reason.status),
-    name   : reason.name || 'Error',
-    label  : _.invoke(mapping, 'label', reason),
-    message: _.invoke(mapping, 'format', reason) || reason.message,
-    details: _.invoke(mapping, 'details', reason)
+  const errorResponse = {
+    errors: [{
+      status    : reason.status,
+      statusName: _.get(statusNamesMapping, reason.status),
+      name      : reason.name || 'Error',
+      label     : _.invoke(mapping, 'label', reason),
+      message   : _.invoke(mapping, 'format', reason) || reason.message,
+      details   : _.invoke(mapping, 'details', reason)
+    }]
   };
 
-  return error;
+  if (invalidOptions.length) {
+    errorResponse.warnings = [{
+      name   : 'Invalid URL parameters',
+      details: invalidOptions
+    }];
+  }
+
+  return errorResponse;
 }
 
 
