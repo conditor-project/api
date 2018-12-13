@@ -1,23 +1,32 @@
 'use strict';
 
 const Joi                   = require('joi'),
-      {aggregation: config} = require('config-component').get(module)
+      {aggregation: config} = require('config-component').get(module),
+      _                     = require('lodash')
 ;
 
-let schema;
-
-module.exports.getSchema = () => schema;
+module.exports.attemptMap = attemptMap;
 
 /**
  * Bucket Aggregations
  */
+const globalAggsSchema = Joi.object()
+                            .keys(
+                              {
+                                type: Joi.string().valid('global').required(),
+                                name: Joi.string(),
+                                aggs: _getSubAggsSchema()
+                              }
+                            )
+;
+
 const nestedAggsSchema = Joi.object()
                             .keys({
-                                    type           : Joi.string().valid('nested').required(),
-                                    path           : Joi.string().required(),
-                                    aggs           : Joi.lazy(() => {return schema;}),
-                                    field          : Joi.forbidden().default(Joi.ref('path')),
-                                    name           : Joi.string()
+                                    type : Joi.string().valid('nested').required(),
+                                    path : Joi.string().required(),
+                                    aggs : _getSubAggsSchema(),
+                                    field: Joi.forbidden().default(Joi.ref('path')),
+                                    name : Joi.string()
                                   });
 
 const termsAggsSchema = Joi.object().label('Terms aggregation')
@@ -38,7 +47,7 @@ const termsAggsSchema = Joi.object().label('Terms aggregation')
                                    missing                  : Joi.string(),
                                    include                  : [Joi.string(), Joi.array().items(Joi.string())],
                                    exclude                  : [Joi.string(), Joi.array().items(Joi.string())],
-                                   aggs                     : Joi.lazy(() => {return schema;})
+                                   aggs                     : _getSubAggsSchema()
                                  })
 ;
 
@@ -55,7 +64,7 @@ const dateRangeAggsSchema = Joi.object()
                                        format : Joi.forbidden()
                                                    .default(
                                                      'yyy-MM-dd HH:mm:ss||strict_date_hour_minute_second||strict_date||strict_year||epoch_millis'),
-                                       aggs   : Joi.lazy(() => {return schema;})
+                                       aggs   : _getSubAggsSchema()
                                      })
 ;
 /*
@@ -74,6 +83,14 @@ const cardinalityAggsSchema = Joi.object()
 const bucketAggs = [termsAggsSchema, dateRangeAggsSchema, nestedAggsSchema];
 const metricsAggs = [cardinalityAggsSchema];
 
-const aggs = [].concat(bucketAggs, metricsAggs);
+const subAggs = [].concat(bucketAggs, metricsAggs);
 
-schema = Joi.array().label('Aggregation').items(...aggs);
+function _getSubAggsSchema () { return Joi.lazy(() => {return Joi.array().items(...subAggs);}, {once: true});}
+
+const schemas = {termsAggsSchema, dateRangeAggsSchema, nestedAggsSchema, cardinalityAggsSchema, globalAggsSchema};
+
+function attemptMap (values) {
+  return _.map(values, (value) => {
+    return Joi.attempt(value, schemas[_.camelCase(value.type) + 'AggsSchema']);
+  });
+}

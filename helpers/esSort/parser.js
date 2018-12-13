@@ -16,6 +16,7 @@ function _parse (sortQuery) {
     return parser.parse(sortQuery);
   } catch (err) {
     err.isPeg = true;
+    err.label = 'Elastic sort grammar';
     throw err;
   }
 }

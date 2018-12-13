@@ -16,7 +16,7 @@ const sortSchema = Joi.object()
                               missing      : Joi.string(),
                               unmapped_type: Joi.string(),
                               nested       : Joi.lazy(() => nested)
-                            });
+                            }).label('Sort');
 
 const nested = Joi.object()
                   .keys({

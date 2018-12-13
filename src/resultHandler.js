@@ -93,13 +93,21 @@ function getErrorHandler (res) {
 const errorMessagesMapping = [
   {
     predicate: (reason) => reason.isPeg,
-    format   : (reason) => reason.message
+    label    : (reason) => reason.label,
+    message  : (reason) => reason.message
   },
   {
     predicate: (reason) => reason.isJoi,
-    format   : (reason) => _.get(reason, 'details.0.message'),
-    details  : (reason) => _.get(reason, 'details.0.context.value'),
+    message  : (reason) => _.get(reason, 'details.0.message'),
+    details  : (reason) => {
+      const value = _.get(reason, 'details.0.context.value');
+      return `got (${typeof value}) ${_.isObject(value)?JSON.stringify(value):value}`;
+    },
     label    : (reason) => _.get(reason, 'details.0.context.label')
+  },
+  {
+    predicate: (reason) => {return _(reason).keys().intersection(['body', 'response']).size() === 2;},
+    message  : (reason) => _.get(reason, 'body.error.root_cause.0.reason')
   }
 ];
 
@@ -114,9 +122,9 @@ function _format (reason, invalidOptions = []) {
     errors: [{
       status    : reason.status,
       statusName: _.get(statusNamesMapping, reason.status),
-      name      : reason.name || 'Error',
+      name      : reason.name,
       label     : _.invoke(mapping, 'label', reason),
-      message   : _.invoke(mapping, 'format', reason) || reason.message,
+      message   : _.invoke(mapping, 'message', reason) || reason.message,
       details   : _.invoke(mapping, 'details', reason)
     }]
   };

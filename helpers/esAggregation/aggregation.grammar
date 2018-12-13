@@ -27,6 +27,10 @@ AggregationType
   / DateRangeAgg
   / CardinalityAgg
   / NestedAgg
+  / GlobalAgg
+
+GlobalAgg
+  = _ type:"global"i _ options:AggOptions? { return Object.assign({type:"global"}, options);}
 
 NestedAgg
   = _ type:"nested"i _ ":" _ path:NestedField _ { return {path, type:"nested"}; }

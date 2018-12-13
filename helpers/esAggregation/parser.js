@@ -16,6 +16,7 @@ function _parse (aggsQuery) {
     return parser.parse(aggsQuery);
   } catch (err) {
     err.isPeg = true;
+    err.label = 'Elastic aggregation grammar';
     throw err;
   }
 }

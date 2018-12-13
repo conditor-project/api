@@ -1,11 +1,10 @@
 'use strict';
 
 
-const esb    = require('elastic-builder/src'),
-      _      = require('lodash'),
-      parser = require('./parser'),
-      Joi    = require('joi'),
-      schema = require('./validation').getSchema()
+const esb        = require('elastic-builder/src'),
+      _          = require('lodash'),
+      parser     = require('./parser'),
+      attemptMap = require('./validation').attemptMap
 ;
 
 const queryBuilder = module.exports;
@@ -14,7 +13,8 @@ queryBuilder.build = build;
 
 function build (aggsQueryString) {
   const ast          = parser.parse(aggsQueryString),
-        validatedAst = Joi.attempt(ast, schema);
+        validatedAst = attemptMap(ast)
+  ;
 
   return _buildAggs(validatedAst);
 }
