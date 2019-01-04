@@ -69,11 +69,11 @@ const expectedAst = [
       }]
   },
   {
-    query: 'authorRef.idConditor:{nested: { path: authorRef }}',
+    query: 'authors.idConditor:{nested: { path: authors }}',
     expected: [
       {
-        field: 'authorRef.idConditor',
-        nested: {path: 'authorRef'}
+        field: 'authors.idConditor',
+        nested: {path: 'authors'}
       }
     ]
   }

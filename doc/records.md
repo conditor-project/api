@@ -35,7 +35,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 Faire une recherche sur un nom d'auteur :
 
 ```url
-https://api-integ.conditor.fr/v1/records?q=author:bob
+https://api-integ.conditor.fr/v1/records?q=first3AuthorNames:bob
 ```
 
 
@@ -43,25 +43,25 @@ Déclencher un scroll :
 ```url
 https://api-integ.conditor.fr/v1/records?scroll=5m
 ```
-Renvoyer uniquement le champ authorRef de chaque notice :
+Renvoyer uniquement le champ authors de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authorRef
+https://api-integ.conditor.fr/v1/records?include=authors
 ```
-Renvoyer uniquement les champs authorRef et idConditor de chaque notice :
+Renvoyer uniquement les champs authors et idConditor de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authorRef,idConditor
+https://api-integ.conditor.fr/v1/records?include=authors,idConditor
 ```
-Renvoyer uniquement le sous-champ surname de authorRef de chaque notice :
+Renvoyer uniquement le sous-champ surname de authors de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authorRef.surname
+https://api-integ.conditor.fr/v1/records?include=authors.surname
 ```
-Exclure le champ authorRef :
+Exclure le champ authors :
 ```url
-https://api-integ.conditor.fr/v1/records?exclude=authorRef
+https://api-integ.conditor.fr/v1/records?exclude=authors
 ```
 Cumuler les paramètres `exclude` et `include` :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authorRef&exclude=authorRef.surname
+https://api-integ.conditor.fr/v1/records?include=authors&exclude=authors.surname
 ```
 Choisir nombre de résultats retournés :
 ```url
@@ -147,7 +147,7 @@ https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate?include=idCondit
 Filtrer la réponse afin de récupérer les notices publiées en 2014 marquées comme doublon certain et doublon incertain en incluant uniquement l'idConditor et le titre. Le tout filtré par une recherche sur l'auteur :
 
 ```url
-https://api-integ.conditor.fr/v1/records/2014/duplicate/near_duplicate?include=idConditor,title&q=author:bob
+https://api-integ.conditor.fr/v1/records/2014/duplicate/near_duplicate?include=idConditor,title&q=first3AuthorNames:bob
 ```
 
 ------

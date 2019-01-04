@@ -38,7 +38,7 @@ const queries = [
     query: 'nearDuplicate.similarityRate:desc:avg:{nested:{path: nearDuplicate}} authorNames:min'
   },
   {
-    query: 'authorRef.idConditor:{nested: { path: authorRef }}'
+    query: 'authors.idConditor:{nested: { path: authors }}'
   },
   {
     query: 'nearDuplicate.similarityRate:{nested: { path: nearDuplicate, nested:{ path: parent} }}'

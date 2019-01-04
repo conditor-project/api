@@ -108,7 +108,7 @@ describe('GET /records', function() {
     });
 
     it('should return multiple aggregations', () => {
-      const requestUrl = `/${apiVersion}/records?aggs=terms:source date_range:creationDate:[2018] cardinality:author.normalized`;
+      const requestUrl = `/${apiVersion}/records?aggs=terms:source date_range:creationDate:[2018] cardinality:first3AuthorNames.normalized`;
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
@@ -127,8 +127,8 @@ describe('GET /records', function() {
           aggregations['TERMS_SOURCE'].buckets.map(bucket => {
             bucket.should.have.keys('key', 'doc_count');
           });
-          aggregations.should.have.key('CARDINALITY_AUTHOR_NORMALIZED');
-          aggregations['CARDINALITY_AUTHOR_NORMALIZED'].should.have.keys('value');
+          aggregations.should.have.key('CARDINALITY_FIRST_3_AUTHOR_NAMES_NORMALIZED');
+          aggregations['CARDINALITY_FIRST_3_AUTHOR_NAMES_NORMALIZED'].should.have.keys('value');
         });
     });
 
@@ -169,7 +169,7 @@ describe('GET /records', function() {
   describe('/zip', function() {
     this.timeout(300000);
     it('Should respond with a ZIP including records.json', function(done) {
-      const requestUrl = `/${apiVersion}/records/_filter/hal/2014/duplicate/near_duplicate/zip?q=author:jean&include=idConditor&limit=617`;
+      const requestUrl = `/${apiVersion}/records/_filter/hal/2014/duplicate/near_duplicate/zip?q=authors:jean&include=idConditor&limit=617`;
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
