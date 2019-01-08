@@ -128,7 +128,7 @@ router.get(`/records(/_filter` + filterByCriteriaRouteTemplate + `)?/zip`,
                .catch(getErrorHandler(res));
            });
 
-// @todo code result builder or find more elegant
+// @todo add result builder or find more elegant
 function addWarning (warning) {
   const warnings = _.get(this, '_warnings', []);
   warnings.push(warning);

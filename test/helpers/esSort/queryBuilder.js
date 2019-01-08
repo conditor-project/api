@@ -2,8 +2,7 @@
 
 const queryBuilder = require('../../../helpers/esSort/queryBuilder'),
       _            = require('lodash'),
-      should       = require('should'), // jshint ignore:line
-      esb          = require('elastic-builder/src')
+      should       = require('should') // jshint ignore:line
 ;
 
 const queries = [
@@ -52,7 +51,7 @@ describe('esSort: ', () => {
   describe('queryBuilder#build(sortQueryString)', () => {
     _.forEach(queries, ({query, message}) => {
       describe(`"${query}"`, () => {
-        it(message || 'Should build correct esSortQuery', () => {
+        it(message || 'Should build esSortQuery without throwing', () => {
           queryBuilder.build(query);
         });
       });

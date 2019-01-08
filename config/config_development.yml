@@ -8,7 +8,7 @@ nodejs:
   stackTraceLimit: 20
 
 smokeTest:
-  doRun: false
+  doRun: true
 
 security:
   ip:

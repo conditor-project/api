@@ -11,12 +11,19 @@ const request   = require('supertest'),
 ;
 
 const apiVersion = `v${semver.major(config.app.version)}`;
+before(function(){
+  app._start();
+});
+
+after(function() {
+  app._close();
+});
 
 describe('GET /records', function() {
   this.timeout(100000);
-  after(function() {
-    app._close();
-  });
+
+
+
   describe('?scroll={DurationString}&size={Number}', function() {
     it('Should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
       const requestUrl = `/${apiVersion}/records/_filter/sudoc?scroll=5m&include=idConditor,titre&exclude=titre.value`;

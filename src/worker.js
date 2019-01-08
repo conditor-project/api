@@ -1,8 +1,17 @@
 'use strict';
 
-const config = require('config-component').get(module);
+const config = require('config-component').get(module)
+;
 
+// @todo create by worker setup process
 Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
+
+process.on('unhandledRejection', (reason, p) => {
+  logError('Unhandled Rejection at:', p, 'reason:', reason);
+  if (config.app.doExitOnUnhandledRejection) {
+    process.exit(1);
+  }
+});
 
 const
   cluster             = require('cluster'),
@@ -20,7 +29,8 @@ const
   httpMethodsHandler  = require('../middlewares/httpMethodsHandler'),
   compression         = require('compression'),
   _                   = require('lodash'),
-  state               = require('../helpers/state')
+  state               = require('../helpers/state'),
+  pgContainer           = require('../helpers/clients/pg').startAll()
 ;
 
 elasticContainer.startAll();
@@ -37,25 +47,40 @@ const
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
-let server;
-
 
 module.exports = app;
 
-app._close = () => {
-  server.close();
-  logInfo(clusterId.bold, `: server closed`);
+let server = startServer();
+
+function startServer () {
+  return app.listen(
+    config.express.api.port,
+    config.express.api.host,
+    () => {
+      logInfo(clusterId.bold,
+              `: server listening on `,
+              `${config.express.api.host + ':' + config.express.api.port}`.bold.success);
+    }
+  );
+}
+
+
+app._start = () => {
+  if (server && !server.listening || !server) {
+    server = startServer();
+  }
+  elasticContainer.startAll();
+  pgContainer.startAll();
 };
 
-server = app.listen(
-  config.express.api.port,
-  config.express.api.host,
-  () => {
-    logInfo(clusterId.bold,
-            `: server listening on `,
-            `${config.express.api.host + ':' + config.express.api.port}`.bold.success);
-  }
-);
+app._close = () => {
+  server.close(() => {
+    logInfo(clusterId.bold, `: server closed`);
+    elasticContainer.stopAll();
+    pgContainer.stopAll();
+  });
+};
+
 
 app.set('etag', false);
 app.set('json spaces', 2);

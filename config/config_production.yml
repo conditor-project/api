@@ -3,3 +3,6 @@
 
 imports:
   - resource: config.yml
+
+app:
+  doExitOnUnhandledRejection: false

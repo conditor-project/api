@@ -17,6 +17,9 @@ parameters:
   LOG_PATH: /var/log
   FORBIDDEN_JWT_IDS: ~
 
+app:
+  doExitOnUnhandledRejection: true
+
 smokeTest:
   doRun: true
 
@@ -59,6 +62,13 @@ elastic:
       requestTimeout: 30000
       log: # Possible values: error, info, trace, warning, debug
         - error
+pg:
+ clients:
+   main:
+     host: %env(PG_HOST)% # defaults to localhost
+     port: %env(PG_PORT)% # defaults to 5432
+     username: %env(PG_USERNAME)%
+     password: %env(PG_PASSWORD)%
 
 aggregation:
   bucket:

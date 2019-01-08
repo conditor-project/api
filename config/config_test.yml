@@ -5,7 +5,7 @@ imports:
   - resource: config.yml
 
 nodejs:
-  stackTraceLimit: 20
+  stackTraceLimit: 5
 
 security:
   reverseProxy: ::ffff:127.0.0.1 # we add supertest request ip so we can x-forward spoofed ip

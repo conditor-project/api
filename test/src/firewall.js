@@ -10,16 +10,15 @@ const request    = require('supertest'),
 const apiVersion = `v${semver.major(config.app.version)}`;
 
 describe('GET /records', function() {
-  after(function() {
-    app._close();
-  });
+
   describe('With valid JWT Authorization Request Header Field', function() {
     it('Should return status 2xx', function(done) {
       const token = generate();
       request(app)
-        .get(`/${apiVersion}/records`)
+        .get(`/${apiVersion}/records?page_size=50&q=author:bob`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
         .set('Authorization', `Bearer ${token}`)
+        .expect((res)=>{if(res.statusType !==2) throw new Error(res.status);})
         .end(done);
     });
   });
@@ -54,6 +53,7 @@ describe('GET /records', function() {
       request(app)
         .get(`/${apiVersion}/records?access_token=${token}`)
         .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
+        .expect((res)=>{if(res.statusType !==2) throw new Error(res.status);})
         .end(done);
 
     });
@@ -76,6 +76,7 @@ describe('GET /records', function() {
       request(app)
         .get(`/${apiVersion}/records`)
         .set('X-Forwarded-For','111.11.11.1') // We spoof our ip
+        .expect((res)=>{if(res.statusType !==2) throw new Error(res.status);})
         .end(done);
     });
   });

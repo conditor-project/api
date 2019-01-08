@@ -15,7 +15,8 @@ configValidator.validate = function(config) {
 configValidator.schema = Joi.object()
                             .keys({
                                     app     : {
-                                      version: customJoi.string().semver()
+                                      version: customJoi.string().semver(),
+                                      doExitOnUnhandledRejection: Joi.boolean()
                                     },
                                     elastic : {
                                       queryString: {

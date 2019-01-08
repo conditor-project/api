@@ -34,6 +34,7 @@ function logInfo () {
 }
 
 function logWarning () {
+  if (process.env.NODE_ENV === 'test') return;
   console.warn('%s: [%s]:',
                appName.bold.warning,
                new Date(Date.now()).toLocaleString(),
@@ -42,7 +43,7 @@ function logWarning () {
 }
 
 function logDebug () {
-  if (process.env.NODE_ENV === 'production') return;
+  if (['test', 'production'].includes(process.env.NODE_ENV)) return;
   console.info('%s: [%s]:',
                appName.bold.primary,
                new Date(Date.now()).toLocaleString(),

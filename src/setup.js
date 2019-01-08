@@ -19,6 +19,9 @@ function setup () {
     .then(() => {
       process.on('unhandledRejection', (reason, p) => {
         logError('Unhandled Rejection at:', p, 'reason:', reason);
+        if (config.app.doExitOnUnhandledRejection) {
+          process.exit(1);
+        }
       });
       return indexManager
         .getSettings(config.indices.records.index, 'index.max_result_window')
@@ -39,15 +42,15 @@ function setup () {
       logInfo('Application major semver : ', semver.major(config.app.version));
 
       if (!config.smokeTest.doRun) return;
+      logInfo(`${'Smoke test'.bold} : ${'run'.bold.warning}`);
 
-      logInfo(`Run ${'smoke test'.bold.warning}:`);
       return smokeTest
         .run()
         .then(() => {
-          logInfo(`Smoke test ${'succeded'.bold.success}`);
+          logInfo(`${'Smoke test'.bold} :  ${'succeded'.bold.success}`);
         })
         .catch((reason) => {
-          logError(`Smoke test ${'failed'.bold.danger}: \n`, reason);
+          logError(`${'Smoke test'.bold} : ${'failed'.bold.danger}: \n`, reason);
           process.exit(1);
         });
 

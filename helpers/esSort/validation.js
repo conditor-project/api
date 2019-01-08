@@ -10,7 +10,7 @@ module.exports.getSchema = () => schema;
 
 const sortSchema = Joi.object()
                       .keys({
-                              field        : Joi.string().required(),
+                             field        : Joi.string().required(),
                               order        : Joi.string().valid('asc', 'desc'),
                               mode         : Joi.string().valid('min', 'max', 'sum', 'avg', 'median'),
                               missing      : Joi.string(),

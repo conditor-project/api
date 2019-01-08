@@ -15,7 +15,7 @@ setup()
   .then(() => {
     cluster.setupMaster({exec: './src/worker.js'});
     for (let i = 0; i < nbCpus; ++i) {
-      cluster.fork({state:JSON.stringify(state.get())});
+      cluster.fork({state: JSON.stringify(state.get())});
     }
   })
   .catch((reason) => {throw reason;})
