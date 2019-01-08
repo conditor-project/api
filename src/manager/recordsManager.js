@@ -206,7 +206,7 @@ function getDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}
                                       body: requestBody.toJSON(),
                                       size: 2 // If hits count =/= 1 then an error is thrown
                                     },
-                                    queryStringToParams({include: 'duplicate.idConditor'}),
+                                    queryStringToParams({include: 'duplicates.idConditor'}),
                                     defaultParams
       );
 
@@ -216,7 +216,7 @@ function getDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}
         .then(esResultFormat.getSingleResult)
         .then((result) => {
           const idConditors = _.chain(result)
-                               .get('result.duplicate', [])
+                               .get('result.duplicates', [])
                                .transform((accu, duplicate) => {
                                  accu.push(_.get(duplicate, 'idConditor', ''));
                                })
@@ -245,7 +245,7 @@ function getDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}
               if (!q && result.totalCount < idConditors.length) {
                 result.addWarning({
                                     code: 199,
-                                    text: `Expected nested duplicate total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
+                                    text: `Expected nested duplicates total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
                                   });
               }
               return result;
@@ -271,7 +271,7 @@ function getNearDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} 
                                       body: requestBody.toJSON(),
                                       size: 2 // If hits count =/= 1 then an error is thrown
                                     },
-                                    queryStringToParams({include: 'nearDuplicate.idConditor'}),
+                                    queryStringToParams({include: 'nearDuplicates.idConditor'}),
                                     defaultParams
       );
 
@@ -281,7 +281,7 @@ function getNearDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} 
         .then(esResultFormat.getSingleResult)
         .then((result) => {
           const idConditors = _.chain(result)
-                               .get('result.nearDuplicate', [])
+                               .get('result.nearDuplicates', [])
                                .transform((accu, duplicate) => {
                                  accu.push(_.get(duplicate, 'idConditor', ''));
                                })
@@ -310,7 +310,7 @@ function getNearDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} 
               if (!q && result.totalCount < idConditors.length) {
                 result.addWarning({
                                     code: 199,
-                                    text: `Expected nested nearDuplicate total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
+                                    text: `Expected nested nearDuplicates total is ${idConditors.length} for record ${idConditor}, but got ${result.totalCount}`
                                   });
               }
               return result;

@@ -25,25 +25,25 @@ const queries = [
     query: ' "pi:rate" : Sum '
   },
   {
-    query: 'nearDuplicate.similarityRate:{nested:{path: nearDuplicate}}'
+    query: 'nearDuplicates.similarityRate:{nested:{path: nearDuplicates}}'
   },
   {
-    query: 'nearDuplicate.similarityRate:desc:avg:{nested:{path: nearDuplicate}}'
+    query: 'nearDuplicates.similarityRate:desc:avg:{nested:{path: nearDuplicates}}'
   },
   {
-    query: 'nearDuplicate.similarityRate: desc : AVG: { nested: {path: nearDuplicate}}'
+    query: 'nearDuplicates.similarityRate: desc : AVG: { nested: {path: nearDuplicates}}'
   },
   {
-    query: 'nearDuplicate.similarityRate:desc:avg:{nested:{path: nearDuplicate}} authorNames:min'
+    query: 'nearDuplicates.similarityRate:desc:avg:{nested:{path: nearDuplicates}} authorNames:min'
   },
   {
     query: 'authors.idConditor:{nested: { path: authors }}'
   },
   {
-    query: 'nearDuplicate.similarityRate:{nested: { path: nearDuplicate, nested:{ path: parent} }}'
+    query: 'nearDuplicates.similarityRate:{nested: { path: nearDuplicates, nested:{ path: parent} }}'
   },
   {
-    query: 'nearDuplicate.similarityRate:{unmapped_type: long, missing: _last}'
+    query: 'nearDuplicates.similarityRate:{unmapped_type: long, missing: _last}'
   }
 ];
 
