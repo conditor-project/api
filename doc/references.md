@@ -46,14 +46,14 @@ Les réponses de l'API sont assorties d'un ensemble d'informations spécifiques 
 
 ## JSON
 
-Le JSON retourné par l'API Conditor est composé de champs extraits de la notice comme `title`, `issn`,  `author`, mais aussi de champs à vocations techniques comme `idConditor`, `ingestId`, `isDuplicate`.
+Le JSON retourné par l'API Conditor est composé de champs extraits de la notice comme `title`, `issn`,  `first3AuthorNames`, mais aussi de champs à vocations techniques comme `idConditor`, `sessionName`, `isDuplicate`.
 
 Liste non-exhaustive des champs du JSON:
 
 | Champs      | Type    | Description                                |
 | ----------- | ------- | ------------------------------------------ |
 | idConditor  | String  | Identifiant Conditor de la notice          |
-| ingestId    | String  | Identifiant de la session d'ingestion      |
+| sessionName | String  | Identifiant de la session d'ingestion      |
 | isDuplicate | Boolean | Indique si la notice est en doublon        |
 | duplicate   | Array   | La liste des `doublons certains`           |
 | teiBlob     | Binary  | La notice TEI Conditor encodée en `Base64` |

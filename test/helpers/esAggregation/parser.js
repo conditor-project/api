@@ -47,7 +47,7 @@ const expectedAst = [
     expected: [{type: 'terms', field: 'source'}, {type: 'date_range', field: 'creationDate', ranges: [{from: '2018'}]}]
   },
   {
-    query   : 'terms:source date_range:creationDate:[2018] cardinality:author.normalized',
+    query   : 'terms:source date_range:creationDate:[2018] cardinality:first3AuthorNames.normalized',
     message : 'Should accept first level multiple aggregations without bracket',
     expected: [{
       type : 'terms',
@@ -60,7 +60,7 @@ const expectedAst = [
                },
                {
                  type : 'cardinality',
-                 field: 'author.normalized'
+                 field: 'first3AuthorNames.normalized'
                }]
   },
   {
@@ -73,14 +73,14 @@ const expectedAst = [
     }]
   },
   {
-    query   : 'terms:source>terms:author.normalized>cardinality:source:{name:sourceCount} date_range:creationDate:[2018] cardinality:author.normalized',
+    query   : 'terms:source>terms:first3AuthorNames.normalized>cardinality:source:{name:sourceCount} date_range:creationDate:[2018] cardinality:first3AuthorNames.normalized',
     message : 'Should accept multiple sub aggregations',
     expected: [{
       type : 'terms',
       field: 'source',
       aggs : [{
         type : 'terms',
-        field: 'author.normalized',
+        field: 'first3AuthorNames.normalized',
         aggs : [{type: 'cardinality', field: 'source', name: 'sourceCount'}]
       }]
     },
@@ -91,7 +91,7 @@ const expectedAst = [
                },
                {
                  type : 'cardinality',
-                 field: 'author.normalized'
+                 field: 'first3AuthorNames.normalized'
                }]
   }
 ];
