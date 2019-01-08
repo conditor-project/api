@@ -39,7 +39,7 @@
     "async": "^2.6.1",
     "bluebird": "^3.5.3",
     "bodybuilder": "^2.2.16",
-    "co-config": "git+https://github.com/conditor-project/co-config.git#fieldsRefactoring",
+    "co-config": "git+https://github.com/conditor-project/co-config.git",
     "colors": "^1.3.2",
     "compression": "^1.7.3",
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
