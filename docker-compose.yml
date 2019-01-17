@@ -3,7 +3,7 @@ services:
 
   conditorapi:
     container_name: conditor-api
-    image: conditor/api:1.0.0-beta.12
+    image: conditor/api:1.0.0-beta.13
     environment :
       LOG_PATH: /var/log
       CONDITOR_API_HOST: 0.0.0.0
