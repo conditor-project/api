@@ -135,19 +135,19 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate
+https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate
 ```
 
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon en incluant uniquement l'idConditor :
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate?include=idConditor
+https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate?include=idConditor
 ```
 
 Filtrer la réponse afin de récupérer les notices publiées en 2014 marquées comme doublon certain et doublon incertain en incluant uniquement l'idConditor et le titre. Le tout filtré par une recherche sur l'auteur :
 
 ```url
-https://api-integ.conditor.fr/v1/records/2014/duplicate/near_duplicate?include=idConditor,title&q=first3AuthorNames:bob
+https://api-integ.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?include=idConditor,title&q=first3AuthorNames:bob
 ```
 
 ------
@@ -186,13 +186,13 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate/zip
+https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate/zip
 ```
 
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2015 marquées comme doublon en incluant uniquement l'idConditor.
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2015/duplicate/zip?include=idConditor
+https://api-integ.conditor.fr/v1/records/_filter/hal/2015/duplicate/zip?include=idConditor
 ```
 
 ------

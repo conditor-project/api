@@ -56,6 +56,7 @@ Liste non-exhaustive des champs du JSON:
 | sessionName | String  | Identifiant de la session d'ingestion      |
 | isDuplicate | Boolean | Indique si la notice est en doublon        |
 | duplicates   | Array   | La liste des `doublons certains`           |
+| nearDuplicates   | Array   | La liste des `doublons incertains`           |
 | teiBlob     | Binary  | La notice TEI Conditor encodée en `Base64` |
 
 
