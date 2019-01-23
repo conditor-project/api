@@ -60,24 +60,35 @@ Liste non-exhaustive des champs du JSON:
 | nearDuplicates | Array | La liste des `doublons incertains` |
 | teiBlob     | Binary  | La notice TEI Conditor encodée en `Base64` |
 
-## Aggrégations
+## Mode Debug
 
-Des données d'aggrégations peuvent êtres obtenues sur certaines routes de l'API Conditor via le paramétre d'url `aggs`.
+Par défaut, quand l'API renvoie une erreur (400, par exemple), les infos retournés sont minimales et pas forcément explicites pour quelqu'un qui ne connaît pas bien l'API. 
 
-Le fonctionnement de ces aggrégations se base entiérement sur celui d'[Elastic](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html), hormis en ce qui concerne la syntaxe qui elle a été adaptée pour les besoins de l'API.
+Pour pallier ce défaut, le mode "debug" permet de demander à l'API de renvoyer plus de détails dans le message d'erreur retourné.
 
-------
+Pour ce faire, il suffit d'utiliser le paramètre d'URL `debug` (sans valeur).
 
-Ex. de syntaxe d'aggrégation de type`terms`:
+Par exemple, sur la requête suivante
 
-`aggregationType : field : {options}?`
+`https://api.conditor.fr/v1/records?page_size=465465465`
 
-aggs=terms:source:{size:20, order:{_count:desc}}
+L'API renvoie le code de retour HTTP 400 ainsi que le message "Bad Request".
 
-------
+Avec le paramètre debug :
 
-Ex. de syntaxe d'aggrégation de type `date_range`:
+`https://api.conditor.fr/v1/records?page_size=465465465&debug`
 
-`aggregationType : field : [ranges]+ : {options}?`
+Le message retourné devient :
 
-aggs=date_range:publicationDate.date:[2008 TO now]
+```json
+{
+    "errors": [
+        {
+            "status": 400,
+            "statusName": "Bad Request",
+            "name": "sizeTooHighException",
+            "message": "The required size 465465465 exceed the maximum  1000"
+        }
+    ]
+}
+```

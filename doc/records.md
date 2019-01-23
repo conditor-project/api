@@ -18,13 +18,13 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
 
-4. `page` (number) : le numéro de la page demandé
+4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 
 6. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
-7. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
+7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
 
 8. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
 
@@ -129,10 +129,10 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de [scroll](scroll.md) (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 2. `include` (string) : Une liste de champs à extraire et retourner dans la réponse.
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
-4. `page` (number) : le numéro de la page demandé
+4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 6. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
-7. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques. 
+7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques. 
 8. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
@@ -221,7 +221,7 @@ Route de récupération d'une notice identifiée par son idConditor.
 
 1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `exclude` (string) : Une liste de champs à exclure de la réponse.
-3. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
+3. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
 
 **Retourne**
 
@@ -266,6 +266,10 @@ https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei
 
 
 
-GET /records/<idConditor>/duplicates/[and_self]
+## GET /records/<idConditor>/duplicates/[and_self]
 
-GET /records/<idConditor>/near_duplicates/[and_self]
+à venir...
+
+## GET /records/<idConditor>/near_duplicates/[and_self]
+
+à venir...
