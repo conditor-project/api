@@ -12,9 +12,9 @@ Ce mécanisme de tri est une transposition du mécanisme interne du moteur de re
 - `/records/<idConditor>/duplicates/[and_self]`
 - `/records/<idConditor>/near_duplicates/[and_self]`
 
-## Syntax d'utilisation
+## Syntaxe d'utilisation
 
-`https://api.conditor.fr/<route>/?sort=<liste_de_criteres> ` avec`liste_de_critères`, une suite de critères séparés par le caractère espace
+`https://api.conditor.fr/<route>/?sort=<liste_de_criteres>` avec`liste_de_critères`, une suite de critères séparés par le caractère espace
 
 Chaque critère possède la sous-syntaxe :
 
@@ -34,9 +34,9 @@ Chaque critère possède la sous-syntaxe :
 
 Ce paramètre n'impacte pas particulièrement le format de retour de l'API. Seul l'ordre des hits renvoyés est modifié.
 
-##Exemples
+## Exemples
 
-_Tri descendant sur le champ publicationDate.date (de type date)_
+*Tri descendant sur le champ publicationDate.date (de type date)*
 
 `...?sort=publicationDate.date:desc`
 

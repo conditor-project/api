@@ -18,13 +18,17 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
 
-4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
+4. `page` (number) : le numéro de la page demandé
 
-5. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 
-6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
+6. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
-7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+7. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
+
+8. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+
+9. 
 
    ​    
 
@@ -125,10 +129,11 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de [scroll](scroll.md) (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 2. `include` (string) : Une liste de champs à extraire et retourner dans la réponse.
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
-4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
-5. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
-6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques. 
-7. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
+4. `page` (number) : le numéro de la page demandé
+5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
+6. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+7. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques. 
+8. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
 
