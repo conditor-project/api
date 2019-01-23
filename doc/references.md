@@ -54,12 +54,11 @@ Liste non-exhaustive des champs du JSON:
 | ----------- | ------- | ------------------------------------------ |
 | idConditor  | String  | Identifiant Conditor de la notice          |
 | sessionName | String  | Identifiant de la session d'ingestion      |
-| isDuplicate | Boolean | Indique si la notice est en doublon        |
+| isDuplicate | Boolean | Indique si la notice est `doublon certain` d'une autre notice |
+| isNearDuplicate | Boolean | Indique si la notice est `doublon incertain` d'une autre notice |
 | duplicates   | Array   | La liste des `doublons certains`           |
-| nearDuplicates   | Array   | La liste des `doublons incertains`           |
+| nearDuplicates | Array | La liste des `doublons incertains` |
 | teiBlob     | Binary  | La notice TEI Conditor encodée en `Base64` |
-
-
 
 ## Aggrégations
 

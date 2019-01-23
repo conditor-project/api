@@ -159,4 +159,5 @@ Script available at [./bin/list-registry.js](./bin/list-registry.js)
 * [Sécurité](doc/securite.md )
 * [Records API](doc/records.md)
 * [Scroll API](doc/scroll.md)
+* [Tri des résultats](doc/sort.md)
 

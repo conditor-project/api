@@ -24,7 +24,9 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
 
-     
+7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+
+   ​    
 
 **Retourne**
 
@@ -84,6 +86,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 2. `exclude` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
+5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
 
@@ -103,7 +106,7 @@ https://api-integ.conditor.fr/v1/records/zip?include=title,creationDate
 
 ## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]
 
-Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API [Scroll](scroll.md).
 
 La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
 Ce type de filtre n'impacte pas le **score de pertinence**.
@@ -119,12 +122,13 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 **Paramètres d'URL**
 
-1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
+1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de [scroll](scroll.md) (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 2. `include` (string) : Une liste de champs à extraire et retourner dans la réponse.
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
 4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
 5. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques. 
+7. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
 
@@ -176,6 +180,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 2. `exclude` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
+5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
 
@@ -253,3 +258,9 @@ Récupérer le TEI d'une notice identifiée :
 ```url
 https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei
 ```
+
+
+
+GET /records/<idConditor>/duplicates/[and_self]
+
+GET /records/<idConditor>/near_duplicates/[and_self]
