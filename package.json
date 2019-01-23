@@ -45,7 +45,7 @@
     "config-component": "git+https://github.com/Inist-CNRS/node-config-component.git",
     "elastic-builder": "^2.2.2",
     "elasticdump": "^4.2.0",
-    "elasticsearch": "^15.3.0",
+    "elasticsearch": "^15.2.0",
     "elasticsearch-scroll-stream": "^1.1.4",
     "express": "^4.16.4",
     "file-stream-rotator": "^0.4.1",
@@ -61,7 +61,7 @@
     "lucene-query-parser": "^1.2.0",
     "moment-duration-format": "^2.2.2",
     "morgan": "^1.9.1",
-    "nanoid": "^2.0.0",
+    "nanoid": "^2.0.1",
     "pegjs": "^0.10.0",
     "pg": "^7.8.0",
     "pg-hstore": "^2.3.2",
@@ -75,6 +75,6 @@
     "nodemon": "^1.18.9",
     "nyc": "^13.1.0",
     "should": "^13.2.3",
-    "supertest": "^3.3.0"
+    "supertest": "^3.4.2"
   }
 }
