@@ -64,7 +64,7 @@ export LOG_PATH="$HOME/var/log"
 export CONDITOR_ES_HOSTS="localhost:9200"
 ```
 
-You can also set other optional environment variables :
+You can also set other optional environment variables...
 
 ```bash
 export CONDITOR_API_HOST="0.0.0.0"
@@ -72,6 +72,16 @@ export CONDITOR_API_PORT="63332"
 export REVERSE_PROXY="~"
 export JWT_KEY="Secret phrase for generating tokens"
 export NODE_ENV="development|production"
+```
+
+... and other variables for PostGres and PGadmin
+
+```bash
+export PG_HOST="localhost"
+export PG_USERNAME="conditor"
+export PG_PASSWORD="conditor"
+export PGADMIN_DEFAULT_EMAIL="pgadmin@mailbox.com"
+export PGADMIN_DEFAULT_PASSWORD="pgadminpwd"
 ```
 
 For native node start or forever start :
