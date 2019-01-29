@@ -80,11 +80,14 @@ function getSingleResultErrorHandler (res) {
 }
 
 function getErrorHandler (res) {
-  return (reason) => {
-    let status = [400, 404].includes(reason.status) ? reason.status : 500;
-    logError(reason);
+  return (err) => {
+    const status = [400, 404].includes(err.status) ? err.status : 500;
+    if(status === 500) logError(err);
+
+    if (res.headersSent) return;
+
     if (_.has(res, 'req.query.debug') && res.req.query.debug !== 'false' && status === 400) {
-      return res.status(status).send(_format(reason, res.locals.invalidOptions));
+      return res.status(status).send(_format(err, res.locals.invalidOptions));
     }
     res.sendStatus(status);
   };
@@ -101,7 +104,7 @@ const errorMessagesMapping = [
     message  : (reason) => _.get(reason, 'details.0.message'),
     details  : (reason) => {
       const value = _.get(reason, 'details.0.context.value');
-      return `got (${typeof value}) ${_.isObject(value)?JSON.stringify(value):value}`;
+      return `got (${typeof value}) ${_.isObject(value) ? JSON.stringify(value) : value}`;
     },
     label    : (reason) => _.get(reason, 'details.0.context.label')
   },
@@ -113,7 +116,7 @@ const errorMessagesMapping = [
 
 const statusNamesMapping = {
   400: 'Bad Request'
-
+  /* add others if needed */
 };
 
 function _format (reason, invalidOptions = []) {

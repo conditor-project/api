@@ -1,12 +1,10 @@
 /* jshint -W098 */
 'use strict';
-const logger   = require('../helpers/logger'),
-      logError = logger.logError
+const {logError}           = require('../helpers/logger'),
+      {getErrorHandler} = require('../src/resultHandler')
 ;
 module.exports = errorHandler;
 
 function errorHandler (err, req, res, next) {
-  logError(err, err.stack, '\n');
-
-  if (!res.headersSent) res.sendStatus(500);
+  getErrorHandler(res)(err);
 }
