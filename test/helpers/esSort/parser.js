@@ -31,35 +31,35 @@ const expectedAst = [
     expected: [{field: 'pi:rate', mode: 'sum'}]
   },
   {
-    query   : 'nearDuplicate.similarityRate:{nested:{path: nearDuplicate}}',
-    expected: [{field: 'nearDuplicate.similarityRate', nested: {path: 'nearDuplicate'}}]
+    query   : 'nearDuplicates.similarityRate:{nested:{path: nearDuplicates}}',
+    expected: [{field: 'nearDuplicates.similarityRate', nested: {path: 'nearDuplicates'}}]
   },
   {
-    query   : 'nearDuplicate.similarityRate:desc:avg:{nested:{path: nearDuplicate}}'
+    query   : 'nearDuplicates.similarityRate:desc:avg:{nested:{path: nearDuplicates}}'
               + '',
     expected: [{
-      field : 'nearDuplicate.similarityRate',
-      nested: {path: 'nearDuplicate'},
+      field : 'nearDuplicates.similarityRate',
+      nested: {path: 'nearDuplicates'},
       mode  : 'avg',
       order : 'desc'
     }]
   },
   {
-    query   : 'nearDuplicate.similarityRate: desc : AVG: { nested: {path: nearDuplicate}}',
+    query   : 'nearDuplicates.similarityRate: desc : AVG: { nested: {path: nearDuplicates}}',
     expected: [{
-      field : 'nearDuplicate.similarityRate',
-      nested: {path:'nearDuplicate'},
+      field : 'nearDuplicates.similarityRate',
+      nested: {path:'nearDuplicates'},
       mode  : 'avg',
       order : 'desc'
     }]
   },
   {
-    query   : 'nearDuplicate.similarityRate:desc:avg:{nested:{path: nearDuplicate}} authorNames:min'
+    query   : 'nearDuplicates.similarityRate:desc:avg:{nested:{path: nearDuplicates}} authorNames:min'
               + '',
     expected: [
       {
-        field : 'nearDuplicate.similarityRate',
-        nested: {path:'nearDuplicate'},
+        field : 'nearDuplicates.similarityRate',
+        nested: {path:'nearDuplicates'},
         mode  : 'avg',
         order : 'desc'
       },

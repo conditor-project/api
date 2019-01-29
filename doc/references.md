@@ -54,30 +54,41 @@ Liste non-exhaustive des champs du JSON:
 | ----------- | ------- | ------------------------------------------ |
 | idConditor  | String  | Identifiant Conditor de la notice          |
 | sessionName | String  | Identifiant de la session d'ingestion      |
-| isDuplicate | Boolean | Indique si la notice est en doublon        |
-| duplicate   | Array   | La liste des `doublons certains`           |
+| isDuplicate | Boolean | Indique si la notice est `doublon certain` d'une autre notice |
+| isNearDuplicate | Boolean | Indique si la notice est `doublon incertain` d'une autre notice |
+| duplicates   | Array   | La liste des `doublons certains`           |
+| nearDuplicates | Array | La liste des `doublons incertains` |
 | teiBlob     | Binary  | La notice TEI Conditor encodée en `Base64` |
 
+## Mode Debug
 
+Par défaut, quand l'API renvoie une erreur (400, par exemple), les infos retournés sont minimales et pas forcément explicites pour quelqu'un qui ne connaît pas bien l'API. 
 
-## Aggrégations
+Pour pallier ce défaut, le mode "debug" permet de demander à l'API de renvoyer plus de détails dans le message d'erreur retourné.
 
-Des données d'aggrégations peuvent êtres obtenues sur certaines routes de l'API Conditor via le paramétre d'url `aggs`.
+Pour ce faire, il suffit d'utiliser le paramètre d'URL `debug` (sans valeur).
 
-Le fonctionnement de ces aggrégations se base entiérement sur celui d'[Elastic](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html), hormis en ce qui concerne la syntaxe qui elle a été adaptée pour les besoins de l'API.
+Par exemple, sur la requête suivante
 
-------
+`https://api.conditor.fr/v1/records?page_size=465465465`
 
-Ex. de syntaxe d'aggrégation de type`terms`:
+L'API renvoie le code de retour HTTP 400 ainsi que le message "Bad Request".
 
-`aggregationType : field : {options}?`
+Avec le paramètre debug :
 
-aggs=terms:source:{size:20, order:{_count:desc}}
+`https://api.conditor.fr/v1/records?page_size=465465465&debug`
 
-------
+Le message retourné devient :
 
-Ex. de syntaxe d'aggrégation de type `date_range`:
-
-`aggregationType : field : [ranges]+ : {options}?`
-
-aggs=date_range:publicationDate.date:[2008 TO now]
+```json
+{
+    "errors": [
+        {
+            "status": 400,
+            "statusName": "Bad Request",
+            "name": "sizeTooHighException",
+            "message": "The required size 465465465 exceed the maximum  1000"
+        }
+    ]
+}
+```

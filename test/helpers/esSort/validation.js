@@ -29,9 +29,9 @@ const asts = [
         {
           ast: [
             {
-              field : 'nearDuplicate.similarityRate',
+              field : 'nearDuplicates.similarityRate',
               nested: {
-                path  : 'nearDuplicate',
+                path  : 'nearDuplicates',
                 nested: {
                   path: 'parent'
                 }

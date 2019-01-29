@@ -171,8 +171,9 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res, next) => {
 
 });
 
-// /records/{idConditor}/duplicate
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate', (req, res, next) => {
+
+// /records/{idConditor}/duplicates
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicates', (req, res, next) => {
   validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token', 'debug')
     .then(getInvalidOptionsHandler(res))
     .then((query) => {
@@ -185,8 +186,9 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate', (req, res, next) =>
     });
 });
 
-// /records/{idConditor}/duplicate/and_self
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate/and_self', (req, res, next) => {
+
+// /records/{idConditor}/duplicates/and_self
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicates/and_self', (req, res, next) => {
   validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token', 'debug')
     .then(getInvalidOptionsHandler(res))
     .then((query) => {
@@ -199,8 +201,8 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicate/and_self', (req, res,
     });
 });
 
-// /records/{idConditor}/near_duplicate
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate', (req, res, next) => {
+// /records/{idConditor}/near_duplicates
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicates', (req, res, next) => {
   validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token', 'debug')
     .then(getInvalidOptionsHandler(res))
     .then((query) => {
@@ -213,8 +215,8 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate', (req, res, nex
     });
 });
 
-// /records/{idConditor}/near_duplicate/and_self
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicate/and_self', (req, res, next) => {
+// /records/{idConditor}/near_duplicates/and_self
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/near_duplicates/and_self', (req, res, next) => {
   validateQueryString(req.query, records.getNearDuplicatesByIdConditor.options, 'access_token', 'debug')
     .then(getInvalidOptionsHandler(res))
     .then((query) => {

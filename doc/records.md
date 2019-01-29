@@ -18,13 +18,16 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
 
-4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
+4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 
-5. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 
-6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
+6. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
-     
+7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
+
+8. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+   ​    
 
 **Retourne**
 
@@ -84,6 +87,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 2. `exclude` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
+5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
 
@@ -103,7 +107,7 @@ https://api-integ.conditor.fr/v1/records/zip?include=title,creationDate
 
 ## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]
 
-Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API [Scroll](scroll.md).
 
 La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
 Ce type de filtre n'impacte pas le **score de pertinence**.
@@ -119,12 +123,14 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 **Paramètres d'URL**
 
-1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
+1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de [scroll](scroll.md) (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 2. `include` (string) : Une liste de champs à extraire et retourner dans la réponse.
 3. `exclude` (string) : Une liste de champs à exclure de la réponse.
-4. `size` (number) : Nombre de résultats à retourner (défaut: 10, max: 1000)
-5. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
-6. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques. 
+4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
+5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
+6. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques. 
+8. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
 
@@ -135,19 +141,19 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate
+https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate
 ```
 
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon en incluant uniquement l'idConditor :
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate?include=idConditor
+https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate?include=idConditor
 ```
 
 Filtrer la réponse afin de récupérer les notices publiées en 2014 marquées comme doublon certain et doublon incertain en incluant uniquement l'idConditor et le titre. Le tout filtré par une recherche sur l'auteur :
 
 ```url
-https://api-integ.conditor.fr/v1/records/2014/duplicate/near_duplicate?include=idConditor,title&q=first3AuthorNames:bob
+https://api-integ.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?include=idConditor,title&q=first3AuthorNames:bob
 ```
 
 ------
@@ -176,6 +182,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 2. `exclude` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
+5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
 
@@ -186,13 +193,13 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2014/not_duplicate/zip
+https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate/zip
 ```
 
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2015 marquées comme doublon en incluant uniquement l'idConditor.
 
 ```url
-https://api-integ.conditor.fr/v1/records/hal/2015/duplicate/zip?include=idConditor
+https://api-integ.conditor.fr/v1/records/_filter/hal/2015/duplicate/zip?include=idConditor
 ```
 
 ------
@@ -211,7 +218,7 @@ Route de récupération d'une notice identifiée par son idConditor.
 
 1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `exclude` (string) : Une liste de champs à exclure de la réponse.
-3. `aggs` (string) : Une [query](references.md#Aggrégations) qui permet d'obtenir des aggrégations et statistiques.
+3. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
 
 **Retourne**
 
@@ -253,3 +260,152 @@ Récupérer le TEI d'une notice identifiée :
 ```url
 https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei
 ```
+
+
+
+## `GET`&nbsp;/records/&lt;idConditor&gt;/duplicates[/and_self]
+
+Route de récupération des doublons certains d'une notice.
+
+**Arguments de la route**
+
+1. `id_conditor` (string) : Identifiant Conditor de la notice pour laquelle on cherche les doublons certains.
+2. L'ajout du fragment d'URL `/and_self` permet d'intégrer les informations de la notice courante (`id_conditor`) à la liste des doublons trouvés
+
+**Paramètres d'URL**
+
+1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
+
+2. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+
+3. `exclude` (string) : Une liste de champs à exclure de la réponse.
+
+4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
+
+5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
+
+6. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+
+7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+
+8. `access_token` (string) : [jeton d'identification](securite.md) JWT
+
+9. `debug` : Activation du [mode Debug](references.md#mode-debug)
+
+**Retourne**
+
+(json) : Un tableau d'objets, représentant la liste des doublons, avec pour chacun d'entre eux la version JSON complète de la notice (y compris le champ `teiBlob` qui est la version XML-TEI encodée en base 64)
+
+**Exemple**
+
+La requête suivante renvoie les 2 doublons certains de la notice d'`id_conditor` "XztL5M8At6EdzDumYeJBXr2qg" :
+
+`.../records/XztL5M8At6EdzDumYeJBXr2qg/duplicates`
+
+Réponse de l'API : 
+
+```json
+[
+    {
+        "creationDate": "2019-01-14 15:40:58",
+        "title": {
+            "default": "3-Deazaneplanocin A (DZNep), an inhibitor of the histone methyltransferase EZH2, induces apoptosis and reduces cell migration in chondrosarcoma cells.",
+            ....
+        },
+        "first3AuthorNames": "Girard Nicolas Bazille Céline Lhuissier Eva",
+        "idConditor": "ZF_tOY5Iym25kuFdzk3k9dgNZ",
+        "doi": "10.1371/journal.pone.0098176"
+        ...
+    },
+    {
+        "creationDate": "2019-01-11 15:13:35",
+        "title": {
+            "default": "3-Deazaneplanocin A (DZNep), an Inhibitor of the Histone Methyltransferase EZH2, Induces Apoptosis and Reduces Cell Migration in Chondrosarcoma Cells",
+            ...
+        },
+        "first3AuthorNames": "Girard Nicolas Bazille Celine Lhuissier Eva",
+        "idConditor": "JPSpXc5ueCubPvY_indVYiGXB",
+        "doi": "10.1371/journal.pone.0098176",
+        ...
+    }
+]
+```
+
+NB : Dans cet exemple, on a donc 3 notices représentant de manière certaine la même production. Leurs 3 identifiants sont `XztL5M8At6EdzDumYeJBXr2qg`, `ZF_tOY5Iym25kuFdzk3k9dgNZ` et `JPSpXc5ueCubPvY_indVYiGXB`
+
+## `GET`&nbsp;/records/&lt;idConditor&gt;/near_duplicates[/and_self]
+
+Route de récupération des doublons incertains d'une notice.
+
+**Arguments de la route**
+
+1. `id_conditor` (string) : Identifiant Conditor de la notice pour laquelle on cherche les doublons incertains.
+2. L'ajout du fragment d'URL `/and_self` permet d'intégrer les informations de la notice courante (`id_conditor`) à la liste des doublons trouvés
+
+**Paramètres d'URL**
+
+1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
+
+2. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+
+3. `exclude` (string) : Une liste de champs à exclure de la réponse.
+
+4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
+
+5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
+
+6. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+
+7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+
+8. `access_token` (string) : [jeton d'identification](securite.md) JWT
+
+9. `debug` : Activation du [mode Debug](references.md#mode-debug)
+
+
+**Retourne**
+
+(json) : Un tableau d'objets, représentant la liste des doublons, avec pour chacun d'entre eux la version JSON complète de la notice (y compris le champ `teiBlob` qui est la version XML-TEI encodée en base 64)
+
+**Exemple**
+
+La requête suivante renvoie les 2 doublons incertains de la notice d'`id_conditor` "XztL5M8At6EdzDumYeJBXr2qg", plus la notice demandée elle-même :
+
+`.../records/LikaDFBCEMhCN7INEEl1ghA1G/near_duplicates/and_self`
+
+Réponse de l'API : 
+
+```json
+[
+    {
+        "creationDate": "2019-01-22 12:00:06",
+        "title": {
+            "default": "Acoustic Radiation",
+            ...
+        },
+        "idConditor": "LikaDFBCEMhCN7INEEl1ghA1G"
+        ...
+    },
+    {
+        "creationDate": "2019-01-22 11:56:29",
+        "title": {
+            "default": "Acoustic Waves, Propagation",
+            ...
+        },
+        "idConditor": "vBqQsmyu6v7TWvaXuDHDR0EQx",
+        ...
+    },
+    {
+        "creationDate": "2019-01-22 12:00:06",
+        "title": {
+            "default": "Acoustic Waves, Scattering",
+            ...
+        },
+        "idConditor": "1asAH17m8wlzFXgKFh5moNlxI",
+        ...
+    }  
+]
+```
+
+NB : Dans cet exemple, on a donc 3 notices représentant de manière incertaine la même production. Leurs 3 identifiants sont `LikaDFBCEMhCN7INEEl1ghA1G`, `vBqQsmyu6v7TWvaXuDHDR0EQx` et `1asAH17m8wlzFXgKFh5moNlxI`
+
