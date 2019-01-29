@@ -1,10 +1,9 @@
 'use strict';
+const {express: {allowedAccessMethods}} = require('config-component').get(module);
 
 module.exports = httpMethodsHandler;
 
 function httpMethodsHandler (req, res, next) {
-  const allowedHttpMethods = ['GET', 'OPTIONS'];
-
   if (req.method === 'OPTIONS') {
     // End CORS preflight request.
     return res
@@ -13,7 +12,7 @@ function httpMethodsHandler (req, res, next) {
 
   }
 
-  if (!allowedHttpMethods.includes(req.method)) {
+  if (!allowedAccessMethods.includes(req.method)) {
     return res
       .status(405)
       .end();

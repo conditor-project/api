@@ -29,6 +29,9 @@ configValidator.schema = Joi.object()
                                         }
                                       }
                                     },
+                                    express: {
+                                      allowedAccessMethods: Joi.array()
+                                    },
                                     security: {
                                       ip : {
                                         inMemory: Joi.array().optional()

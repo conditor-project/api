@@ -14,23 +14,24 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 const
-  cluster             = require('cluster'),
-  express             = require('express'),
-  app                 = express(),
-  {security}          = require('config-component').get(module),
-  myColors            = require('../helpers/myColors'), // jshint ignore: line
-  elasticContainer    = require('../helpers/clients/elastic'),
-  {logInfo, logError} = require('../helpers/logger'),
-  helmet              = require('helmet'),
-  morgan              = require('../middlewares/morgan'),
-  semver              = require('semver'),
-  errorHandler        = require('../middlewares/errorHandler'),
-  resConfig           = require('../middlewares/resConfig'),
-  httpMethodsHandler  = require('../middlewares/httpMethodsHandler'),
-  compression         = require('compression'),
-  _                   = require('lodash'),
-  state               = require('../helpers/state'),
-  pgContainer           = require('../helpers/clients/pg').startAll()
+  cluster                         = require('cluster'),
+  express                         = require('express'),
+  app                             = express(),
+  {security}                      = require('config-component').get(module),
+  myColors                        = require('../helpers/myColors'), // jshint ignore: line
+  elasticContainer                = require('../helpers/clients/elastic'),
+  {logInfo, logError, logWarning} = require('../helpers/logger'),
+  helmet                          = require('helmet'),
+  morgan                          = require('../middlewares/morgan'),
+  semver                          = require('semver'),
+  errorHandler                    = require('../middlewares/errorHandler'),
+  resConfig                       = require('../middlewares/resConfig'),
+  httpMethodsHandler              = require('../middlewares/httpMethodsHandler'),
+  compression                     = require('compression'),
+  _                               = require('lodash'),
+  state                           = require('../helpers/state'),
+  pgContainer                     = require('../helpers/clients/pg').startAll(),
+  bodyParser                      = require('body-parser')
 ;
 
 elasticContainer.startAll();
@@ -40,10 +41,11 @@ state.assign(process.env.state || {});
 
 const
   // Routers
-  root     = require('../controllers/root'),
-  records  = require('../controllers/records'),
-  scroll   = require('../controllers/scroll'),
-  firewall = require('./firewall')
+  root                  = require('../controllers/root'),
+  records               = require('../controllers/records'),
+  scroll                = require('../controllers/scroll'),
+  duplicatesValidations = require('../controllers/duplicatesValidations'),
+  firewall              = require('./firewall')
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
@@ -66,9 +68,11 @@ function startServer () {
 
 
 app._start = () => {
-  if (server && !server.listening || !server) {
-    server = startServer();
+  if (server && server.listening) {
+    logWarning(clusterId.bold, ': server already started');
+    return;
   }
+  server = startServer();
   elasticContainer.startAll();
   pgContainer.startAll();
 };
@@ -85,10 +89,11 @@ app._close = () => {
 app.set('etag', false);
 app.set('json spaces', 2);
 app.set('trust proxy', _.get(security, 'reverseProxy', false));
-app.use(resConfig, httpMethodsHandler);
 app.use(helmet({noSniff: false}), morgan);
+app.use(bodyParser.json());
+app.use(resConfig, httpMethodsHandler);
 app.use(compression());
 app.get('/', (req, res) => {res.redirect(`/v${semver.major(config.app.version)}`);});
-app.use(`/v${semver.major(config.app.version)}`, root, firewall, scroll, records);
+app.use(`/v${semver.major(config.app.version)}`, root, firewall, scroll, records, duplicatesValidations);
 app.use(errorHandler);
 

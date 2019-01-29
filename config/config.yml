@@ -45,6 +45,10 @@ express:
   api:
     host: %env(CONDITOR_API_HOST)%
     port: %env(CONDITOR_API_PORT)%
+  allowedAccessMethods:
+    - GET
+    - POST
+    - OPTIONS
 
 elastic:
   maxScrollDuration: 300s # d|h|m|s|ms|micros|nanos
@@ -69,6 +73,7 @@ pg:
      port: %env(PG_PORT)% # defaults to 5432
      username: %env(PG_USERNAME)%
      password: %env(PG_PASSWORD)%
+     database: %env(PG_DATABASE)%
 
 aggregation:
   bucket:
@@ -76,6 +81,3 @@ aggregation:
       invalidFields:
         - idConditor
       maxSize: 1000
-
-
-

@@ -1,11 +1,12 @@
 'use strict';
 const {
         elastic: {queryString: {allowLeadingWildcard, maxDeterminizedStates, lenient}}
-      }                         = require('config-component').get(module),
-      esb                       = require('elastic-builder/src'),
-      _                         = require('lodash'),
+      }                          = require('config-component').get(module),
+      esb                        = require('elastic-builder/src'),
+      _                          = require('lodash'),
       {build: buildAggregations} = require('../helpers/esAggregation/queryBuilder'),
-      {build: buildSorts}        = require('../helpers/esSort/queryBuilder')
+      {build: buildSorts}        = require('../helpers/esSort/queryBuilder'),
+      reThrow                    = require('./reThrow')
 ;
 
 const documentQueryBuilder = module.exports;
@@ -61,12 +62,7 @@ function _buildSorts (sortQuery) {
   try {
     return buildSorts(sortQuery);
   } catch (err) {
-    if ((err.name === 'SyntaxError' && err.isPeg === true)
-        || (err.name === 'ValidationError' && err.isJoi === true)
-    ) {
-      err.status = 400;
-    }
-    throw err;
+    reThrow(err);
   }
 }
 
@@ -74,11 +70,8 @@ function _buildAggregations (aggsQueryString) {
   try {
     return buildAggregations(aggsQueryString);
   } catch (err) {
-    if ((err.name === 'SyntaxError' && err.isPeg === true)
-        || (err.name === 'ValidationError' && err.isJoi === true)
-    ) {
-      err.status = 400;
-    }
-    throw err;
+    reThrow(err);
   }
 }
+
+
