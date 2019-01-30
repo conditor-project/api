@@ -27,7 +27,6 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
 
 8. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
-   ​    
 
 **Retourne**
 

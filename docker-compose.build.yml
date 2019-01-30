@@ -29,6 +29,33 @@ services:
       - ./.jwt:/app/.jwt
     restart: "on-failure:5"
 
+  conditorpg:
+    container_name: conditor-postgres
+    image: postgres:11.1
+    environment:
+      POSTGRES_HOST: ${PG_HOST}
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${PG_USERNAME}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: conditor
+    ports:
+      - 5432:5432
+    networks:
+      - apinet
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  conditorpga:
+    container_name: conditor-pgadmin
+    image: dpage/pgadmin4:4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports: 
+      - 54322:80
+    networks:
+      - apinet
+
 networks:
   apinet:
     driver: bridge
