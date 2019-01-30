@@ -14,9 +14,9 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 
-2. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 
-3. `exclude` (string) : Une liste de champs à exclure de la réponse.
+3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 
 4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 
@@ -48,23 +48,23 @@ https://api-integ.conditor.fr/v1/records?scroll=5m
 ```
 Renvoyer uniquement le champ authors de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authors
+https://api-integ.conditor.fr/v1/records?includes=authors
 ```
 Renvoyer uniquement les champs authors et idConditor de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authors,idConditor
+https://api-integ.conditor.fr/v1/records?includes=authors,idConditor
 ```
 Renvoyer uniquement le sous-champ surname de authors de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authors.surname
+https://api-integ.conditor.fr/v1/records?includes=authors.surname
 ```
 Exclure le champ authors :
 ```url
-https://api-integ.conditor.fr/v1/records?exclude=authors
+https://api-integ.conditor.fr/v1/records?excludes=authors
 ```
-Cumuler les paramètres `exclude` et `include` :
+Cumuler les paramètres `excludes` et `includes` :
 ```url
-https://api-integ.conditor.fr/v1/records?include=authors&exclude=authors.surname
+https://api-integ.conditor.fr/v1/records?includes=authors&excludes=authors.surname
 ```
 Choisir nombre de résultats retournés :
 ```url
@@ -83,8 +83,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 **Paramètres d'URL**
 
-1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
-2. `exclude` (string) : Une liste de champs à exclure de la réponse.
+1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `excludes` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
 5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
@@ -98,7 +98,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 Récupérer toutes les notices dans une archive en incluant uniquement le titre et la date de création.
 
 ```url
-https://api-integ.conditor.fr/v1/records/zip?include=title,creationDate
+https://api-integ.conditor.fr/v1/records/zip?includes=title,creationDate
 ```
 
 ------
@@ -124,8 +124,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 **Paramètres d'URL**
 
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de [scroll](scroll.md) (max: 5m, unités: d|h|m|s|ms|micros|nanos).
-2. `include` (string) : Une liste de champs à extraire et retourner dans la réponse.
-3. `exclude` (string) : Une liste de champs à exclure de la réponse.
+2. `includes` (string) : Une liste de champs à extraire et retourner dans la réponse.
+3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 6. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
@@ -147,13 +147,13 @@ https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon en incluant uniquement l'idConditor :
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate?include=idConditor
+https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate?includes=idConditor
 ```
 
 Filtrer la réponse afin de récupérer les notices publiées en 2014 marquées comme doublon certain et doublon incertain en incluant uniquement l'idConditor et le titre. Le tout filtré par une recherche sur l'auteur :
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?include=idConditor,title&q=first3AuthorNames:bob
+https://api-integ.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?includes=idConditor,title&q=first3AuthorNames:bob
 ```
 
 ------
@@ -178,8 +178,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 **Paramètres d'URL**
 
-1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
-2. `exclude` (string) : Une liste de champs à exclure de la réponse.
+1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `excludes` (string) : Une liste de champs à exclure de la réponse.
 3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
 5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
@@ -199,7 +199,7 @@ https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate/zip
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2015 marquées comme doublon en incluant uniquement l'idConditor.
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/hal/2015/duplicate/zip?include=idConditor
+https://api-integ.conditor.fr/v1/records/_filter/hal/2015/duplicate/zip?includes=idConditor
 ```
 
 ------
@@ -216,8 +216,8 @@ Route de récupération d'une notice identifiée par son idConditor.
 
 **Paramètres d'URL**
 
-1. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
-2. `exclude` (string) : Une liste de champs à exclure de la réponse.
+1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `excludes` (string) : Une liste de champs à exclure de la réponse.
 3. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
 
 **Retourne**
@@ -234,7 +234,7 @@ https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz
 Récupérer une notice identifiée et extraire le champ title :
 
 ```url
-https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?include=title
+https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?includes=title
 ```
 
 ------
@@ -276,9 +276,9 @@ Route de récupération des doublons certains d'une notice.
 
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 
-2. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 
-3. `exclude` (string) : Une liste de champs à exclure de la réponse.
+3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 
 4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 
@@ -346,9 +346,9 @@ Route de récupération des doublons incertains d'une notice.
 
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de scroll (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 
-2. `include` (string) : Une liste de champs à extraire et à retourner dans la réponse.
+2. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 
-3. `exclude` (string) : Une liste de champs à exclure de la réponse.
+3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 
 4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 

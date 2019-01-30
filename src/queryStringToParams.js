@@ -22,12 +22,12 @@ const paramsMapping = {
             }
           }
         },
-        include  : {
-          mapKey  : _.constant('_sourceInclude'),
+        includes  : {
+          mapKey  : _.constant('_sourceIncludes'),
           mapValue: _splitString
         },
-        exclude  : {
-          mapKey  : _.constant('_sourceExclude'),
+        excludes  : {
+          mapKey  : _.constant('_sourceExcludes'),
           mapValue: _splitString
         },
         page_size : {

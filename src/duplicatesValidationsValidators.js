@@ -12,6 +12,7 @@ validator.schema = Joi.object()
                               duplicates   : Joi.array().items(idConditorSchema),
                               notDuplicates: Joi.array().items(idConditorSchema)
                             })
+                      .or('duplicates', 'notDuplicates')
 ;
 
 validator.validate = (duplicatesValidations) => {

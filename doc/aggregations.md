@@ -33,7 +33,7 @@ Il est donc parfois nécessaire d'utiliser une version "normalisée" des champs 
 
 ## Exemples
 
-Ex. de syntaxe d'agrégation de type`terms`:
+Ex. de syntaxe d'agrégation de type `terms`:
 
 aggs=terms:source:{size:20, order:{_count:desc}}
 

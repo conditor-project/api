@@ -28,7 +28,7 @@ recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria
 recordsManager.getDuplicatesByIdConditor = getDuplicatesByIdConditor;
 recordsManager.getNearDuplicatesByIdConditor = getNearDuplicatesByIdConditor;
 
-getScrollStreamFilterByCriteria.options = ['include', 'exclude', 'q', 'limit', 'sort'];
+getScrollStreamFilterByCriteria.options = ['includes', 'excludes', 'q', 'limit', 'sort'];
 function getScrollStreamFilterByCriteria (filterCriteria = {}, {q, sort, limit, ...options} = {}) {
   return Promise
     .resolve()
@@ -82,7 +82,7 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, {q, sort, limit, 
     });
 }
 
-filterByCriteria.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs', 'sort'];
+filterByCriteria.options = ['scroll', 'includes', 'excludes', 'page', 'page_size', 'q', 'aggs', 'sort'];
 function filterByCriteria (filterCriteria, {q, aggs, sort, ...options} = {}) {
   return Promise
     .resolve()
@@ -108,7 +108,7 @@ function filterByCriteria (filterCriteria, {q, aggs, sort, ...options} = {}) {
     });
 }
 
-getSingleHitByIdConditor.options = ['include', 'exclude', 'aggs'];
+getSingleHitByIdConditor.options = ['includes', 'excludes', 'aggs'];
 function getSingleHitByIdConditor (idConditor, {aggs, ...options} = {}) {
   return Promise
     .resolve()
@@ -166,7 +166,7 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
 }
 
 
-search.options = ['scroll', 'include', 'exclude', 'page', 'page_size', 'q', 'aggs', 'sort'];
+search.options = ['scroll', 'includes', 'excludes', 'page', 'page_size', 'q', 'aggs', 'sort'];
 function search ({q, aggs, sort, ...options}) {
 
   return Promise
@@ -192,7 +192,7 @@ function search ({q, aggs, sort, ...options}) {
     });
 }
 
-getDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q', 'sort'];
+getDuplicatesByIdConditor.options = ['includes', 'excludes', 'aggs', 'page', 'page_size', 'q', 'sort'];
 function getDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}, flag = '') {
   const AND_SELF = 'and_self';
 
@@ -206,7 +206,7 @@ function getDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}
                                       body: requestBody.toJSON(),
                                       size: 2 // If hits count =/= 1 then an error is thrown
                                     },
-                                    queryStringToParams({include: 'duplicates.idConditor'}),
+                                    queryStringToParams({includes: 'duplicates.idConditor'}),
                                     defaultParams
       );
 
@@ -257,7 +257,7 @@ function getDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}
 }
 
 
-getNearDuplicatesByIdConditor.options = ['include', 'exclude', 'aggs', 'page', 'page_size', 'q', 'sort'];
+getNearDuplicatesByIdConditor.options = ['includes', 'excludes', 'aggs', 'page', 'page_size', 'q', 'sort'];
 function getNearDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} = {}, flag = '') {
   const AND_SELF = 'and_self';
 
@@ -271,7 +271,7 @@ function getNearDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} 
                                       body: requestBody.toJSON(),
                                       size: 2 // If hits count =/= 1 then an error is thrown
                                     },
-                                    queryStringToParams({include: 'nearDuplicates.idConditor'}),
+                                    queryStringToParams({includes: 'nearDuplicates.idConditor'}),
                                     defaultParams
       );
 

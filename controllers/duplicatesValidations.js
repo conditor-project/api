@@ -11,13 +11,13 @@ const express                                                          = require
 
 module.exports = router;
 
-router.post('/duplicatesValidations', (req, res) => {
+router.post('/duplicatesValidations', (req, res, next) => {
   validate(req.body)
-    .then((result) => {
+    .then((reqBody) => {
 
-      res.send(result);
+      res.status(204).send();
     })
     .catch(reThrow)
-    .catch(getErrorHandler(res))
+    .catch(next)
   ;
 });

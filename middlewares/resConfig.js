@@ -1,6 +1,6 @@
 'use strict';
-const httpHeadersMapping              = require('../src/resultHandler').gethttpHeadersMapping(),
-      {invokeMap}                     = require('lodash'),
+const httpHeadersMapping                = require('../src/resultHandler').gethttpHeadersMapping(),
+      {invokeMap}                       = require('lodash'),
       {express: {allowedAccessMethods}} = require('config-component').get(module)
 ;
 
