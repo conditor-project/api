@@ -100,11 +100,13 @@ function addWarning(warning){
 function nonUniqueResultException () {
   let err = new Error('NonUniqueResultException');
   err.name = 'NonUniqueResultException';
+  err.status = 300;
   return err;
 }
 
 function noResultException () {
   let err = new Error('NoResultException');
   err.name = 'NoResultException';
+  err.status = 404;
   return err;
 }

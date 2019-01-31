@@ -48,11 +48,11 @@ function getScrollStreamFilterByCriteria (filterCriteria = {}, {q, sort, limit, 
               );
 
       // idConditor is mandatory
-      if (params._sourceInclude) {
-        params._sourceInclude.push('idConditor');
+      if (params._sourceIncludes) {
+        params._sourceIncludes.push('idConditor');
       }
-      if (params._sourceExclude) {
-        _.pull(params._sourceExclude, 'idConditor');
+      if (params._sourceExcludes) {
+        _.pull(params._sourceExcludes, 'idConditor');
       }
 
       const scrollStream = new ScrollStream(esClient,
@@ -147,7 +147,7 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
               _.defaultsDeep({
                                body          : requestBody.toJSON(),
                                size          : 2, // If hits count =/= 1 then an error is thrown
-                               _sourceInclude: 'teiBlob'
+                               _sourceIncludes: 'teiBlob'
                              },
                              queryStringToParams(options),
                              defaultParams
