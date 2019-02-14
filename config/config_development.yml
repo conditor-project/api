@@ -14,3 +14,7 @@ security:
   ip:
     inMemory:
       - 127.0.0.1
+
+indices:
+  records:
+    index: records-20190122

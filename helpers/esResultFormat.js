@@ -1,7 +1,8 @@
 'use strict';
 
 const _     = require('lodash'),
-      state = require('./state')
+      state = require('./state'),
+      {sourceIdsMap} = require('config-component').get(module)
 ;
 
 const responseFormat = module.exports;
@@ -34,7 +35,7 @@ responseFormat.getSingleScalarResult = (response) => {
 };
 
 responseFormat.getResult = (response) => {
-  const hits         = _.map(response.hits.hits, (hit) => {return _.assign({}, hit._source, {_score: hit._score, _sort: hit.sort});}),
+  const hits         = _.map(response.hits.hits, (hit) => {return _.assign({}, hit._source, _formatHit(hit));}),
         aggregations = _.get(response, 'aggregations', null)
   ;
 
@@ -47,7 +48,7 @@ responseFormat.getResult = (response) => {
     resultCount : _.get(response, 'hits.hits.length', 0),
     scrollId    : _.get(response, '_scroll_id', null),
     aggregations: aggregations,
-    addWarning : addWarning
+    addWarning  : addWarning
   };
 };
 
@@ -83,20 +84,29 @@ responseFormat.paginate = (result, from = 0, size = 10) => {
     result.links = links;
   }
 
-  if(result.resultCount < size){
+  if (result.resultCount < size) {
     result.status = 206;
   }
 
   return result;
 };
 
-function addWarning(warning){
+function addWarning (warning) {
   const warnings = _.get(this, '_warnings', []);
   warnings.push(warning);
   this._warnings = warnings;
 
   return this;
 }
+
+function _formatHit (hit) {
+  return {
+    _score: hit._score,
+    _sort:hit.sort
+  };
+}
+
+// Exceptions
 function nonUniqueResultException () {
   let err = new Error('NonUniqueResultException');
   err.name = 'NonUniqueResultException';

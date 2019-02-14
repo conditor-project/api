@@ -2,7 +2,7 @@
 ---
 
 imports:
-    - resource: 'secret_parameters.yml'
+    - resource: secret_parameters.yml
     - resource: ../package.json
       pick:
         name: app.name
@@ -11,7 +11,7 @@ imports:
       pick:
         index: indices.records.index
         type: indices.records.type
-
+    - resource: sourceIdsMap.js # Map source name to sourceId name
 
 parameters:
   LOG_PATH: /var/log

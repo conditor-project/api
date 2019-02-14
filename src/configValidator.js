@@ -40,7 +40,8 @@ configValidator.schema = Joi.object()
                                         secret   : Joi.string(),
                                         algorithm: Joi.string()
                                       }
-                                    }
+                                    },
+                              sourceIdsMap : Joi.object()
                                   })
                             .optionalKeys('security.ip')
 ;

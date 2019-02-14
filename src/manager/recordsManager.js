@@ -16,13 +16,21 @@ const recordsManager = module.exports;
 const
   defaultParams = {
     index     : indices.records.index,
-    filterPath: ['hits.hits','hits.hits._source', 'hits.hits._score', 'hits.hits.sort', 'hits.total', '_scroll_id', 'aggregations']
+    filterPath: ['hits.hits',
+                 'hits.hits._source',
+                 'hits.hits._score',
+                 'hits.hits.sort',
+                 'hits.total',
+                 '_scroll_id',
+                 'aggregations']
   }
 ;
 
+// RecordsManager API
 recordsManager.getSingleHitByIdConditor = getSingleHitByIdConditor;
 recordsManager.getSingleTeiByIdConditor = getSingleTeiByIdConditor;
 recordsManager.search = search;
+recordsManager.searchByIdConditors = searchByIdConditors;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
 recordsManager.getDuplicatesByIdConditor = getDuplicatesByIdConditor;
@@ -145,8 +153,8 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
 
       const params =
               _.defaultsDeep({
-                               body          : requestBody.toJSON(),
-                               size          : 2, // If hits count =/= 1 then an error is thrown
+                               body           : requestBody.toJSON(),
+                               size           : 2, // If hits count =/= 1 then an error is thrown
                                _sourceIncludes: 'teiBlob'
                              },
                              queryStringToParams(options),
@@ -165,6 +173,11 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
     });
 }
 
+searchByIdConditors.options = ['scroll', 'includes', 'excludes', 'page', 'page_size', 'aggs', 'sort'];
+function searchByIdConditors (idConditors, options = {}) {
+  options.q = `idConditor:(${idConditors.join(' OR ')})`;
+  return search(options);
+}
 
 search.options = ['scroll', 'includes', 'excludes', 'page', 'page_size', 'q', 'aggs', 'sort'];
 function search ({q, aggs, sort, ...options}) {
@@ -320,6 +333,8 @@ function getNearDuplicatesByIdConditor (idConditor, {q, aggs, sort, ...options} 
         ;
     });
 }
+
+
 function _clientErrorHandler (err) {
   if (['TypeError'].includes(err.name)) {err.status = 400;}
   throw err;
