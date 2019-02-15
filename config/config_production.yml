@@ -6,7 +6,3 @@ imports:
 
 app:
   doExitOnUnhandledRejection: false
-
-smokeTest:
-  doRun: false
-
