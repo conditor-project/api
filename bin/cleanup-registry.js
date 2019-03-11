@@ -19,9 +19,10 @@ fs.readJson(file)
   })
   .then(([invalidTokens, validTokens]) => {
   if(invalidTokens.length){
+    console.info('Removed invalid(s) token(s) '.bold.info);
     console.dir(invalidTokens);
   } else{
-    console.info('No invalid Tokens '.bold.info);
+    console.info('No invalid Token '.bold.info);
   }
     fs.outputJson(file, validTokens, {spaces: 2});
   })

@@ -1,26 +1,42 @@
 {
     "tables": {
-        "Users": {
-            "tableName": "Users",
+        "DuplicatesValidations": {
+            "tableName": "DuplicatesValidations",
             "schema": {
                 "id": {
-                    "allowNull": false,
                     "primaryKey": true,
-                    "autoIncrement": true,
+                    "allowNull": false,
                     "field": "id",
-                    "seqType": "Sequelize.INTEGER"
-                },
-                "firstname": {
-                    "field": "firstname",
                     "seqType": "Sequelize.STRING"
                 },
-                "lastname": {
-                    "field": "lastname",
+                "isDuplicate": {
+                    "allowNull": false,
+                    "field": "isDuplicate",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "initialSourceId": {
+                    "allowNull": false,
+                    "field": "initialSourceId",
                     "seqType": "Sequelize.STRING"
                 },
-                "email": {
-                    "field": "email",
+                "initialSource": {
+                    "allowNull": false,
+                    "field": "initialSource",
                     "seqType": "Sequelize.STRING"
+                },
+                "targetSourceId": {
+                    "allowNull": false,
+                    "field": "targetSourceId",
+                    "seqType": "Sequelize.STRING"
+                },
+                "targetSource": {
+                    "allowNull": false,
+                    "field": "targetSource",
+                    "seqType": "Sequelize.STRING"
+                },
+                "comment": {
+                    "field": "comment",
+                    "seqType": "Sequelize.STRING(400)"
                 },
                 "createdAt": {
                     "allowNull": false,
@@ -31,12 +47,23 @@
                     "allowNull": false,
                     "field": "updatedAt",
                     "seqType": "Sequelize.DATE"
+                },
+                "UserId": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Users",
+                        "key": "id"
+                    },
+                    "onDelete": "SET NULL",
+                    "onUpdate": "CASCADE",
+                    "field": "UserId",
+                    "seqType": "Sequelize.INTEGER"
                 }
             },
             "indexes": []
         },
-        "Validations": {
-            "tableName": "Validations",
+        "Users": {
+            "tableName": "Users",
             "schema": {
                 "id": {
                     "allowNull": false,
@@ -45,16 +72,13 @@
                     "field": "id",
                     "seqType": "Sequelize.INTEGER"
                 },
-                "isDuplicate": {
-                    "field": "isDuplicate",
-                    "seqType": "Sequelize.BOOLEAN"
-                },
-                "idConditor": {
-                    "field": "idConditor",
-                    "seqType": "Sequelize.STRING"
-                },
-                "targetIdConditor": {
-                    "field": "targetIdConditor",
+                "email": {
+                    "validate": {
+                        "isEmail": true
+                    },
+                    "allowNull": false,
+                    "unique": true,
+                    "field": "email",
                     "seqType": "Sequelize.STRING"
                 },
                 "createdAt": {
@@ -71,5 +95,5 @@
             "indexes": []
         }
     },
-    "revision": 1
+    "revision": 4
 }

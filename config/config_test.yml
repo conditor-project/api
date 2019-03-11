@@ -11,7 +11,8 @@ security:
   reverseProxy: ::ffff:127.0.0.1 # we add supertest request ip so we can x-forward spoofed ip
   ip:
     inMemory:
-      - 111.11.11.1
+      - ip: 111.11.11.1
+        email: test-user@conditor.fr
   jwt:
     forbiddenIds:
       - forbidThisId

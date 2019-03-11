@@ -1,27 +1,17 @@
 'use strict';
 
 const {pg: {clients: {main}}} = require('config-component').get(module);
+const _ = require('lodash');
+
+const defaultOptions = {
+  host            : 'localhost',
+  dialect         : 'postgres',
+  port            : 5432,
+  operatorsAliases: false
+};
 
 module.exports = {
-  'development': {
-    'username': main.username,
-    'password': main.password,
-    'database': main.database,
-    'host'    : main.host,
-    'dialect' : 'postgres'
-  },
-  'test'       : {
-    'username': main.username,
-    'password': main.password,
-    'database': main.database,
-    'host'    : main.host,
-    'dialect' : 'postgres'
-  },
-  'production' : {
-    'username': main.username,
-    'password': main.password,
-    'database': main.database,
-    'host'    : main.host,
-    'dialect' : 'postgres'
-  }
+  'development': _.defaults(main, defaultOptions),
+  'test'       : _.defaults(main, defaultOptions),
+  'production' : _.defaults(main, defaultOptions)
 };

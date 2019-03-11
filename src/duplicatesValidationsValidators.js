@@ -9,7 +9,7 @@ const validator = module.exports;
 const idConditor = Joi.string().token();
 const report = Joi.object().keys({
                                    recordId: idConditor.required(),
-                                   comment : Joi.string()
+                                   comment : Joi.string().max(400,'utf8')
                                  });
 
 

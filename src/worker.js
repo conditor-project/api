@@ -30,7 +30,6 @@ const
   compression                     = require('compression'),
   _                               = require('lodash'),
   state                           = require('../helpers/state'),
-  pgContainer                     = require('../helpers/clients/pg').startAll(),
   bodyParser                      = require('body-parser')
 ;
 
@@ -45,7 +44,8 @@ const
   records               = require('../controllers/records'),
   scroll                = require('../controllers/scroll'),
   duplicatesValidations = require('../controllers/duplicatesValidations'),
-  firewall              = require('./firewall')
+  firewall              = require('./firewall'),
+  db                    = require('../db/models/index')
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
@@ -74,14 +74,13 @@ app._start = () => {
   }
   server = startServer();
   elasticContainer.startAll();
-  pgContainer.startAll();
 };
 
 app._close = () => {
   server.close(() => {
     logInfo(clusterId.bold, `: server closed`);
     elasticContainer.stopAll();
-    pgContainer.stopAll();
+    db.sequelize.close();
   });
 };
 
@@ -94,6 +93,7 @@ app.use(bodyParser.json());
 app.use(resConfig, httpMethodsHandler);
 app.use(compression());
 app.get('/', (req, res) => {res.redirect(`/v${semver.major(config.app.version)}`);});
-app.use(`/v${semver.major(config.app.version)}`, root, firewall, scroll, records, duplicatesValidations);
+app.use(`/v${semver.major(config.app.version)}`, root);
+app.use(`/v${semver.major(config.app.version)}`, firewall, scroll, records, duplicatesValidations);
 app.use(errorHandler);
 

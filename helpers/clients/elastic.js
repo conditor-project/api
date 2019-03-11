@@ -6,7 +6,7 @@ const config           = require('config-component').get(module),
       clientsContainer = {}
 ;
 
-let started = false;
+let _started = false;
 
 module.exports.get = get;
 module.exports.startAll = startAll;
@@ -14,15 +14,19 @@ module.exports.stopAll = stopAll;
 module.exports.isStarted = isStarted;
 
 
-function get () {
+function get (clientName) {
+  if (typeof clientName === 'string') {
+    return clientsContainer[clientName];
+  }
+
   return clientsContainer;
 }
 
 
 function startAll () {
 // jshint validthis: true
-  if (started) return this;
-  started = true;
+  if (_started) return this;
+  _started = true;
   _.transform(config.elastic.clients,
               (container, client, clientName) => {
                 container[clientName] = new elasticsearch.Client(_.cloneDeep(client));
@@ -35,12 +39,12 @@ function startAll () {
 
 function stopAll () {
 // jshint validthis: true
-  started = false;
+  _started = false;
   _.forOwn(clientsContainer, (client) => {client.close();});
 
   return this;
 }
 
 function isStarted () {
-  return started;
+  return _started;
 }

@@ -11,16 +11,19 @@ const express                                                          = require
       records                                                          = require('../src/manager/recordsManager'),
       validateQueryString                                              = require('../helpers/validateQueryString'),
       getInvalidOptionsHandler                                         = require('../src/getInvalidOptionsHandler'),
-      {sourceIdsMap}                                                   = require('config-component').get(module)
+      {sourceIdsMap}                                                   = require('config-component').get(module),
+      db                                                               = require('../db/models/index'),
+      he                                                               = require('he')
 ;
 
 module.exports = router;
 
 router.post('/duplicatesValidations', (req, res, next) => {
   if (!req.is('json')) return res.sendStatus(415);
+
   validateBody(req.body)
     .then(normalizeBody)
-    .then((body) => res.locals.body = body)
+    .then(body => res.locals.body = body)
     .then(() => validateQueryString(req.query, 'access_token', 'debug'))
     .then(getInvalidOptionsHandler(res))
     .then(() => records.getSingleHitByIdConditor(res.locals.body.recordId,
@@ -52,22 +55,24 @@ router.post('/duplicatesValidations', (req, res, next) => {
       res.locals.initialRecord = initialRecord;
       return reportedRecordsIds;
     })
-    .then((reportedRecordsIds) => records.searchByIdConditors(reportedRecordsIds,
-                                                              {includes: `${_.values(sourceIdsMap)}, idConditor, source, duplicates, nearDuplicates`})
+    .then(reportedRecordsIds => records.searchByIdConditors(reportedRecordsIds,
+                                                            {includes: `${_.values(sourceIdsMap)}, idConditor, source, sourceId, sourceUid, duplicates, nearDuplicates`})
     )
-    .then((result) => _.transform(_.concat(result.result, res.locals.initialRecord),
-                                  (accu, {source, idConditor, duplicates, nearDuplicates, ...record}) => {
-                                    accu[idConditor] = {
-                                      source,
-                                      sourceId: record[sourceIdsMap[source]],
-                                      duplicates,
-                                      nearDuplicates
-                                    };
-                                  },
-                                  {}
+    .then(result => _.transform(_.concat(result.result, res.locals.initialRecord),
+                                (accu, {source, idConditor, duplicates, nearDuplicates, sourceId, sourceUid, ...record}) => {
+                                  accu[idConditor] = {
+                                    idConditor,
+                                    source,
+                                    sourceId : sourceId || record[sourceIdsMap[source]],
+                                    sourceUid: sourceUid || `${source}#${record[sourceIdsMap[source]]}`,
+                                    duplicates,
+                                    nearDuplicates
+                                  };
+                                },
+                                {}
           )
     )
-    .then((result) => {
+    .then(result => {
       return {
         initialRecord      : result[res.locals.body.recordId],
         reportDuplicates   : _.map(res.locals.body.reportDuplicates,
@@ -76,10 +81,41 @@ router.post('/duplicatesValidations', (req, res, next) => {
                                    ({recordId, comment}) => _.set(result[recordId], 'comment', comment))
       };
     })
-    .then((result) => {
-      console.dir(result);
+    .then(({initialRecord, reportDuplicates, reportNonDuplicates}) => {
+
+      const duplicatesBulk = _.transform(reportDuplicates, (bulk, targetRecord) => {
+        bulk.push({
+                    isDuplicate      : true,
+                    initialSource    : initialRecord.source,
+                    initialSourceId  : initialRecord.sourceId,
+                    initialIdConditor: initialRecord.idConditor,
+                    targetSource     : targetRecord.source,
+                    targetSourceId   : targetRecord.sourceId,
+                    targetIdConditor : targetRecord.idConditor,
+                    comment          : he.encode(targetRecord.comment),
+                    UserId           : req.user.id
+                  });
+      }, []);
+
+      const nonDuplicatesBulk = _.transform(reportNonDuplicates, (bulk, targetRecord) => {
+        bulk.push({
+                    isDuplicate      : false,
+                    initialSource    : initialRecord.source,
+                    initialSourceId  : initialRecord.sourceId,
+                    initialIdConditor: initialRecord.idConditor,
+                    targetSource     : targetRecord.source,
+                    targetSourceId   : targetRecord.sourceId,
+                    targetIdConditor : targetRecord.idConditor,
+                    comment          : he.encode(targetRecord.comment),
+                    UserId           : req.user.id
+                  });
+      }, []);
+
+      const bulk = duplicatesBulk.concat(nonDuplicatesBulk);
+
+      return db.DuplicatesValidations.bulkCreate(bulk, {validate: true, individualHooks: true});
     })
-    .then(() => res.sendStatus(204))
+    .then(() => res.sendStatus(201))
     .catch(reThrow)
     .catch(next)
   ;

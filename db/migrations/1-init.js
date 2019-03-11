@@ -5,19 +5,64 @@ var Sequelize = require('sequelize');
 /**
  * Actions summary:
  *
+ * createTable "DuplicatesValidations", deps: []
  * createTable "Users", deps: []
- * createTable "Validations", deps: []
  *
  **/
 
 var info = {
     "revision": 1,
-    "name": "first",
-    "created": "2019-01-14T13:50:28.114Z",
+    "name": "init",
+    "created": "2019-02-27T13:35:24.021Z",
     "comment": ""
 };
 
 var migrationCommands = [{
+        fn: "createTable",
+        params: [
+            "DuplicatesValidations",
+            {
+                "id": {
+                    "type": Sequelize.STRING,
+                    "field": "id",
+                    "allowNull": false,
+                    "primaryKey": true
+                },
+                "isDuplicate": {
+                    "type": Sequelize.BOOLEAN,
+                    "field": "isDuplicate"
+                },
+                "initialSourceId": {
+                    "type": Sequelize.STRING,
+                    "field": "initialSourceId"
+                },
+                "initialSource": {
+                    "type": Sequelize.STRING,
+                    "field": "initialSource"
+                },
+                "targetSourceId": {
+                    "type": Sequelize.STRING,
+                    "field": "targetSourceId"
+                },
+                "targetSource": {
+                    "type": Sequelize.STRING,
+                    "field": "targetSource"
+                },
+                "createdAt": {
+                    "type": Sequelize.DATE,
+                    "field": "createdAt",
+                    "allowNull": false
+                },
+                "updatedAt": {
+                    "type": Sequelize.DATE,
+                    "field": "updatedAt",
+                    "allowNull": false
+                }
+            },
+            {}
+        ]
+    },
+    {
         fn: "createTable",
         params: [
             "Users",
@@ -41,43 +86,9 @@ var migrationCommands = [{
                     "type": Sequelize.STRING,
                     "field": "email"
                 },
-                "createdAt": {
-                    "type": Sequelize.DATE,
-                    "field": "createdAt",
-                    "allowNull": false
-                },
-                "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "field": "updatedAt",
-                    "allowNull": false
-                }
-            },
-            {}
-        ]
-    },
-    {
-        fn: "createTable",
-        params: [
-            "Validations",
-            {
-                "id": {
-                    "type": Sequelize.INTEGER,
-                    "field": "id",
-                    "autoIncrement": true,
-                    "primaryKey": true,
-                    "allowNull": false
-                },
-                "isDuplicate": {
-                    "type": Sequelize.BOOLEAN,
-                    "field": "isDuplicate"
-                },
-                "idConditor": {
+                "role": {
                     "type": Sequelize.STRING,
-                    "field": "idConditor"
-                },
-                "targetIdConditor": {
-                    "type": Sequelize.STRING,
-                    "field": "targetIdConditor"
+                    "field": "role"
                 },
                 "createdAt": {
                     "type": Sequelize.DATE,

@@ -81,54 +81,63 @@ function getSingleResultErrorHandler (res) {
 
 function getErrorHandler (res) {
   return (err) => {
-    const status = [400, 404].includes(err.status) ? err.status : 500;
-    if(status === 500) logError(err);
+    const status = [400, 409, 404].includes(err.status) ? err.status : 500;
+    if (status === 500) logError(err);
 
     if (res.headersSent) return;
 
-    if (_.has(res, 'req.query.debug') && res.req.query.debug !== 'false' && status === 400) {
-      return res.status(status).send(_format(err, res.locals.invalidOptions));
+    if (_.has(res, 'req.query.debug') && res.req.query.debug !== 'false' && String(status).startsWith('4')) {
+      return res.status(status).send(_format(err, res.locals));
     }
     res.sendStatus(status);
   };
 }
-
 const errorMessagesMapping = [
-  {
-    predicate: (reason) => reason.isPeg,
-    label    : (reason) => reason.label,
-    message  : (reason) => reason.message
-  },
-  {
-    predicate: (reason) => reason.isJoi,
-    message  : (reason) => _.get(reason, 'details.0.message'),
-    details  : (reason) => {
-      const value = _.get(reason, 'details.0.context.value');
-      return `got (${typeof value}) ${_.isObject(value) ? JSON.stringify(value) : value}`;
-    },
-    label    : (reason) => _.get(reason, 'details.0.context.label')
-  },
-  {
-    predicate: (reason) => {return _(reason).keys().intersection(['body', 'response']).size() === 2;},
-    message  : (reason) => _.get(reason, 'body.error.root_cause.0.reason')
-  }
-];
+        {
+          predicate: (reason) => reason.isPeg,
+          label    : (reason) => reason.label,
+          message  : (reason) => reason.message
+        },
+        {
+          predicate: (reason) => reason.isJoi,
+          message  : (reason) => _.get(reason, 'details.0.message'),
+          details  : (reason) => {
+            const value = _.get(reason, 'details.0.context.value');
+            return `got (${typeof value}) ${_.isObject(value) ? JSON.stringify(value) : value}`;
+          },
+          label    : (reason) => _.get(reason, 'details.0.context.label')
+        },
+        {
+          predicate: (reason) => {return _(reason).keys().intersection(['body', 'response']).size() === 2;},
+          message  : (reason) => _.get(reason, 'body.error.root_cause.0.reason')
+        },
+        {
+          predicate: reason => reason.name === 'SequelizeUniqueConstraintError'
+                               && _.get(reason, 'original.table') === 'DuplicatesValidations',
+          name     : () => 'Unique constaint error',
+          message  : () => `Duplicates already validated`,
+          details  : (reason) =>  [_.invoke(reason,'errors.0.instance.getInitialSourceUid'),_.invoke(reason,'errors.0.instance.getTargetSourceUid')]
+        }
+
+      ]
+;
 
 const statusNamesMapping = {
-  400: 'Bad Request'
+  400: 'Bad Request',
+  409: 'Conflict'
   /* add others if needed */
 };
 
-function _format (reason, invalidOptions = []) {
+function _format (reason, {invalidOptions = [], ...resLocals} = {}) {
   const mapping = _.find(errorMessagesMapping, ({predicate}) => predicate(reason));
   const errorResponse = {
     errors: [{
       status    : reason.status,
       statusName: _.get(statusNamesMapping, reason.status),
-      name      : reason.name,
+      name      : _.invoke(mapping, 'name', reason) || reason.name,
       label     : _.invoke(mapping, 'label', reason),
       message   : _.invoke(mapping, 'message', reason) || reason.message,
-      details   : _.invoke(mapping, 'details', reason)
+      details   : _.invoke(mapping, 'details', reason, resLocals)
     }]
   };
 
