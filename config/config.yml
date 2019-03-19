@@ -9,8 +9,8 @@ imports:
         version: app.version
     - resource: ../node_modules/co-config/es.js
       pick:
-        index: indices.records.index
-        type: indices.records.type
+        index: parameters.RECORD_INDEX
+        type: parameters.RECORD_TYPE
     - resource: sourceIdsMap.js # Map source name to sourceId name
 
 parameters:
@@ -78,6 +78,7 @@ pg:
      password: %env(PG_PASSWORD)%
      database: %env(PG_DATABASE)%
      operatorsAliases: false
+     logging: false
 
 aggregation:
   bucket:
@@ -85,3 +86,8 @@ aggregation:
       invalidFields:
         - idConditor
       maxSize: 1000
+
+indices:
+  records:
+    index: %env(RECORD_INDEX)%
+    type: %env(RECORD_TYPE)%

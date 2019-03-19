@@ -17,19 +17,6 @@ function setup () {
   return Promise
     .resolve()
     .then(() => {
-      process.on('unhandledRejection', (reason, p) => {
-        logError('Unhandled Rejection at:', p, 'reason:', reason);
-        if (config.app.doExitOnUnhandledRejection) {
-          process.exit(1);
-        }
-      });
-      return indexManager
-        .getSettings(config.indices.records.index, 'index.max_result_window')
-        .then((settings) => {
-          state.set('indices.records.cachedSettings.maxResultWindow', settings.max_result_window);
-        });
-    })
-    .then(() => {
       return validate(config)
         .catch((error) => {
           logError('Config validation Error'.bold + '\n', error.annotate(process.env.NODE_ENV === 'production'));
@@ -37,6 +24,12 @@ function setup () {
         });
     })
     .then(() => {
+      process.on('unhandledRejection', (reason, p) => {
+        logError('Unhandled Rejection at:', p, 'reason:', reason);
+        if (config.app.doExitOnUnhandledRejection) {
+          process.exit(1);
+        }
+      });
       Error.stackTraceLimit = config.nodejs.stackTraceLimit || Error.stackTraceLimit;
       logInfo('Application semver : ', config.app.version);
       logInfo('Application major semver : ', semver.major(config.app.version));
@@ -54,6 +47,13 @@ function setup () {
           process.exit(1);
         });
 
+    })
+    .then(() => {
+      return indexManager
+        .getSettings(config.indices.records.index, 'index.max_result_window')
+        .then((settings) => {
+          state.set('indices.records.cachedSettings.maxResultWindow', settings.max_result_window);
+        });
     })
     .catch((reason) => {
       logError(reason);
