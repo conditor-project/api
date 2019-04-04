@@ -41,10 +41,10 @@ Liste des champs du JSON par ordre alphabétique :
 | halAuthorId | String | liste des identifiants Hal des auteurs |  | 
 | halId | String | identifiant du document Hal |  | 
 | hasDoi | Boolean | présence ou non d'un DOI (valeur True ou False) |  | 
-"| hasTransDuplicate | Boolean | existence d'un doublon par transitivité (valeur True or False)
-Si A doublon de B et B doublon de C alors A est doublon de C | x | "
-"| idChain | String | ensemble des idConditors, préfixés par le nom de la source, des notices considérées comme doublons certains.
-Identifiants séparés par ""!"" | x | "
+| hasTransDuplicate | Boolean | existence d'un doublon par transitivité (valeur True or False)
+Si A doublon de B et B doublon de C alors A est doublon de C | x | 
+| idChain | String | ensemble des idConditors, préfixés par le nom de la source, des notices considérées comme doublons certains.
+Identifiants séparés par ! | x | 
 | idConditor | String | identifiant du document Conditor créé aléatoirement |  | 
 | idHal | String | liste des identifiants des auteurs Hal regroupant les halAuthorId |  | 
 | idProdinra | String | identifiant du document ProdInra |  | 
@@ -79,8 +79,7 @@ Identifiants séparés par ""!"" | x | "
 | pmId | String | identifiant du document notice PubMedCentral |  | 
 | ppn | String | identifiant du document Sudoc |  | 
 | publicationDate | String | date de publication présente dans la notice source |  | 
-"| publicationDate.date | date | version de type date de publicationDate. Créée à partir de cette dernière, elle se présente sous la forme de
-Mois Jour Année, heure:seconde:centième:millième | x | "
+| publicationDate.date | date | version de type date de publicationDate. Créée à partir de cette dernière, elle se présente sous la forme de Mois Jour Année, heure:seconde:centième:millième | x | 
 | reportNumber | String | numéro de rapport |  | 
 | researcherId | String | identifiant WoS de l'auteur |  | 
 | sciencespo | String | identifiant du document de Sciences Po |  | 
