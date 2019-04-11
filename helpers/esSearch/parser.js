@@ -11,9 +11,9 @@ const aggsGrammar = fs.readFileSync(path.join(__dirname, 'search.grammar'), 'utf
 
 module.exports.parse = _parse;
 
-function _parse (aggsQuery) {
+function _parse (searchQuery) {
   try {
-    return parser.parse(aggsQuery);
+    return parser.parse(searchQuery);
   } catch (err) {
     err.isPeg = true;
     err.label = 'Elastic search grammar';
