@@ -16,6 +16,3 @@ security:
       - ip: 127.0.0.1
         email: user@conditor.fr
 
-indices:
-  records:
-    index: records-20190122
