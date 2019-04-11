@@ -1,9 +1,9 @@
 start = node:group_exp+ { return node; }
 
 group_exp
-  = fieldname:fieldname value:StringLiteral _* { return { fieldname, value } }
-  / fieldname:nestedfieldname value:StringLiteral _* { return { fieldname, value } }
-  / value:StringLiteral _* { return { value } }
+  = fieldname:fieldname value:StringLiteral _ { return { fieldname, value } }
+  / fieldname:nestedfieldname value:StringLiteral _ { return { fieldname, value } }
+  / value:StringLiteral _ { return { value } }
 
 fieldname = fieldname:StringLiteral ':' { return fieldname }
 
