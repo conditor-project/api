@@ -1,17 +1,16 @@
 'use strict';
 
-const parser = require('../../../helpers/esSearch/parser'),
-      should = require('should'), // jshint ignore:line
-      _      = require('lodash')
-;
+const parser = require('../../../helpers/esSearch/parser');
+const should = require('should'); // jshint ignore:line
+const _ = require('lodash');
 
 const expectedAst = [
   {
-    query   : '"documentType:ART"',
+    query: '"documentType:ART"',
     expected: [{ queryString: 'documentType:ART' }]
   },
   {
-    query   : '"documentType:ART" author>name:"forename:rodrigo"',
+    query: '"documentType:ART" author>name>"forename:rodrigo"',
     expected: [
       {
         queryString: 'documentType:ART'
@@ -23,7 +22,7 @@ const expectedAst = [
     ]
   },
   {
-    query   : '"documentType:ART" author>name:"forename:rodrigo" title:"fr:(parthénogenese du poulpe)"',
+    query: '"documentType:ART" author>name>"forename:rodrigo" title>"fr:(parthénogenese du poulpe)"',
     expected: [
       {
         queryString: 'documentType:ART'
@@ -39,7 +38,7 @@ const expectedAst = [
     ]
   },
   {
-    query   : '"documentType:ART" author>name:"forename:rodrigo" title:"fr:\\"parthénogenese du poulpe\\""',
+    query: '"documentType:ART" author>name>"forename:rodrigo" title>"fr:\\"parthénogenese du poulpe\\""',
     expected: [
       {
         queryString: 'documentType:ART'
@@ -50,7 +49,7 @@ const expectedAst = [
       },
       {
         rootFieldName: 'title',
-        queryString: 'fr:\\"parthénogenese du poulpe\\"'
+        queryString: 'fr:"parthénogenese du poulpe"'
       }
     ]
   }
@@ -60,7 +59,7 @@ const expectedAst = [
 describe('esSearch: Grammar', () => {
   describe('parser#parse(searchQueryString)', () => {
     _.forEach(expectedAst, (test) => {
-      describe(`"${test.query}"`, () => {
+      describe(test.query, () => {
         it(test.message || 'Should return correct AST', (done) => {
           try {
             const ast = parser.parse(test.query);
