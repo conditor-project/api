@@ -16,7 +16,7 @@ const expectedAst = [
         queryString: 'documentType:ART'
       },
       {
-        rootFieldName: ['author', 'name'],
+        nestedPaths: ['author', 'name'],
         queryString: 'forename:rodrigo'
       }
     ]
@@ -28,11 +28,11 @@ const expectedAst = [
         queryString: 'documentType:ART'
       },
       {
-        rootFieldName: ['author', 'name'],
+        nestedPaths: ['author', 'name'],
         queryString: 'forename:rodrigo'
       },
       {
-        rootFieldName: 'title',
+        nestedPaths: ['title'],
         queryString: 'fr:(parthénogenese du poulpe)'
       }
     ]
@@ -44,11 +44,11 @@ const expectedAst = [
         queryString: 'documentType:ART'
       },
       {
-        rootFieldName: ['author', 'name'],
+        nestedPaths: ['author', 'name'],
         queryString: 'forename:rodrigo'
       },
       {
-        rootFieldName: 'title',
+        nestedPaths: ['title'],
         queryString: 'fr:"parthénogenese du poulpe"'
       }
     ]

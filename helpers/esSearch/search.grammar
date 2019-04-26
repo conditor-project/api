@@ -1,11 +1,11 @@
 start = node:group_exp+ { return node; }
 
 group_exp
-  = rootFieldName:rootFieldName queryString:DoubleStringLiteral _ { return { rootFieldName, queryString } }
-  / rootFieldName:nestedFieldName queryString:DoubleStringLiteral _ { return { rootFieldName, queryString } }
+  = nestedPaths:rootFieldName queryString:DoubleStringLiteral _ { return { nestedPaths, queryString } }
+  / nestedPaths:nestedFieldName queryString:DoubleStringLiteral _ { return { nestedPaths, queryString } }
   / queryString:StringLiteral _ { return { queryString } }
 
-rootFieldName = rootFieldName:StringLiteral '>' { return rootFieldName }
+rootFieldName = rootFieldName:StringLiteral '>' { return [ rootFieldName ] }
 
 nestedFieldName = nestedFieldName:subFieldName+ { return nestedFieldName }
 
