@@ -1,5 +1,5 @@
 'use strict';
-
+/* eslint-env mocha */
 const parser = require('../../../helpers/esSearch/parser');
 const should = require('should'); // jshint ignore:line
 const _ = require('lodash');
@@ -55,7 +55,6 @@ const expectedAst = [
   }
 ];
 
-
 describe('esSearch: Grammar', () => {
   describe('parser#parse(searchQueryString)', () => {
     _.forEach(expectedAst, (test) => {
@@ -66,7 +65,7 @@ describe('esSearch: Grammar', () => {
             ast.should.deepEqual(test.expected);
             done();
           } catch (error) {
-            done(error)
+            done(error);
           }
         });
       });
