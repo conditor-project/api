@@ -6,9 +6,6 @@ const should = require('should'); // jshint ignore:line
 
 const queries = [
   {
-    query: '""'
-  },
-  {
     query: '"*"'
   },
   {

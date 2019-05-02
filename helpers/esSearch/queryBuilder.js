@@ -6,15 +6,16 @@ const {
 } = require('config-component').get(module);
 const esb = require('elastic-builder/src');
 const parser = require('./parser');
-
+const { attempt } = require('./validation');
 const queryBuilder = module.exports;
 
 queryBuilder.build = build;
 
 function build (searchQueryString) {
   const ast = parser.parse(searchQueryString);
+  const validateAst = attempt(ast);
 
-  return ast.map(item => {
+  return validateAst.map(item => {
     if (item.hasOwnProperty('nestedPaths') && item.nestedPaths.length > 0) {
       return buildNestedQuery(item.nestedPaths, item.queryString);
     }
