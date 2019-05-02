@@ -25,6 +25,24 @@ const queries = [
   },
   {
     query: `"documentType:ART" 'title.fr:"parthenogenese du poulpe"' authors>affiliations>"authors.affiliations.ref:*"`
+  },
+  {
+    query: '"city.\*:(this AND that OR thus)"'
+  },
+  {
+    query: '"name:/joh?n(ath[oa]n)/"'
+  },
+  {
+    query: '"quikc~ brwn~ foks~"'
+  },
+  {
+    query: '"count:[1 TO 5}"'
+  },
+  {
+    query: '"quick^2 fox"'
+  },
+  {
+    query: '"status:(active OR pending) title:(full text search)^2"'
   }
 ];
 

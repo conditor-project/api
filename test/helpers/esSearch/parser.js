@@ -22,7 +22,7 @@ const expectedAst = [
     ]
   },
   {
-    query: '"documentType:ART" author>name>"forename:rodrigo" title>"fr:(parthénogenese du poulpe)"',
+    query: '"documentType:ART" author>name>"forename:rodrigo" title>"title.fr:(parthénogenese du poulpe)"',
     expected: [
       {
         queryString: 'documentType:ART'
@@ -33,12 +33,12 @@ const expectedAst = [
       },
       {
         nestedPaths: ['title'],
-        queryString: 'fr:(parthénogenese du poulpe)'
+        queryString: 'title.fr:(parthénogenese du poulpe)'
       }
     ]
   },
   {
-    query: '"documentType:ART" author>name>"forename:rodrigo" title>"fr:\\"parthénogenese du poulpe\\""',
+    query: '"documentType:ART" author>name>"forename:rodrigo" title>"title.fr:\\"parthénogenese du poulpe\\""',
     expected: [
       {
         queryString: 'documentType:ART'
@@ -49,7 +49,7 @@ const expectedAst = [
       },
       {
         nestedPaths: ['title'],
-        queryString: 'fr:"parthénogenese du poulpe"'
+        queryString: 'title.fr:"parthénogenese du poulpe"'
       }
     ]
   }
