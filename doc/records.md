@@ -26,7 +26,7 @@ Il est aussi possible de faire une requête sur un champ imbriqué (par exemple,
 
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 
-6. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+6. `q` (string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
 7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
 
@@ -91,7 +91,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
-3. `q` (string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence entouré de simple ou double guillements.
+3. `q` (string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence entouré de simple ou double guillements.
 4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
 5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
@@ -134,7 +134,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
-6. `q`(string) : Une `Query Lucene` qui permet de filtrer et trier les notices grâce à un score de pertinence.
+6. `q`(string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
 7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques. 
 8. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
