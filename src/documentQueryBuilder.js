@@ -17,7 +17,7 @@ documentQueryBuilder.buildRequestBody = buildRequestBody;
 
 function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = {}, sortQuery = '') {
 
-  luceneQueryString = _.isNil(luceneQueryString) ? '*' : luceneQueryString;
+  luceneQueryString = _.isNil(luceneQueryString) ? '"*"' : luceneQueryString;
   aggsQueryString = _.isNil(aggsQueryString) ? '' : aggsQueryString;
 
   return esb
