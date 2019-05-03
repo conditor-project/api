@@ -7,7 +7,10 @@ const {security: {jwt: jwtConfig}, app} = require('config-component').get(module
 
 const jwtToken = module.exports;
 
-jwtToken.generate = ({jwtId} = {}) => {
+jwtToken.generate = ({jwtId, sub} = {}) => {
+  if (sub && !(typeof sub === 'string' && !sub.startwith('mailto:'))) throw new Error(
+    '"sub" must be an email adresse prefixed by "mailto:"');
+
   return jwt.sign(
     {},
     jwtConfig.secret,
@@ -15,7 +18,7 @@ jwtToken.generate = ({jwtId} = {}) => {
       algorithm: jwtConfig.algorithm,
       expiresIn: jwtConfig.expiresIn,
       issuer   : app.name,
-      subject  : 'user:anonymous',
+      subject  : sub || 'mailto:user@conditor.fr',
       jwtid    : jwtId || nanoid()
     }
   );

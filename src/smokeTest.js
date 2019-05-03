@@ -1,10 +1,10 @@
 'use strict';
 
-const esClients           = require('../helpers/clients/elastic').startAll().get(),
-      pgClients           = require('../helpers/clients/pg').startAll().get(),
-      {logError, logInfo} = require('../helpers/logger')
+const esClients = require('../helpers/clients/elastic').startAll().get(),
+      {logInfo} = require('../helpers/logger'),
+      db        = require('../db/models/index'),
+      _         = require('lodash')
 ;
-
 
 const smokeTest = module.exports;
 
@@ -17,7 +17,7 @@ smokeTest.run = function() {
     })
     .then(() => {
       logInfo(`Smoke test on ${'PostGreSQL clients'.info}`);
-      return testPgClients();
+      return testPgClient();
     })
     ;
 };
@@ -35,13 +35,7 @@ function testElasticClients () {
   return Promise.all(promises);
 }
 
-function testPgClients () {
-  const promises =
-          Object.values(pgClients)
-                .map(
-                  (client) => {
-                    return client.authenticate();
-                  });
-
-  return Promise.all(promises);
+function testPgClient () {
+  return db.sequelize.authenticate()
+    ;
 }

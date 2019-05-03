@@ -3,26 +3,33 @@
 'use strict';
 
 const fs                 = require('fs-extra'),
-      {generate, verify} = require('../src/jwtToken')
+      {generate, verify} = require('../src/jwtToken'),
+      myColors           = require('../helpers/myColors')
 ;
 const file = './.jwt/tokenRegistry.json';
 
-const token = generate();
+const token = generate(),
+      entry = _buildRegistration(token)
+;
 
 fs.readJson(file)
   .then((registry) => {
-    registry.push(_buildRegistration(token));
+    registry.push(entry);
     return registry;
   })
   .catch((err) => {
     if (err.code === 'ENOENT') {
-      return [_buildRegistration(token)];
+      return [entry];
     }
     console.error(err);
     process.exit(1);
   })
   .then((json) => {
-    fs.outputJson(file, json, {spaces: 2});
+    fs.outputJson(file, json, {spaces: 2})
+      .then(() => {
+        console.info('Jwt token generated'.bold.success);
+        console.dir(entry);
+      });
   });
 
 function _buildRegistration (token) {
@@ -32,6 +39,7 @@ function _buildRegistration (token) {
     token,
     creation  : (new Date(decoded.iat * 1000)).toLocaleString(),
     expiration: (new Date(decoded.exp * 1000)).toLocaleString(),
+    subject   : decoded.sub,
     jwtid     : decoded.jti
   };
 }

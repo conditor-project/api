@@ -122,8 +122,7 @@ router.get(`/records(/_filter` + filterByCriteriaRouteTemplate + `)?/zip`,
                        res.set('Content-disposition', 'attachment; filename=corpus.zip');
                        getResultHandler(res)(result);
                      }
-                   })
-                   ;
+                   });
                })
                .catch(next);
            });

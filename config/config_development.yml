@@ -8,12 +8,13 @@ nodejs:
   stackTraceLimit: 20
 
 smokeTest:
-  doRun: false
+  doRun: true
 
 security:
-  ip:
+  ip:  # list authorized ip Users
     inMemory:
-      - 127.0.0.1
+      - ip: 127.0.0.1
+        email: user@conditor.fr
 
 indices:
   records:

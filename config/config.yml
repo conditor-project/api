@@ -32,8 +32,11 @@ security:
     secret: %env(JWT_KEY)%
     expiresIn: 30 days # https://github.com/zeit/ms
     forbiddenIds: %env(FORBIDDEN_JWT_IDS)%
-  ip:
-    inMemory: [] # list authorized ips
+#  ip:  # list authorized ip Users
+#    inMemory:
+#      - ip: 127.0.0.1
+#        email: user@conditor.fr
+
 
 nodejs:
   stackTraceLimit: 10
@@ -74,6 +77,7 @@ pg:
      username: %env(PG_USERNAME)%
      password: %env(PG_PASSWORD)%
      database: %env(PG_DATABASE)%
+     operatorsAliases: false
 
 aggregation:
   bucket:

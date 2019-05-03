@@ -8,12 +8,13 @@ const
 ;
 
 
-const appName   = _.get(packageJson, 'name', 'myApp');
+const appName = _.get(packageJson, 'name', 'myApp');
 
 module.exports.logInfo = logInfo;
 module.exports.logError = logError;
 module.exports.logWarning = logWarning;
 module.exports.logDebug = logDebug;
+module.exports.logSuccess = logSuccess;
 
 function logError (err) {
   const message = typeof err === 'string' ? arguments : [err.message, err];
@@ -23,6 +24,14 @@ function logError (err) {
                 ...(_.map(message, trans))
   )
   ;
+}
+
+function logSuccess () {
+  console.info('%s: [%s]:',
+               appName.bold.success,
+               new Date(Date.now()).toLocaleString(),
+               ...(_.map(arguments, trans))
+  );
 }
 
 function logInfo () {

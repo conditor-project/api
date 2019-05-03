@@ -7,6 +7,11 @@ const Joi    = require('joi'),
 const configValidator = module.exports;
 
 const customJoi = extend();
+const ipUser = Joi.object()
+                  .keys({
+                          ip   : Joi.string().ip({version: ['ipv4'], cidr: 'forbidden'}),
+                          email: Joi.string().email()
+                        });
 
 configValidator.validate = function(config) {
   return Joi.validate(config, configValidator.schema, {allowUnknown: true, presence: 'required', abortEarly: false});
@@ -14,11 +19,11 @@ configValidator.validate = function(config) {
 
 configValidator.schema = Joi.object()
                             .keys({
-                                    app     : {
-                                      version: customJoi.string().semver(),
+                                    app         : {
+                                      version                   : customJoi.string().semver(),
                                       doExitOnUnhandledRejection: Joi.boolean()
                                     },
-                                    elastic : {
+                                    elastic     : {
                                       queryString: {
                                         allowLeadingWildcard : Joi.boolean().optional(),
                                         maxDeterminizedStates: Joi.number().optional()
@@ -29,19 +34,19 @@ configValidator.schema = Joi.object()
                                         }
                                       }
                                     },
-                                    express: {
+                                    express     : {
                                       allowedAccessMethods: Joi.array()
                                     },
-                                    security: {
+                                    security    : {
                                       ip : {
-                                        inMemory: Joi.array().optional()
+                                        inMemory: Joi.array().items(ipUser).optional()
                                       },
                                       jwt: {
                                         secret   : Joi.string(),
                                         algorithm: Joi.string()
                                       }
                                     },
-                              sourceIdsMap : Joi.object()
+                                    sourceIdsMap: Joi.object()
                                   })
                             .optionalKeys('security.ip')
 ;
