@@ -10,7 +10,7 @@ services:
       args:
         - http_proxy
         - https_proxy
-    image: conditor/api:1.0.0-beta.14
+    image: conditor/api:1.0.0-beta.15
     environment :
       LOG_PATH: /var/log
       CONDITOR_API_HOST: 0.0.0.0
@@ -19,12 +19,12 @@ services:
       REVERSE_PROXY: ${REVERSE_PROXY}
       JWT_KEY: ${JWT_KEY}
       NODE_ENV: ${NODE_ENV}
+      CONDITOR_ES_VERSION: 6.x
       PG_HOST: conditor-postgres
       PG_PORT: ${PG_PORT}
       PG_USERNAME: ${PG_USERNAME}
       PG_PASSWORD: ${PG_PASSWORD}
       PG_DATABASE: ${PG_DATABASE}
-      CONDITOR_ES_VERSION: 6.x
 
     ports:
       - 63332:63332
