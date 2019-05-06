@@ -1,5 +1,8 @@
 node_modules
 test
+pgdata
+.*
 config/secret_parameters.yml
 npm-debug.log
-
+local*
+*.env.sh
