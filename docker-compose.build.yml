@@ -2,6 +2,8 @@ version: '2'
 services:
 
   conditorapi:
+    depends_on: 
+      - conditorpg
     container_name: conditor-api
     build:
       context: .
@@ -17,6 +19,11 @@ services:
       REVERSE_PROXY: ${REVERSE_PROXY}
       JWT_KEY: ${JWT_KEY}
       NODE_ENV: ${NODE_ENV}
+      PG_HOST: conditor-postgres
+      PG_PORT: ${PG_PORT}
+      PG_USERNAME: ${PG_USERNAME}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DATABASE: ${PG_DATABASE}
       CONDITOR_ES_VERSION: 6.x
 
     ports:
@@ -34,18 +41,20 @@ services:
     image: postgres:11.1
     environment:
       POSTGRES_HOST: ${PG_HOST}
-      POSTGRES_PORT: 5432
+      POSTGRES_PORT: ${PG_PORT}
       POSTGRES_USER: ${PG_USERNAME}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
-      POSTGRES_DB: conditor
+      POSTGRES_DB: ${PG_DATABASE}
     ports:
-      - 5432:5432
+      - 5432:${PG_PORT}
     networks:
       - apinet
     volumes:
       - ./pgdata:/var/lib/postgresql/data
 
   conditorpga:
+    depends_on: 
+      - conditorpg
     container_name: conditor-pgadmin
     image: dpage/pgadmin4:4
     environment: 
