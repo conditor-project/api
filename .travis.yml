@@ -10,6 +10,7 @@ before_script:
   - psql -c "CREATE DATABASE conditor;" -U postgres
   - psql -c "CREATE USER conditor WITH PASSWORD 'conditor';" -U postgres
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE conditor TO conditor;" -U postgres
+  - npx sequelize db:migrate
   - sleep 10
 node_js:
   - '10'
