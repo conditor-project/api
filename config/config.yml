@@ -78,7 +78,6 @@ pg:
      password: %env(PG_PASSWORD)%
      database: %env(PG_DATABASE)%
      operatorsAliases: false
-     logging: false
 
 aggregation:
   bucket:
@@ -91,3 +90,5 @@ indices:
   records:
     index: %env(RECORD_INDEX)%
     type: %env(RECORD_TYPE)%
+    excludes:
+      - path

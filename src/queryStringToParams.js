@@ -1,12 +1,12 @@
 'use strict';
 
 const
-  config    = require('config-component').get(module),
-  moment    = require('moment'),
-  _         = require('lodash'),
-  trimChars = require('lodash/fp/trimChars'),
-  state     = require('../helpers/state'),
-  isNumeric = require('../helpers/isNumeric')
+  {elastic} = require('config-component').get(module),
+  moment             = require('moment'),
+  _                  = require('lodash'),
+  splitList          = require('../helpers/splitList'),
+  state              = require('../helpers/state'),
+  isNumeric          = require('../helpers/isNumeric')
 ;
 
 module.exports = queryStringToParams;
@@ -22,15 +22,15 @@ const paramsMapping = {
             }
           }
         },
-        includes  : {
+        includes : {
           mapKey  : _.constant('_sourceIncludes'),
-          mapValue: _splitString
+          mapValue: splitList
         },
-        excludes  : {
+        excludes : {
           mapKey  : _.constant('_sourceExcludes'),
-          mapValue: _splitString
+          mapValue: splitList
         },
-        page_size : {
+        page_size: {
           isValid    : _validatePageSize,
           mapValue   : Number,
           mapKey     : _.constant('size'),
@@ -40,7 +40,7 @@ const paramsMapping = {
           isValid : _validatePage,
           mapValue: (page, key, queryString, params) => {
             const size = _.get(params, 'size', 10);
-            return (page - 1) * Math.max(size,1);
+            return (page - 1) * Math.max(size, 1);
           },
           mapKey  : _.constant('from')
         },
@@ -70,7 +70,6 @@ function queryStringToParams (queryString) {
     .value()
   ;
   _.forOwn(paramsValidation, (validator) => {validator(params);});
-
   return params;
 }
 
@@ -107,7 +106,7 @@ function _validatePage (page) {
 
 function _validatePageSize (pageSize) {
   if (!_isPositiveInteger(pageSize)) throw invalidType('page_size', pageSize, 'Positive Integer');
-  if (pageSize > config.elastic.maxPageSize) throw sizeTooHighException(pageSize, config.elastic.maxPageSize);
+  if (pageSize > elastic.maxPageSize) throw sizeTooHighException(pageSize, elastic.maxPageSize);
 }
 
 function _isPositiveInteger (value) {
@@ -117,7 +116,7 @@ function _isPositiveInteger (value) {
 function _validateScrollDuration (durationString) {
 
   let scrollDuration,
-      maxDuration = _convertDurationStringToSecond(config.elastic.maxScrollDuration)
+      maxDuration = _convertDurationStringToSecond(elastic.maxScrollDuration)
   ;
   try {
     scrollDuration = _convertDurationStringToSecond(durationString);
@@ -178,12 +177,4 @@ function _parseDurationString (durationString) {
 
 function _escapeLuceneQuery (query) {
   return query.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, '\\$1');
-}
-
-function _splitString (value) {
-  return _(value)
-    .split(',')
-    .map(trimChars(' '))
-    .value()
-    ;
 }

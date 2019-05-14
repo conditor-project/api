@@ -1,8 +1,7 @@
 'use strict';
 
 const _     = require('lodash'),
-      state = require('./state'),
-      {sourceIdsMap} = require('config-component').get(module)
+      state = require('./state')
 ;
 
 const responseFormat = module.exports;

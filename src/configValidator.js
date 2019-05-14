@@ -48,7 +48,11 @@ configValidator.schema = Joi.object()
                                     },
                                     sourceIdsMap: Joi.object(),
                                     indices     : Joi.object().keys({
-                                                                      records: {index: Joi.string(), type: Joi.string()}
+                                                                      records: {
+                                                                        index: Joi.string(),
+                                                                        type: Joi.string(),
+                                                                        excludes: Joi.array().optional()
+                                                                      }
                                                                     })
                                   })
                             .optionalKeys('security.ip')
