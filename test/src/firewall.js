@@ -15,8 +15,8 @@ describe('GET /records', function() {
     it('Should return status 2xx', function(done) {
       const token = generate();
       request(app)
-        .get(`/${apiVersion}/records?page_size=50&q=author:bob`)
-        .set('X-Forwarded-For', '166.66.6.6') // We spoof our ip
+        .get(`/${apiVersion}/records?page_size=50&q="author:bob"`)
+        .set('X-Forwarded-For','166.66.6.6') // We spoof our ip
         .set('Authorization', `Bearer ${token}`)
         .expect((res) => {if (res.statusType !== 2) throw new Error(res.status);})
         .end(done);

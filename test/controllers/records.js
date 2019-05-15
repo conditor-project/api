@@ -176,7 +176,7 @@ describe('GET /records', function() {
   describe('/zip', function() {
     this.timeout(300000);
     it('Should respond with a ZIP including records.json', function(done) {
-      const requestUrl = `/${apiVersion}/records/_filter/hal/2014/duplicate/near_duplicate/zip?q=authors:jean&include=idConditor&limit=617`;
+      const requestUrl = `/${apiVersion}/records/_filter/hal/2014/duplicate/near_duplicate/zip?q="authors:jean"&include=idConditor&limit=617`;
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)

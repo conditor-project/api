@@ -1,0 +1,12 @@
+start = node:group_exp+ { return node; }
+
+group_exp
+  = nestedPaths:rootFieldName queryString:DoubleStringLiteral _ { return { nestedPaths, queryString } }
+  / nestedPaths:nestedFieldName queryString:DoubleStringLiteral _ { return { nestedPaths, queryString } }
+  / queryString:StringLiteral _ { return { queryString } }
+
+rootFieldName = rootFieldName:StringLiteral '>' { return [ rootFieldName ] }
+
+nestedFieldName = nestedFieldName:subFieldName+ { return nestedFieldName }
+
+subFieldName = subFieldName:StringLiteral '>' { return subFieldName }
