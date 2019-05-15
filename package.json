@@ -58,7 +58,7 @@
     "elasticsearch-scroll-stream": "^1.1.4",
     "express": "^4.16.4",
     "file-stream-rotator": "^0.4.1",
-    "forever": "^0.15.3",
+    "forever": "^1.0.0",
     "format-link-header": "^2.1.0",
     "fs-extra": "^8.0.1",
     "he": "^1.2.0",
@@ -78,7 +78,7 @@
     "pg": "^7.11.0",
     "pg-hstore": "^2.3.2",
     "semver": "^6.0.0",
-    "sequelize": "^4.44.0",
+    "sequelize": "^5.8.6",
     "sequelize-auto-migrations": "^1.0.3",
     "sequelize-cli": "^5.4.0",
     "yauzl": "^2.10.0"
