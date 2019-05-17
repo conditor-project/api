@@ -94,8 +94,7 @@ router.post('/duplicatesValidations', (req, res, next) => {
 
       return db.DuplicatesValidations.bulkCreate(bulk, {validate: true, individualHooks: true})
                .then(() => {
-
-                 updateDuplicatesTree({initialRecord, reportDuplicates, reportNonDuplicates});
+                 return updateDuplicatesTree(initialRecord, {reportDuplicates, reportNonDuplicates});
                });
     })
     .then(() => res.sendStatus(201))

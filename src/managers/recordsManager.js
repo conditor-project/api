@@ -178,7 +178,7 @@ function getSingleTeiByIdConditor (idConditor, options = {}) {
 
 searchByIdConditors.options = ['scroll', 'includes', 'excludes', 'page', 'page_size', 'aggs', 'sort'];
 function searchByIdConditors (idConditors, options = {}) {
-  options.q = `idConditor:(${idConditors.join(' OR ')})`;
+  options.q = `"idConditor:(${idConditors.join(' OR ')})"`;
   return search(options);
 }
 

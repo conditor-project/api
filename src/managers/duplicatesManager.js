@@ -31,7 +31,7 @@ function updateDuplicatesTree (initialRecord, {reportDuplicates = [], reportNonD
           _([initialRecord])
             .concat(
               _.get(initialRecord, 'duplicates', []),
-              reportDuplicates,
+              _.map(reportDuplicates, (reportedDuplicate)=>_.set(reportedDuplicate,'isValidatedByUser',true)),
               _.flatMap(reportDuplicates, 'duplicates')
             )
             .compact()
@@ -41,14 +41,20 @@ function updateDuplicatesTree (initialRecord, {reportDuplicates = [], reportNonD
   ;
 
   const idConditors = _.map(duplicatesChain, 'idConditor');
-  const duplicatesIdChain = '';
+  let duplicatesIdChain = _.chain(duplicatesChain)
+                             .map(({source, idConditor}) => `${source}:${idConditor}`)
+                             .sort()
+                             .join('!')
+                             .value()
+  ;
+
   const q = `idConditor:(${idConditors.join(' OR ')})`;
   const painlessParams = {
     duplicates   : duplicatesChain,
     nonDuplicates: reportNonDuplicates,
-    duplicatesIdChain
+    duplicatesIdChain: `!${duplicatesIdChain}!`
   };
-  console.dir(duplicatesChain, {depth: 10});
+
   const params =
           _.defaultsDeep(
             {
@@ -70,6 +76,6 @@ function updateDuplicatesTree (initialRecord, {reportDuplicates = [], reportNonD
     .updateByQuery(params);
 }
 
-function toNestedDuplicate ({source, idConditor}) {
-  return {source, idConditor};
+function toNestedDuplicate ({source, idConditor, isValidatedByUser}) {
+  return {source, idConditor, isValidatedByUser};
 }
