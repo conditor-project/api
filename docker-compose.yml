@@ -2,8 +2,10 @@ version: '2'
 services:
 
   conditorapi:
+    depends_on: 
+      - conditorpg
     container_name: conditor-api
-    image: conditor/api:1.0.0-beta.14
+    image: conditor/api:1.0.0-beta.15
     environment :
       LOG_PATH: /var/log
       CONDITOR_API_HOST: 0.0.0.0
@@ -13,6 +15,11 @@ services:
       JWT_KEY: ${JWT_KEY}
       NODE_ENV: ${NODE_ENV}
       CONDITOR_ES_VERSION: 6.x
+      PG_HOST: conditor-postgres
+      PG_PORT: ${PG_PORT}
+      PG_USERNAME: ${PG_USERNAME}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DATABASE: ${PG_DATABASE}
 
     ports:
       - 63332:63332
@@ -23,6 +30,35 @@ services:
       - ./bin:/app/bin
       - ./.jwt:/app/.jwt
     restart: "on-failure:5"
+
+  conditorpg:
+    container_name: conditor-postgres
+    image: postgres:11.1
+    environment:
+      POSTGRES_HOST: ${PG_HOST}
+      POSTGRES_PORT: ${PG_PORT}
+      POSTGRES_USER: ${PG_USERNAME}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE}
+    ports:
+      - 5432:${PG_PORT}
+    networks:
+      - apinet
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  conditorpga:
+    depends_on: 
+      - conditorpg
+    container_name: conditor-pgadmin
+    image: dpage/pgadmin4:4
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports: 
+      - 54322:80
+    networks:
+      - apinet
 
 networks:
   apinet:

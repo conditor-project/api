@@ -1,11 +1,12 @@
 {
   "name": "conditor-api",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0-beta.15",
   "description": "Main api of the Conditor-project",
   "main": "app.js",
   "scripts": {
-    "start": "export NODE_ENV=production; npx view-config; forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a  -e ~/.forever/conditor-api.errors.log app.js --no-color",
-    "stop": "forever stop conditor-api",
+    "start": "export NODE_ENV=production; view-config; node app.js",
+    "start-forever": "export NODE_ENV=production; view-config; forever start --killSignal SIGINT --uid conditor-api --id conditor-api -a  -e ~/.forever/conditor-api.errors.log app.js --no-color",
+    "stop-forever": "forever stop conditor-api",
     "dev": "export NODE_ENV=development; view-config; nodemon app.js",
     "test:nyc": "export NODE_ENV=test; npm run config:validate; nyc mocha --recursive",
     "test": "export NODE_ENV=test; npm run config:validate; mocha --recursive",

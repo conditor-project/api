@@ -78,8 +78,10 @@ export NODE_ENV="development|production"
 
 ```bash
 export PG_HOST="localhost"
+export PG_PORT="5432"
 export PG_USERNAME="conditor"
 export PG_PASSWORD="conditor"
+export PG_DATABASE="conditor"
 export PGADMIN_DEFAULT_EMAIL="pgadmin@mailbox.com"
 export PGADMIN_DEFAULT_PASSWORD="pgadminpwd"
 ```
