@@ -20,7 +20,7 @@ ValueSeparator = _ "," _
 _
  = Whitespace*
 
-Whitespace "Whitespace" = [ \t\n\r]
+Whitespace = [ \t\n\r]
 
 // ----- 3. Values -----
 
@@ -108,37 +108,39 @@ Zero
 
 // ----- 7. Strings -----
 
-StringLiteral "string"
+String = chars:.* { return chars.join('') }
+
+DoubleStringLiteral = '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
+
+StringLiteral
   = '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
   / "'" chars:SingleStringCharacter* "'" { return chars.join("") }
   /  chars:IdentifierCharacter+ { return chars.join(""); }
 
 DoubleStringCharacter
-  = $Char
+  = !('"' / "\\") char:. { return char; }
+  / "\\" sequence:EscapeSequence { return sequence; }
 
 SingleStringCharacter
-  = $(!("'") Char)
+  = !("'" / "\\") char:. { return char; }
+  / "\\" sequence:EscapeSequence { return sequence; }
+
+EscapeSequence
+  = "'"
+  / '"'  
+  / "\\"
+  / "/"
+  / "b" { return "\b"; }
+  / "f" { return "\f"; }
+  / "n" { return "\n"; }
+  / "r" { return "\r"; }
+  / "t" { return "\t"; }
+  / "u" digits:$(HexDigit HexDigit HexDigit HexDigit) {
+  return String.fromCharCode(parseInt(digits, 16));
+  }
 
 IdentifierCharacter
   = [A-Za-z0-9_\-.]
-
-Char
-  = Unescaped
-  / Escape
-    sequence:(
-        '"'
-      / "\\"
-      / "/"
-      / "b" { return "\b"; }
-      / "f" { return "\f"; }
-      / "n" { return "\n"; }
-      / "r" { return "\r"; }
-      / "t" { return "\t"; }
-      / "u" digits:$(HexDigit HexDigit HexDigit HexDigit) {
-          return String.fromCharCode(parseInt(digits, 16));
-        }
-    )
-    { return sequence; }
 
 Escape
   = "\\"

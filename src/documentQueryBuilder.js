@@ -6,6 +6,7 @@ const {
       _                          = require('lodash'),
       {build: buildAggregations} = require('../helpers/esAggregation/queryBuilder'),
       {build: buildSorts}        = require('../helpers/esSort/queryBuilder'),
+      {build: buildSearchs}        = require('../helpers/esSearch/queryBuilder'),
       reThrow                    = require('./reThrow')
 ;
 
@@ -16,7 +17,7 @@ documentQueryBuilder.buildRequestBody = buildRequestBody;
 
 function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = {}, sortQuery = '') {
 
-  luceneQueryString = _.isNil(luceneQueryString) ? '*' : luceneQueryString;
+  luceneQueryString = _.isNil(luceneQueryString) ? '"*"' : luceneQueryString;
   aggsQueryString = _.isNil(aggsQueryString) ? '' : aggsQueryString;
 
   return esb
@@ -24,18 +25,11 @@ function buildRequestBody (luceneQueryString, aggsQueryString, filterCriteria = 
     .query(
       esb
         .boolQuery()
-        .filter(
-          _buildTermQueriesByCriteria(filterCriteria)
-        )
-        .must(
-          _buildQueryStringQuery(luceneQueryString)
-        )
+        .filter(_buildTermQueriesByCriteria(filterCriteria))
+        .must(_buildSearchs(luceneQueryString))
     )
-    .sorts(
-      _buildSorts(sortQuery)
-    )
-    .aggs(_buildAggregations(aggsQueryString))
-    ;
+    .sorts(_buildSorts(sortQuery))
+    .aggs(_buildAggregations(aggsQueryString));
 }
 
 function _buildTermQueriesByCriteria (criteria) {
@@ -47,15 +41,6 @@ function _buildTermQueriesByCriteria (criteria) {
                        filters.push(esb.termQuery(field, value));
                      },
                      []);
-}
-
-function _buildQueryStringQuery (queryLucene) {
-  return esb
-    .queryStringQuery(queryLucene)
-    .allowLeadingWildcard(allowLeadingWildcard)
-    .maxDeterminizedStates(maxDeterminizedStates)
-    .lenient(lenient)
-    ;
 }
 
 function _buildSorts (sortQuery) {
@@ -74,4 +59,10 @@ function _buildAggregations (aggsQueryString) {
   }
 }
 
-
+function _buildSearchs (searchQueryString) {
+  try {
+    return buildSearchs(searchQueryString);
+  } catch (err) {
+    reThrow(err);
+  }
+}

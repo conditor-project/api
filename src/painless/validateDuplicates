@@ -1,0 +1,61 @@
+    Object findDuplicate(def duplicates, def predicateDuplicate){
+      for(def duplicate:duplicates){
+        if(duplicate.idConditor == predicateDuplicate.idConditor){return duplicate}
+      }
+      return null;
+    }
+
+    int addNx(ArrayList duplicates, def duplicate){
+      if(findDuplicate(duplicates, duplicate) == null){
+        duplicates.add(duplicate);
+      }
+
+      return duplicates.size();
+    }
+
+
+    int removeIx(ArrayList duplicates, def duplicate){
+      for(int i = 0; i < duplicates.size(); i++ ){
+       if(duplicates[i].idConditor == duplicate.idConditor){duplicates.remove(i);}
+      }
+
+      return  duplicates.size();
+    }
+
+
+    if(ctx._source.duplicates == null){
+      ctx._source.duplicates = new ArrayList();
+    }
+    if(ctx._source.nearDuplicates == null){
+      ctx._source.nearDuplicates = new ArrayList();
+    }
+
+    if(params.duplicates == null){
+      params.duplicates = new ArrayList();
+    }
+    if(params.nonDuplicates == null){
+      params.duplicates = new ArrayList();
+    }
+
+
+    ArrayList allReportedDuplicates= new ArrayList();
+    allReportedDuplicates.addAll(params.duplicates);
+    allReportedDuplicates.addAll(params.nonDuplicates);
+
+    for(def duplicate:params.duplicates){
+      if(duplicate.idConditor == ctx._source.idConditor){
+        continue;
+      }
+      addNx(ctx._source.duplicates, duplicate);
+    }
+
+    ctx._source.isDuplicate = ctx._source.duplicates.size() > 0 ? true: false;
+
+    if(ctx._source.nearDuplicates.size() != 0){
+      for(def duplicate:allReportedDuplicates){
+        removeIx(ctx._source.nearDuplicates, duplicate);
+      }
+      ctx._source.isNearDuplicate = ctx._source.nearDuplicates.size() > 0 ?true: false;
+    }
+
+    ctx._source.idChain = params.duplicatesIdChain;

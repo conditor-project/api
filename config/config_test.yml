@@ -22,3 +22,13 @@ elastic:
     main:
       log: # Possible values: error, info, trace, warning, debug
         - error
+
+pg:
+ clients:
+   main:
+     logging: false
+
+indices:
+  recordsTest:
+    index: records-test
+    type: %env(RECORD_TYPE)%

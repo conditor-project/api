@@ -6,3 +6,8 @@ imports:
 
 app:
   doExitOnUnhandledRejection: false
+
+pg:
+ clients:
+   main:
+     logging: false

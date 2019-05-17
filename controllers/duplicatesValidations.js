@@ -1,45 +1,49 @@
 'use strict';
 
-const express                                                          = require('express'),
-      router                                                           = express.Router(),
-      _                                                                = require('lodash'),
-      {validate: validateBody, normalize: normalizeBody}               = require(
+const express                                            = require('express'),
+      router                                             = express.Router(),
+      _                                                  = require('lodash'),
+      he                                                 = require('he'),
+      {sourceIdsMap}                                     = require('config-component').get(module),
+      db                                                 = require('../db/models/index'),
+      {validate: validateBody, normalize: normalizeBody} = require(
         '../src/duplicatesValidationsValidators'),
-      {logError, logDebug, logWarning}                                 = require('../helpers/logger'),
-      {getResultHandler, getErrorHandler, getSingleResultErrorHandler} = require('../src/resultHandler'),
-      reThrow                                                          = require('../src/reThrow'),
-      records                                                          = require('../src/manager/recordsManager'),
-      validateQueryString                                              = require('../helpers/validateQueryString'),
-      getInvalidOptionsHandler                                         = require('../src/getInvalidOptionsHandler'),
-      {sourceIdsMap}                                                   = require('config-component').get(module),
-      db                                                               = require('../db/models/index'),
-      he                                                               = require('he')
+      reThrow                                            = require('../src/reThrow'),
+      records                                            = require('../src/managers/recordsManager'),
+      validateQueryString                                = require('../helpers/validateQueryString'),
+      getInvalidOptionsHandler                           = require('../src/getInvalidOptionsHandler'),
+      {updateDuplicatesTree}                              = require('../src/managers/duplicatesManager')
 ;
 
 module.exports = router;
+
+const includes = _(sourceIdsMap)
+  .values()
+  .concat(['idConditor', 'source', 'sourceId', 'sourceUid', 'duplicates', 'nearDuplicates', 'chainId'])
+  .value()
+;
 
 router.post('/duplicatesValidations', (req, res, next) => {
   if (!req.is('json')) return res.sendStatus(415);
 
   validateBody(req.body)
     .then(normalizeBody)
-    .then(body => res.locals.body = body)
+    .then(normalizedBody => res.locals.reqBody = normalizedBody)
     .then(() => validateQueryString(req.query, 'access_token', 'debug'))
     .then(getInvalidOptionsHandler(res))
-    .then(() => records.getSingleHitByIdConditor(res.locals.body.recordId,
-                                                 {includes: `${_.values(sourceIdsMap)}, source,idConditor, duplicates, nearDuplicates`})
-    )
+    .then(() => records.getSingleHitByIdConditor(res.locals.reqBody.recordId, {includes}))
     .then(({result: initialRecord}) => {
       const nearDuplicatesIds          = _.map(initialRecord.nearDuplicates, (duplicate) => duplicate.idConditor),
             duplicatesIds              = _.map(initialRecord.duplicates, (duplicate) => duplicate.idConditor),
             reportedRecordsIds         = _.concat(_.chain(res)
-                                                   .get('locals.body.reportDuplicates', [])
+                                                   .get('locals.reqBody.reportDuplicates', [])
                                                    .map('recordId')
                                                    .value(),
                                                   _.chain(res)
-                                                   .get('locals.body.reportNonDuplicates', [])
+                                                   .get('locals.reqBody.reportNonDuplicates', [])
                                                    .map('recordId')
                                                    .value()),
+            // Sanity checks
             invalidRecordsIds          = _.difference(reportedRecordsIds, nearDuplicatesIds),
             nonUniqValidatedRecordsIds = _(reportedRecordsIds).groupBy()
                                                               .pickBy(group => group.length > 1)
@@ -47,7 +51,6 @@ router.post('/duplicatesValidations', (req, res, next) => {
                                                               .value(),
             duplicatesIntersection     = _.intersection(reportedRecordsIds, duplicatesIds)
       ;
-
       if (nonUniqValidatedRecordsIds.length) throw nonUniqueRecordsIdsException(nonUniqValidatedRecordsIds);
       if (invalidRecordsIds.length) throw invalidRecordsIdsException(invalidRecordsIds);
       if (duplicatesIntersection.length) throw duplicatesIntersectionException(duplicatesIntersection);
@@ -55,71 +58,70 @@ router.post('/duplicatesValidations', (req, res, next) => {
       res.locals.initialRecord = initialRecord;
       return reportedRecordsIds;
     })
-    .then(reportedRecordsIds => records.searchByIdConditors(reportedRecordsIds,
-                                                            {includes: `${_.values(sourceIdsMap)}, idConditor, source, sourceId, sourceUid, duplicates, nearDuplicates`})
-    )
-    .then(result => _.transform(_.concat(result.result, res.locals.initialRecord),
-                                (accu, {source, idConditor, duplicates, nearDuplicates, sourceId, sourceUid, ...record}) => {
-                                  accu[idConditor] = {
-                                    idConditor,
-                                    source,
-                                    sourceId : sourceId || record[sourceIdsMap[source]],
-                                    sourceUid: sourceUid || `${source}#${record[sourceIdsMap[source]]}`,
-                                    duplicates,
-                                    nearDuplicates
-                                  };
-                                },
-                                {}
-          )
-    )
-    .then(result => {
+    .then(reportedRecordsIds => records.searchByIdConditors(reportedRecordsIds, {includes}))
+    .then(({result}) => {
+
+      const recordsMap = _buildRecordsMap(result, res.locals.initialRecord);
+
       return {
-        initialRecord      : result[res.locals.body.recordId],
-        reportDuplicates   : _.map(res.locals.body.reportDuplicates,
-                                   ({recordId, comment}) => _.set(result[recordId], 'comment', comment)),
-        reportNonDuplicates: _.map(res.locals.body.reportNonDuplicates,
-                                   ({recordId, comment}) => _.set(result[recordId], 'comment', comment))
+        initialRecord      : recordsMap[res.locals.reqBody.recordId],
+        reportDuplicates   : _.map(res.locals.reqBody.reportDuplicates,
+                                   ({recordId, comment}) => _.chain(recordsMap[recordId])
+                                                             .set('comment', comment)
+                                                             .set('isDuplicate', true)
+                                                             .value()),
+        reportNonDuplicates: _.map(res.locals.reqBody.reportNonDuplicates,
+                                   ({recordId, comment}) => _.chain(recordsMap[recordId])
+                                                             .set('comment', comment)
+                                                             .set('isDuplicate', false)
+                                                             .value())
       };
     })
     .then(({initialRecord, reportDuplicates, reportNonDuplicates}) => {
-
-      const duplicatesBulk = _.transform(reportDuplicates, (bulk, targetRecord) => {
+      const bulk = _.transform(_.concat(reportDuplicates, reportNonDuplicates), (bulk, targetRecord) => {
         bulk.push({
-                    isDuplicate      : true,
+                    isDuplicate      : targetRecord.isDuplicate,
                     initialSource    : initialRecord.source,
                     initialSourceId  : initialRecord.sourceId,
                     initialIdConditor: initialRecord.idConditor,
                     targetSource     : targetRecord.source,
                     targetSourceId   : targetRecord.sourceId,
                     targetIdConditor : targetRecord.idConditor,
-                    comment          : he.encode(targetRecord.comment),
+                    comment          : targetRecord.comment && he.encode(targetRecord.comment),
                     UserId           : req.user.id
                   });
       }, []);
 
-      const nonDuplicatesBulk = _.transform(reportNonDuplicates, (bulk, targetRecord) => {
-        bulk.push({
-                    isDuplicate      : false,
-                    initialSource    : initialRecord.source,
-                    initialSourceId  : initialRecord.sourceId,
-                    initialIdConditor: initialRecord.idConditor,
-                    targetSource     : targetRecord.source,
-                    targetSourceId   : targetRecord.sourceId,
-                    targetIdConditor : targetRecord.idConditor,
-                    comment          : he.encode(targetRecord.comment),
-                    UserId           : req.user.id
-                  });
-      }, []);
+      return db.DuplicatesValidations.bulkCreate(bulk, {validate: true, individualHooks: true})
+               .then(() => {
 
-      const bulk = duplicatesBulk.concat(nonDuplicatesBulk);
-
-      return db.DuplicatesValidations.bulkCreate(bulk, {validate: true, individualHooks: true});
+                 updateDuplicatesTree({initialRecord, reportDuplicates, reportNonDuplicates});
+               });
     })
     .then(() => res.sendStatus(201))
     .catch(reThrow)
     .catch(next)
   ;
 });
+
+/*
+ * Helpers
+ */
+function _buildRecordsMap (...records) {
+  return _.transform(_.concat(...records),
+                     (accu, {source, idConditor, duplicates, nearDuplicates, sourceId, sourceUid, ...record}) => {
+                       accu[idConditor] = {
+                         idConditor,
+                         source,
+                         sourceId : sourceId || record[sourceIdsMap[source]],
+                         sourceUid: sourceUid || `${source}$${record[sourceIdsMap[source]]}`,
+                         duplicates,
+                         nearDuplicates
+                       };
+                     },
+                     {}
+  );
+}
 
 /*
  * Exceptions

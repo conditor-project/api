@@ -16,6 +16,7 @@ const recordsManager = module.exports;
 const
   defaultParams = {
     index     : indices.records.index,
+    type      : indices.records.type,
     filterPath: ['hits.hits',
                  'hits.hits._source',
                  'hits.hits._score',
@@ -35,6 +36,8 @@ recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
 recordsManager.getDuplicatesByIdConditor = getDuplicatesByIdConditor;
 recordsManager.getNearDuplicatesByIdConditor = getNearDuplicatesByIdConditor;
+
+
 
 getScrollStreamFilterByCriteria.options = ['includes', 'excludes', 'q', 'limit', 'sort'];
 function getScrollStreamFilterByCriteria (filterCriteria = {}, {q, sort, limit, ...options} = {}) {

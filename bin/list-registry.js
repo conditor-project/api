@@ -16,7 +16,7 @@ fs.readJson(file)
     if (!_.isArrayLikeObject(registry)) throw new Error('No registry');
     const [invalidTokens, validTokens] = _.partition(registry, ({token}) => isExpiredOrInvalid(token));
     console.info('Valid Tokens: '.bold.success);
-    console.dir(validTokens);
+    console.dir(_.sortBy(validTokens,['subject']));
     console.info('\nInvalid Tokens: '.bold.danger);
     console.dir(invalidTokens);
   })

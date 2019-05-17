@@ -2,7 +2,7 @@
 
 const express                                                          = require('express'),
       {logError, logDebug, logWarning}                                 = require('../helpers/logger'),
-      records                                                          = require('../src/manager/recordsManager'),
+      records                                                          = require('../src/managers/recordsManager'),
       {getResultHandler, getErrorHandler, getSingleResultErrorHandler} = require('../src/resultHandler'),
       _                                                                = require('lodash'),
       archiver                                                         = require('archiver'),

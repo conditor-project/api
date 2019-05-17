@@ -2,14 +2,17 @@
 
 const {security: {jwt: jwtConfig}, app} = require('config-component').get(module),
       jwt                               = require('jsonwebtoken'),
-      nanoid                            = require('nanoid')
+      nanoid                            = require('nanoid'),
+      email                             = require('./emailValidator')
 ;
 
 const jwtToken = module.exports;
 
+// @see https://tools.ietf.org/html/rfc7519#section-4.1.2
+
 jwtToken.generate = ({jwtId, sub} = {}) => {
-  if (sub && !(typeof sub === 'string' && !sub.startwith('mailto:'))) throw new Error(
-    '"sub" must be an email adresse prefixed by "mailto:"');
+
+  email.assert(sub);
 
   return jwt.sign(
     {},
@@ -18,7 +21,7 @@ jwtToken.generate = ({jwtId, sub} = {}) => {
       algorithm: jwtConfig.algorithm,
       expiresIn: jwtConfig.expiresIn,
       issuer   : app.name,
-      subject  : sub || 'mailto:user@conditor.fr',
+      subject  : sub ? `mailto:${sub}` : 'mailto:user@conditor.fr',
       jwtid    : jwtId || nanoid()
     }
   );

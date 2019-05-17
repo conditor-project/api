@@ -46,7 +46,6 @@ function authorize (req, res, next) {
     return res.sendStatus(401);
   }
   const email = _getEmail(req);
-
   db
     .Users
     .findOrCreate({where: {email}, defaults: {email}})

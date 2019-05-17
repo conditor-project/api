@@ -2,7 +2,7 @@
 
 const express                             = require('express'),
       router                              = express.Router(),
-      records                             = require('../src/manager/scrollManager'),
+      records                             = require('../src/managers/scrollManager'),
       {getResultHandler, getErrorHandler} = require('../src/resultHandler'),
       validateQueryString                 = require('../helpers/validateQueryString'),
       getInvalidOptionsHandler            = require('../src/getInvalidOptionsHandler')

@@ -37,11 +37,11 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   DuplicatesValidations.prototype.getInitialSourceUid = function() {
-    return `${this.getDataValue('initialSource')}#${this.getDataValue('initialSourceId')}`;
+    return `${this.getDataValue('initialSource')}$${this.getDataValue('initialSourceId')}`;
   };
 
   DuplicatesValidations.prototype.getTargetSourceUid = function() {
-    return `${this.getDataValue('targetSource')}#${this.getDataValue('targetSourceId')}`;
+    return `${this.getDataValue('targetSource')}$${this.getDataValue('targetSourceId')}`;
   };
 
   // Model helpers
