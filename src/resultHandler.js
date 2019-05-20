@@ -116,7 +116,8 @@ const errorMessagesMapping = [
                                && _.get(reason, 'original.table') === 'DuplicatesValidations',
           name     : () => 'Unique constaint error',
           message  : () => `Duplicates already validated`,
-          details  : (reason) =>  [_.invoke(reason,'errors.0.instance.getInitialSourceUid'),_.invoke(reason,'errors.0.instance.getTargetSourceUid')]
+          details  : (reason) => [_.invoke(reason, 'errors.0.instance.getInitialSourceUid'),
+                                  _.invoke(reason, 'errors.0.instance.getTargetSourceUid')]
         }
 
       ]
