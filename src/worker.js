@@ -17,20 +17,16 @@ const
   cluster                         = require('cluster'),
   express                         = require('express'),
   app                             = express(),
-  {security}                      = require('config-component').get(module),
   myColors                        = require('../helpers/myColors'), // jshint ignore: line
   elasticContainer                = require('../helpers/clients/elastic'),
   {logInfo, logError, logWarning} = require('../helpers/logger'),
   helmet                          = require('helmet'),
-  morgan                          = require('../middlewares/morgan'),
   semver                          = require('semver'),
-  errorHandler                    = require('../middlewares/errorHandler'),
-  resConfig                       = require('../middlewares/resConfig'),
-  httpMethodsHandler              = require('../middlewares/httpMethodsHandler'),
   compression                     = require('compression'),
   _                               = require('lodash'),
   state                           = require('../helpers/state'),
-  bodyParser                      = require('body-parser')
+  bodyParser                      = require('body-parser'),
+  db                              = require('../db/models/index')
 ;
 
 elasticContainer.startAll();
@@ -39,13 +35,17 @@ elasticContainer.startAll();
 state.assign(process.env.state || {});
 
 const
-  // Routers
+  // Routers / middlewares
   root                  = require('../controllers/root'),
   records               = require('../controllers/records'),
   scroll                = require('../controllers/scroll'),
   duplicatesValidations = require('../controllers/duplicatesValidations'),
   firewall              = require('./firewall'),
-  db                    = require('../db/models/index')
+  errorHandler          = require('../middlewares/errorHandler'),
+  resConfig             = require('../middlewares/resConfig'),
+  httpMethodsHandler    = require('../middlewares/httpMethodsHandler'),
+  morgan                = require('../middlewares/morgan'),
+  notFoundHandler       = require('../middlewares/notFoundHandler')
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
@@ -87,7 +87,7 @@ app._close = () => {
 
 app.set('etag', false);
 app.set('json spaces', 2);
-app.set('trust proxy', _.get(security, 'reverseProxy', false));
+app.set('trust proxy', _.get(config.security, 'reverseProxy', false));
 app.use(helmet({noSniff: false}), morgan);
 app.use(bodyParser.json());
 app.use(resConfig, httpMethodsHandler);
@@ -95,5 +95,7 @@ app.use(compression());
 app.get('/', (req, res) => {res.redirect(`/v${semver.major(config.app.version)}`);});
 app.use(`/v${semver.major(config.app.version)}`, root);
 app.use(`/v${semver.major(config.app.version)}`, firewall, scroll, records, duplicatesValidations);
+// This two must be last
 app.use(errorHandler);
+app.use(notFoundHandler);
 

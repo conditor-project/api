@@ -125,7 +125,8 @@ const errorMessagesMapping = [
 
 const statusNamesMapping = {
   400: 'Bad Request',
-  409: 'Conflict'
+  409: 'Conflict',
+  404: 'Not Found'
   /* add others if needed */
 };
 
