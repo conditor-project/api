@@ -54,6 +54,8 @@ Note : le header `Content-Type` doit obligatoirement avoir la valeur `applicatio
 - `404` : la notice `recordId` n'a pas été trouvée
 - `415` : le header `Content-Type` de la requête est différent de `application/json`
 
+*Note* : les doublons validés seront déplacés dans la collection `duplicates` de la notice d'origine, et enrichis d'un booléen `isValidatedByUser: true`. Ce dernier permet de distinguer les doublons certains issus d'un traitement automatique de ceux issus d'une validation humaine.
+
 ## Exemple
 
 (les identifiants utilisés n'existent pas et sont purement illustratifs)
@@ -95,8 +97,8 @@ La notice `id1` après les traitements contiendra les champs suivants
 ```json
 duplicates : [
     {idConditor: "id4", source: "s1"}
-    {idConditor: "id2", source: "s2"},
-    {idConditor: "id3", source: "s3"},
+    {idConditor: "id2", source: "s2", isValidatedByUser:true},
+    {idConditor: "id3", source: "s3", isValidatedByUser:true},
 ],
 nearDuplicates : [
     {idConditor: "id6", source: "s1"}
