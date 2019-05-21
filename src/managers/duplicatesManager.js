@@ -36,12 +36,12 @@ function updateDuplicatesTree (initialRecord, {reportDuplicates = [], reportNonD
             )
             .compact()
             .uniq()
-            .map(toNestedDuplicate)
+            .map(_toNestedDuplicate)
             .value()
   ;
 
   const idConditors = _.map(duplicatesChain, 'idConditor');
-  let duplicatesIdChain = _.chain(duplicatesChain)
+  const duplicatesIdChain = _.chain(duplicatesChain)
                              .map(({source, idConditor}) => `${source}:${idConditor}`)
                              .sort()
                              .join('!')
@@ -67,6 +67,7 @@ function updateDuplicatesTree (initialRecord, {reportDuplicates = [], reportNonD
                   params: painlessParams
                 }
               },
+              refresh: true,
               filterPath: null
             },
             defaultParams
@@ -76,6 +77,6 @@ function updateDuplicatesTree (initialRecord, {reportDuplicates = [], reportNonD
     .updateByQuery(params);
 }
 
-function toNestedDuplicate ({source, idConditor, isValidatedByUser}) {
+function _toNestedDuplicate ({source, idConditor, isValidatedByUser}) {
   return {source, idConditor, isValidatedByUser};
 }
