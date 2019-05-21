@@ -22,10 +22,10 @@ La syntaxe de l'objet attendu dans le body de la requête HTTP est la suivante :
     "recordId": <String> idConditor,
     "reportDuplicates":
           [<String> idConditor]
-        | [{"idConditor":<String>, "comment":<String 400>}],
+        | [{"recordId":<String>, "comment":<String 400>}],
     "reportNonDuplicates":
           [<String> idConditor]
-        | [{"idConditor":<String>, "comment":<String 400>}]
+        | [{"recordId":<String>, "comment":<String 400>}]
 }
 ```
 
@@ -38,7 +38,7 @@ Note : le header `Content-Type` doit obligatoirement avoir la valeur `applicatio
 - `recordId` (**obligatoire**) : l'identifiant `idConditor` de la notice à partir de laquelle s'effectue la validation.
 - `reportDuplicates` (*facultatif*) : la liste des doublons incertains validés en tant que doublons certains. Ce tableau peut contenir :
   - soit directement l'`idConditor` du doublon
-  - soit un objet dont les clés sont `idConditor` et `comment` (un commentaire de 400 caractères maximum, encodé en UTF-8, permettant d'expliquer la raison du choix de validation, par exemple)
+  - soit un objet dont les clés sont `recordId` (l'`idConditor` du doublon) et `comment` (un commentaire de 400 caractères maximum, encodé en UTF-8, permettant d'expliquer la raison du choix de validation, par exemple)
 - `reportNonDuplicates` (*facultatif*) : la liste des doublons incertains invalidés, qui ne seront donc plus jamais considérés comme doublons. La forme de ce tableau est identique à celle du champ `reportDuplicates`
 
 *Note* : les champs `reportDuplicates` et `reportNonDuplicates` sont indépendemment facultatifs, mais au moins un des deux doit être renseigné.
@@ -46,8 +46,8 @@ Note : le header `Content-Type` doit obligatoirement avoir la valeur `applicatio
 ## Réponse de l'API
 
 - `201` : "`created`", toutes les actions demandées ont été correctement effectuées
-- `400` : Erreur liée à un problème dans la requête, pour être :
-  - une erreur de syntaxe de JSON mal formé
+- `400` : Erreur liée à un problème dans la requête. Cela peut être :
+  - une erreur de syntaxe JSON mal formé
   - **`invalidRecordsIdsException`**  :  les identifiants indiqués dans `reportDuplicates` et `reportNonDuplicates` doivent obligatoirement figurer dans la collection `nearDuplicates` de la notice `recordId`
   - **`nonUniqueRecordsIdsException`** : l'identifiant d'une notice ne peut pas être renseigné à la fois dans `reportDuplicates` et `reportNonDuplicates`
   - **`duplicatesIntersectionException`** : les identifiants indiqués dans `reportDuplicates` ne doivent pas déjà exister dans la collection `duplicates` de la notice `recordId`
@@ -82,10 +82,10 @@ POST https://api.conditor.fr/v1/duplicatesValidations?debug
     "recordId": "id1",
     "reportDuplicates": [
         "id2",
-        {"idConditor":"id3", "comment":"le fulltext PDF disponible sur les plateformes sources montrent que les documents sont identiques"}
+        {"recordId":"id3", "comment":"le fulltext PDF disponible sur les plateformes sources montrent que les documents sont identiques"}
     ],
     "reportNonDuplicates": [
-        {"idConditor": "id5", "comment": "Rien à voir, il s'agit d'actes de 2 conférences ayant eu lieu à 10 ans d'intervalle" }
+        {"recordId": "id5", "comment": "Rien à voir, il s'agit d'actes de 2 conférences ayant eu lieu à 10 ans d'intervalle" }
     ]
 }
 ```
