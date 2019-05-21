@@ -4,9 +4,10 @@
 
 L'API Conditor dispose d'une route permettant de prendre en compte les actions de validation ou non-validation des doublons **incertains** (aussi appelé "nearDuplicates").
 
-Par "validation" ou "non-validation", on entend décision humaine sur 2 notices (ou plus) taggées "nearDuplicates" entre elles :
-  - soit on considère qu'elles représentent bien la même production, et elles deviennent alors "duplicates" (doublons **certains**)
-  - soit on considère que ce sont des productions différentes : le lien "nearDuplicate" est supprimé et l'action est mémorisée.
+Par "validation" ou "non-validation", on entend décision humaine sur 2 notices (ou plus) détectées comme doublons potentiels :
+
+- soit on considère qu'elles représentent bien la même production, et elles deviennent alors "duplicates" (doublons **certains**)
+- soit on considère que ce sont des productions différentes : le lien "nearDuplicate" est supprimé et l'action est mémorisée.
 
 ## Syntaxe de la requête
 
@@ -18,11 +19,11 @@ La syntaxe de l'objet attendu dans le body de la requête HTTP est la suivante :
 
 ```json
 {
-    "initialRecord": <String> idConditor,
-    "reportDuplicates": 
+    "recordId": <String> idConditor,
+    "reportDuplicates":
           [<String> idConditor]
         | [{"idConditor":<String>, "comment":<String 400>}],
-    "reportNonDuplicates": 
+    "reportNonDuplicates":
           [<String> idConditor]
         | [{"idConditor":<String>, "comment":<String 400>}]
 }
@@ -30,20 +31,28 @@ La syntaxe de l'objet attendu dans le body de la requête HTTP est la suivante :
 
 Le mode [debug](references.md#mode-debug), permettant d'obtenir plus de précisions en cas d'erreur, peut être utilisé sur cette route.
 
+Note : le header `Content-Type` doit obligatoirement avoir la valeur `application/json`, faut de quoi une erreur `415` est retournée par l'API.
 
 ## Description des champs de l'objet JSON
 
-  - `initialRecord` (**obligatoire**) : l'identifiant `idConditor` de la notice à partir de laquelle s'effectue la validation.
-  - `reportDuplicates` (*facultatif*) : la liste des doublons incertains validés en tant que doublons certains. Ce tableau peut contenir :
-    - soit directement l'`idConditor` du doublon
-    - soit un objet dont les clés sont `idConditor` et `comment` (un commentaire de 400 caractères maximum, encodé en UTF-8, permettant d'expliquer la raison du choix de validation, par exemple)
-  - `reportNonDuplicates` (*facultatif*) : la liste des doublons incertains invalidés, qui ne seront donc plus jamais considérés comme doublons. La forme de ce tableau est identique à celle du champ `reportDuplicates`
+- `recordId` (**obligatoire**) : l'identifiant `idConditor` de la notice à partir de laquelle s'effectue la validation.
+- `reportDuplicates` (*facultatif*) : la liste des doublons incertains validés en tant que doublons certains. Ce tableau peut contenir :
+  - soit directement l'`idConditor` du doublon
+  - soit un objet dont les clés sont `idConditor` et `comment` (un commentaire de 400 caractères maximum, encodé en UTF-8, permettant d'expliquer la raison du choix de validation, par exemple)
+- `reportNonDuplicates` (*facultatif*) : la liste des doublons incertains invalidés, qui ne seront donc plus jamais considérés comme doublons. La forme de ce tableau est identique à celle du champ `reportDuplicates`
 
 *Note* : les champs `reportDuplicates` et `reportNonDuplicates` sont indépendemment facultatifs, mais au moins un des deux doit être renseigné.
 
 ## Réponse de l'API
 
-
+- `201` : "`created`", toutes les actions demandées ont été correctement effectuées
+- `400` : Erreur liée à un problème dans la requête, pour être :
+  - une erreur de syntaxe de JSON mal formé
+  - **`invalidRecordsIdsException`**  :  les identifiants indiqués dans `reportDuplicates` et `reportNonDuplicates` doivent obligatoirement figurer dans la collection `nearDuplicates` de la notice `recordId`
+  - **`nonUniqueRecordsIdsException`** : l'identifiant d'une notice ne peut pas être renseigné à la fois dans `reportDuplicates` et `reportNonDuplicates`
+  - **`duplicatesIntersectionException`** : les identifiants indiqués dans `reportDuplicates` ne doivent pas déjà exister dans la collection `duplicates` de la notice `recordId`
+- `404` : la notice `recordId` n'a pas été trouvée
+- `415` : le header `Content-Type` de la requête est différent de `application/json`
 
 ## Exemple
 
@@ -70,7 +79,7 @@ La requête à envoyer à l'API est donc la suivante :
 ```json
 POST https://api.conditor.fr/v1/duplicatesValidations?debug
 {
-    "initialRecord": "id1",
+    "recordId": "id1",
     "reportDuplicates": [
         "id2",
         {"idConditor":"id3", "comment":"le fulltext PDF disponible sur les plateformes sources montrent que les documents sont identiques"}
@@ -96,4 +105,4 @@ nearDuplicates : [
 
 Les notices `id2`, `id3`, `id4` et `id5` seront mises à jour en conséquence pour refléter les actions effectuées.
 
-Commen tout s'est bien passé, l'API renvoie un code 200.
+Comme tout s'est bien passé, l'API renvoie un code `201`.
