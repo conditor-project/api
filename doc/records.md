@@ -111,7 +111,7 @@ https://api-integ.conditor.fr/v1/records/zip?includes=title,creationDate
 
 
 
-## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]
+## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;near_duplicate&gt;]
 
 Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API [Scroll](scroll.md).
 
@@ -125,7 +125,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 1. `source` (string) : Le nom d'un des corpus source de Conditor (ex: sudoc)
 2. `year` (string) : Année de publication (ex: 2014)
 3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: **duplicate**|**not_duplicate**)
-4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: **near_duplicate**|**not_near_duplicate**)
+4. `near_duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: **near_duplicate**|**not_near_duplicate**)
 
 **Paramètres d'URL**
 
@@ -166,7 +166,7 @@ https://api-integ.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?i
 
 
 
-## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;nearDuplicate&gt;]<wbr>/zip
+## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;near_duplicate&gt;]<wbr>/zip
 
 Route de récupération d'une collection de notices dans une **archive ZIP**. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
 
@@ -180,7 +180,7 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 1. `source` (string) : Le nom d'un des corpus source de Conditor (ex: sudoc)
 2. `year` (string) : Année de publication (ex: 2014)
 3. `duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **certain** ou non (flag: **duplicate**|**not_duplicate**)
-4. `nearDuplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: **near_duplicate**|**not_near_duplicate**)
+4. `near_duplicate` (flagString) : Permet de filtrer les notices marquées en tant que doublon **incertain** ou non (flag: **near_duplicate**|**not_near_duplicate**)
 
 **Paramètres d'URL**
 
