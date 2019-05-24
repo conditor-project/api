@@ -2,7 +2,7 @@
 
 Sur les requêtes renvoyant une liste de résultats, il est possible d'ordonnancer ceux-ci selon une liste de critères via le paramètre d'URL `sort`. 
 
-Ce mécanisme de tri est une transposition du mécanisme interne du moteur de recherche Elasticsearch, [documenté ici](https://www.elastic.co/guide/en/elasticsearch/reference/6.x/search-request-sort.html). Par conséquent, le nommage des paramètres et des options de l'API Conditor est identique, et les valeurs par défaut sont les même.
+Ce mécanisme de tri est une transposition du mécanisme interne du moteur de recherche Elasticsearch, [documenté ici](https://www.elastic.co/guide/en/elasticsearch/reference/6.x/search-request-sort.html). Par conséquent, le nommage des paramètres et des options de l'API Conditor est identique, et les valeurs par défaut sont les mêmes.
 
 ## Liste des routes supportant le paramètre sort
 
