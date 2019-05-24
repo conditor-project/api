@@ -1,8 +1,8 @@
 # Pagination
 
-Le mécanisme de pagination est un mode de parcours d'une liste de résultats typiquement destinée à l'usage des IHM. Il permet de récupérer des "pages" de résultats, et de naviguer entre ces pages dans un sens ou dans l'autre. 
+Le mécanisme de pagination est un mode de parcours d'une liste de résultats typiquement destiné à l'usage des IHM. Il permet de récupérer des "pages" de résultats, et de naviguer entre ces pages dans un sens ou dans l'autre. 
 
-**Note :** Ce mécanisme ne doit pas être utilisé pour parcourir de grands ensemble de résultats. Une limitation technique empêche d'accéder au-delà du 10000ème résultat. Cette fonctionnalité s'appuie sur l'utilisation des paramètres `from` et `size` [du moteur de recherche Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/6.x/search-request-from-size.html).
+**Note :** Ce mécanisme ne doit pas être utilisé pour parcourir de grands ensembles de résultats. Une limitation technique empêche d'accéder au-delà du 10000ème résultat. Cette fonctionnalité s'appuie sur l'utilisation des paramètres `from` et `size` [du moteur de recherche Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/6.x/search-request-from-size.html).
 
 ## Liste des routes supportant la pagination
 
@@ -16,7 +16,7 @@ Le mécanisme de pagination est un mode de parcours d'une liste de résultats ty
 
 **Paramètres d'URL**
 
-1. `page` (number) : le numéro de la page demandé
+1. `page` (number) : le numéro de la page demandée
 2. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 
 **Limitations**
@@ -29,7 +29,7 @@ Il est impossible d'accéder aux résultats au-delà du 10000ème rang.
 
 ## Exemple
 
-Si vous souhaitez récuperer 5 notices du corpus **Hal**, en partant de la 3ème page:
+Si vous souhaitez récupérer 5 notices du corpus **Hal**, en partant de la 3ème page:
 
 ```url
 .../records/_filter/hal/?page_size=5&page=3
