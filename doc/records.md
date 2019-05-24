@@ -8,11 +8,11 @@
 
 Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
-Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche. 
+Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche. 
 
-:warning: Attention, la requête lucène de recherche doit forcément être entouré de simple ou double guillemets. 
+:warning: Attention, la requête lucène de recherche doit forcément être entourée de simple ou double guillemets. 
 
-Il est aussi possible de faire une requête sur un champ imbriqué (par exemple, le champ authors). Pour cela, il suffit de préceder la requête lucène avec le champ imbriqué racine et séparé par un chevron '>'.
+Il est aussi possible de faire une requête sur un champ imbriqué (par exemple, le champ authors). Pour cela, il suffit de faire précéder la requête lucène avec le champ imbriqué racine et séparé par un chevron '>'.
 
 **Paramètres d'URL**
 
@@ -30,7 +30,7 @@ Il est aussi possible de faire une requête sur un champ imbriqué (par exemple,
 
 7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques.
 
-8. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+8. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champs
 
 **Retourne**
 
@@ -85,14 +85,14 @@ https://api-integ.conditor.fr/v1/records?size=100
 
 Route de récupération des notices de la base Conditor dans une **archive ZIP**. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
 
-Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
+Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Paramètres d'URL**
 
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
-3. `q` (string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence entouré de simple ou double guillements.
-4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
+3. `q` (string) : Une `Query Lucene`, entourée de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
+4. `limit`(number): Limite le nombre de résultats renvoyés dans l'archive ZIP.
 5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
@@ -118,7 +118,7 @@ Route de récupération d'une collection de notices au format **JSON** dont le n
 La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
 Ce type de filtre n'impacte pas le **score de pertinence**.
 
-Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
+Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Arguments de la route**
 
@@ -132,9 +132,9 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 1. `scroll` (durationString) : Spécifie combien de temps une représentation consistante sera maintenue pour l'opération de [scroll](scroll.md) (max: 5m, unités: d|h|m|s|ms|micros|nanos).
 2. `includes` (string) : Une liste de champs à extraire et retourner dans la réponse.
 3. `excludes` (string) : Une liste de champs à exclure de la réponse.
-4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
+4. `page` (number) : le numéro de la page demandée ([voir documentation complète](pagin.md))
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
-6. `q`(string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
+6. `q`(string) : Une `Query Lucene`, entourée de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
 7. `aggs` (string) : Une [query](aggregations.md) qui permet d'obtenir des aggrégations et statistiques. 
 8. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
@@ -170,10 +170,10 @@ https://api-integ.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?i
 
 Route de récupération d'une collection de notices dans une **archive ZIP**. Chaque notice est stockée au format JSON dans un fichier nommé d'après l'idConditor.
 
-La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
+La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments doivent respecter l'ordre décrit ci-dessous.
 Ce type de filtre n'impacte pas le **score de pertinence**.
 
-Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
+Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche.
 
 **Arguments de la route**
 
@@ -186,8 +186,8 @@ Une recherche plus fine peut etre effectuée grâce au paramètre d'url `q`. Uti
 
 1. `includes` (string) : Une liste de champs à extraire et à retourner dans la réponse.
 2. `excludes` (string) : Une liste de champs à exclure de la réponse.
-3. `q` (string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
-4. `limit`(number): Limlt le nombre de résultat renvoyer dans l'archive ZIP.
+3. `q` (string) : Une `Query Lucene`, entourée de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
+4. `limit`(number): Limite le nombre de résultats renvoyés dans l'archive ZIP.
 5. `sort` (string) : Une liste de critères qui permet de [trier](sort.md) la liste des résultats
 
 **Retourne**
@@ -286,13 +286,13 @@ Route de récupération des doublons certains d'une notice.
 
 3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 
-4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
+4. `page` (number) : le numéro de la page demandée ([voir documentation complète](pagin.md))
 
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 
-6. `q` (string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
+6. `q` (string) : Une `Query Lucene`, entourée de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
-7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champs
 
 8. `access_token` (string) : [jeton d'identification](securite.md) JWT
 
@@ -346,7 +346,7 @@ Route de récupération des doublons incertains d'une notice.
 **Arguments de la route**
 
 1. `id_conditor` (string) : Identifiant Conditor de la notice pour laquelle on cherche les doublons incertains.
-2. L'ajout du fragment d'URL `/and_self` permet d'intégrer les informations de la notice courante (`id_conditor`) à la liste des doublons trouvés
+2. L'ajout du fragment d'URL `/and_self` permet d'intégrer les informations de la notice courante (`id_conditor`) à la liste des doublons trouvés.
 
 **Paramètres d'URL**
 
@@ -356,13 +356,13 @@ Route de récupération des doublons incertains d'une notice.
 
 3. `excludes` (string) : Une liste de champs à exclure de la réponse.
 
-4. `page` (number) : le numéro de la page demandé ([voir documentation complète](pagin.md))
+4. `page` (number) : le numéro de la page demandée ([voir documentation complète](pagin.md))
 
 5. `page_size` (number) : le nombre de résultats par page, doit être inférieur ou égal à 1000 
 
-6. `q` (string) : Une `Query Lucene`, entouré de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
+6. `q` (string) : Une `Query Lucene`, entourée de simple ou double guillements, qui permet de filtrer et trier les notices grâce à un score de pertinence.
 
-7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champ
+7. `sort` (string) : Une expression permettant de [trier](references.md#Tri) une liste de résultats selon un ou plusieurs champs
 
 8. `access_token` (string) : [jeton d'identification](securite.md) JWT
 
