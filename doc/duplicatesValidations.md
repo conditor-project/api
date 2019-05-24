@@ -31,7 +31,7 @@ La syntaxe de l'objet attendu dans le body de la requête HTTP est la suivante :
 
 Le mode [debug](references.md#mode-debug), permettant d'obtenir plus de précisions en cas d'erreur, peut être utilisé sur cette route.
 
-Note : le header `Content-Type` doit obligatoirement avoir la valeur `application/json`, faut de quoi une erreur `415` est retournée par l'API.
+Note : le header `Content-Type` doit obligatoirement avoir la valeur `application/json`, faute de quoi une erreur `415` est retournée par l'API.
 
 ## Description des champs de l'objet JSON
 
@@ -41,7 +41,7 @@ Note : le header `Content-Type` doit obligatoirement avoir la valeur `applicatio
   - soit un objet dont les clés sont `recordId` (l'`idConditor` du doublon) et `comment` (un commentaire de 400 caractères maximum, encodé en UTF-8, permettant d'expliquer la raison du choix de validation, par exemple)
 - `reportNonDuplicates` (*facultatif*) : la liste des doublons incertains invalidés, qui ne seront donc plus jamais considérés comme doublons. La forme de ce tableau est identique à celle du champ `reportDuplicates`
 
-*Note* : les champs `reportDuplicates` et `reportNonDuplicates` sont indépendemment facultatifs, mais au moins un des deux doit être renseigné.
+*Note* : les champs `reportDuplicates` et `reportNonDuplicates` sont indépendamment facultatifs, mais au moins un des deux doit être renseigné.
 
 ## Réponse de l'API
 
@@ -92,7 +92,7 @@ POST https://api.conditor.fr/v1/duplicatesValidations?debug
 }
 ```
 
-La notice `id1` après les traitements contiendra les champs suivants 
+La notice `id1` après les traitements contiendra les champs suivants :
 
 ```json
 duplicates : [
