@@ -12,6 +12,7 @@ before_script:
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE conditor TO conditor;" -U postgres
   - npm run start-forever
   - sleep 10
+  - npm run stop-forever
 node_js:
   - '10'
 before_install:
