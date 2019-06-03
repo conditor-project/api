@@ -42,8 +42,7 @@ Liste des champs du JSON par ordre alphabétique :
 | halId | String | identifiant du document Hal |  | 
 | hasDoi | Boolean | présence ou non d'un DOI (valeur True ou False) |  | 
 | hasTransDuplicate | Boolean | existence d'un doublon par transitivité (valeur True or False). Si A doublon de B et B doublon de C alors A est doublon de C | x | 
-| idChain | String | ensemble des idConditors, préfixés par le nom de la source, des notices considérées comme doublons certains.
-Identifiants séparés par ! | x | 
+| idChain | String | ensemble des idConditors, préfixés par le nom de la source, des notices considérées comme doublons certains. Identifiants séparés par ! | x | 
 | idConditor | String | identifiant du document Conditor créé aléatoirement |  | 
 | idHal | String | liste des identifiants des auteurs Hal regroupant les halAuthorId |  | 
 | idProdinra | String | identifiant du document ProdInra |  | 
