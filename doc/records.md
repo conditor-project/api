@@ -48,6 +48,11 @@ Faire une recherche sur les codes RNSR (nested query) :
 https://api-integ.conditor.fr/v1/records?q=authors>affiliations>"authors.affiliations.rnsr:199218201Y"
 ```
 
+Faire une recherche sur les adresses des affiliations auteurs (nested query) :
+```url
+https://api-integ.conditor.fr/v1/records?q=authors>affiliations>"authors.affiliations.address:rennes"
+```
+
 Déclencher un scroll :
 ```url
 https://api-integ.conditor.fr/v1/records?scroll=5m
