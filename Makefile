@@ -7,6 +7,9 @@ NC=\033[0m
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+install: ## some install steps
+	cp postgresql.conf.dist postgresql.conf
+
 build: ## build localy docker image of API
 	docker-compose -f ./docker-compose.build.yml build
 

@@ -25,7 +25,7 @@ This API is coded in NodeJS with [ExpressJS](http://expressjs.com/) framework.
 It can be run by different ways :
 
 * Basically, with the `node` CLI
-* Using [forever](https://github.com/foreverjs/forever), via the `npm start` command
+* Using [forever](https://github.com/foreverjs/forever), via the `npm run start-forever` command
 * With docker, via the `make run-prod` command
 
 Logs are managed with morgan, and written in the `$LOG_PATH/conditor-api.log` file
@@ -89,7 +89,7 @@ export PGADMIN_DEFAULT_PASSWORD="pgadminpwd"
 For native node start or forever start :
 
 ```bash
-npm start
+npm run start-forever
 ```
 
 For development purpose
