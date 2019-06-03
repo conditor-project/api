@@ -41,6 +41,7 @@ Logs are managed with morgan, and written in the `$LOG_PATH/conditor-api.log` fi
 ```bash
 git clone https://github.com/conditor-project/api.git
 cd api
+make install # copy postgresql.conf.dist to postgresql.conf
 ```
 
 For native node start or forever start :
@@ -82,8 +83,10 @@ export PG_PORT="5432"
 export PG_USERNAME="conditor"
 export PG_PASSWORD="conditor"
 export PG_DATABASE="conditor"
+export PG_DATADIR="./pgdata"
 export PGADMIN_DEFAULT_EMAIL="pgadmin@mailbox.com"
 export PGADMIN_DEFAULT_PASSWORD="pgadminpwd"
+export PGADMIN_PORT="5432"
 ```
 
 For native node start or forever start :
