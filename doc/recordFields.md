@@ -30,6 +30,7 @@ Liste des champs du JSON par ordre alphabétique :
 | doi | String | identifiant DOI du document |  | 
 | duplicateRules | String | règles qui ont permis l'appariement | x | 
 | duplicates.idConditor | String | idConditor de la notice qui a été appariée comme doublon certain | x | 
+| duplicates.isValidatedByUser | Boolean |  | x |
 | duplicates.rules | String | règles qui ont permis l'appariement | x | 
 | duplicates.sessionName | String | nom de la session : SOURCE_date d'ingestion | x | 
 | duplicates.source | String | source de la notice qui a été appariée comme doublon certain | x | 
@@ -73,6 +74,7 @@ Liste des champs du JSON par ordre alphabétique :
 | part | String | partie d'un document |  | 
 | patentNumber | String | identifiant brevet |  | 
 | path | String | lien vers le document TEI Conditor | x | 
+| pii | String |  |  |
 | pmc | String | identifiant du document texte intégral PubMedCentral |  | 
 | pmId | String | identifiant du document notice PubMedCentral |  | 
 | ppn | String | identifiant du document Sudoc |  | 
