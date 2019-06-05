@@ -60,7 +60,7 @@ Note : le header `Content-Type` doit obligatoirement avoir la valeur `applicatio
 
 (les identifiants utilisés n'existent pas et sont purement illustratifs)
 
-Supposons que la notice d'`idConditor` "`id1`" contiennent les champs suivants :
+Supposons que la notice d'`idConditor` "`id1`" contienne les champs suivants :
 
 ```json
 duplicates : [
