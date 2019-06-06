@@ -17,6 +17,7 @@ services:
       CONDITOR_ES_VERSION: 6.x
       PG_HOST: conditor-postgres
       PG_PORT: 5432
+      RECORD_INDEX: ${RECORD_INDEX}
       PG_USERNAME: ${PG_USERNAME}
       PG_PASSWORD: ${PG_PASSWORD}
       PG_DATABASE: ${PG_DATABASE}

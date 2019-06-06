@@ -58,11 +58,12 @@ make build
 <a name="running-the-api"></a>
 ## Running the API
 
-Before launchig the following commands, you must set `LOG_PATH` and `CONDITOR_ES_HOSTS` environments variables. For example :
+Before launchig the following commands, you MUST set `LOG_PATH`, `CONDITOR_ES_HOSTS` and `RECORD_INDEX` environments variables. For example :
 
 ```bash
 export LOG_PATH="$HOME/var/log"
 export CONDITOR_ES_HOSTS="localhost:9200"
+export RECORD_INDEX="records"
 ```
 
 You can also set other optional environment variables...
