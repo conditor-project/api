@@ -10,7 +10,7 @@ services:
       args:
         - http_proxy
         - https_proxy
-    image: conditor/api:1.0.0
+    image: conditor/api:1.0.1
     environment :
       LOG_PATH: /var/log
       CONDITOR_API_HOST: 0.0.0.0
