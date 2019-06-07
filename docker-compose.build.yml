@@ -12,6 +12,7 @@ services:
         - https_proxy
     image: conditor/api:1.0.1
     environment :
+      TZ: "Europe/Paris"
       LOG_PATH: /var/log
       CONDITOR_API_HOST: 0.0.0.0
       CONDITOR_API_PORT: 63332
