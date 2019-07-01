@@ -8,7 +8,7 @@
 
 Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`page_size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
-Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche. 
+Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Utilisez la [syntaxe Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche. 
 
 :warning: Attention, la requête lucène de recherche doit forcément être entourée de simple ou double guillemets. 
 
