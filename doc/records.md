@@ -6,7 +6,7 @@
 
 ## `GET` /records
 
-Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
+Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`page_size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API Scroll.
 
 Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Utilisez la [syntax Lucene](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax) pour forger une requête de recherche. 
 
@@ -79,7 +79,7 @@ https://api-integ.conditor.fr/v1/records?includes=authors&excludes=authors.surna
 ```
 Choisir nombre de résultats retournés :
 ```url
-https://api-integ.conditor.fr/v1/records?size=100
+https://api-integ.conditor.fr/v1/records?page_size=100
 ```
 
 ------
@@ -118,7 +118,7 @@ https://api-integ.conditor.fr/v1/records/zip?includes=title,creationDate
 
 ## `GET`&nbsp;/records/_filter/\[&lt;source&gt;\]/\[&lt;year&gt;]<wbr>/\[&lt;duplicate&gt;]<wbr>/\[&lt;near_duplicate&gt;]
 
-Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API [Scroll](scroll.md).
+Route de récupération d'une collection de notices au format **JSON** dont le nombre dépend de l'argument&nbsp;`page_size`. La taille maximale de cette collection est de 1000. Pour récupérer plus de notices vous devez utiliser l'API [Scroll](scroll.md).
 
 La collection peut être filtrée en fonction de différents arguments facultatifs de la route. Ces arguments  doivent respecter l'ordre décrit ci-dessous.
 Ce type de filtre n'impacte pas le **score de pertinence**.
