@@ -311,7 +311,7 @@ Route de récupération des doublons certains d'une notice.
 
 La requête suivante renvoie les 2 doublons certains de la notice d'`id_conditor` "XztL5M8At6EdzDumYeJBXr2qg" :
 
-`.../records/XztL5M8At6EdzDumYeJBXr2qg/duplicates`
+`.../records/XztL5M8At6EdzDumYeJBXr2qg/duplicates/and_self`
 
 Réponse de l'API : 
 
