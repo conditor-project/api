@@ -36,6 +36,7 @@ Liste des champs du JSON par ordre alphabétique :
 | duplicates.source | String | source de la notice qui a été appariée comme doublon certain | x | 
 | eisbn | String | isbn électronique |  | 
 | eissn | String | issn électronique |  | 
+| electronicPublicationDate | String | date de publication (électronique) présente dans la notice source |  | 
 | ensam | String | identifiant de document ensam (lien vers le document) |  | 
 | first3AuthorNames | String | 3 premiers auteurs prénom complet ou initiale si la source propose uniquement l'initiale (utile au dédoublonnage) | x | 
 | first3AuthorNamesWithInitials | String | 3 premiers auteurs initiale du prénom (utile au dédoublonnage) | x | 
@@ -78,7 +79,7 @@ Liste des champs du JSON par ordre alphabétique :
 | pmc | String | identifiant du document texte intégral PubMedCentral |  | 
 | pmId | String | identifiant du document notice PubMedCentral |  | 
 | ppn | String | identifiant du document Sudoc |  | 
-| publicationDate | String | date de publication présente dans la notice source |  | 
+| publicationDate | String | date de publication (papier) présente dans la notice source |  | 
 | publicationDate.date | date | version de type date de publicationDate. Créée à partir de cette dernière, elle se présente sous la forme de Mois Jour Année, heure:seconde:centième:millième | x | 
 | reportNumber | String | numéro de rapport |  | 
 | researcherId | String | identifiant WoS de l'auteur |  | 
@@ -101,3 +102,4 @@ Liste des champs du JSON par ordre alphabétique :
 | viaf | String | identifiant d'auteur ou d'organisme |  | 
 | volume | String | volume du fascicule |  | 
 | xissn | String | regroupement des issn et des eissn | x | 
+| xPublicationDate | String | regroupement des dates de publication papier et électronique présentes dans la notice source | x | 
