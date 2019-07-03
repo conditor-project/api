@@ -27,7 +27,7 @@ Pour mettre en oeuvre le ***Scroll*** vous devez faire une première requête su
 Par exemple, si vous souhaitez récupérer les notices de **Hal** marquées en tant que **doublon**:
 
 ```url
-/records/hal/duplicate?scoll=5m
+/records/hal/duplicate?scroll=5m
 ```
 
 En réponse, vous obtenez une première page de 10 résultats (X-Result-Count) sur 62075 (X-Total-Count), ainsi qu'un `Scroll-Id`dans les ***Headers***.
