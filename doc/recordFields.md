@@ -42,10 +42,10 @@ Liste des champs du JSON par ordre alphabétique :
 | first3AuthorNamesWithInitials | String | 3 premiers auteurs initiale du prénom (utile au dédoublonnage) | x | 
 | halAuthorId | String | liste des identifiants Hal des auteurs |  | 
 | halId | String | identifiant du document Hal |  | 
-| hasDoi | Boolean | présence ou non d'un DOI (valeur True ou False) |  | 
+| hasDoi | Boolean | présence ou non d'un DOI (valeur True ou False) | x | 
 | hasTransDuplicate | Boolean | existence d'un doublon par transitivité (valeur True or False). Si A doublon de B et B doublon de C alors A est doublon de C | x | 
 | idChain | String | ensemble des idConditors, préfixés par le nom de la source, des notices considérées comme doublons certains. Identifiants séparés par ! | x | 
-| idConditor | String | identifiant du document Conditor créé aléatoirement |  | 
+| idConditor | String | identifiant du document Conditor créé aléatoirement | x | 
 | idHal | String | liste des identifiants des auteurs Hal regroupant les halAuthorId |  | 
 | idProdinra | String | identifiant du document ProdInra |  | 
 | ineris | String | identifiant du document Ineris |  | 
@@ -97,7 +97,7 @@ Liste des champs du JSON par ordre alphabétique :
 | title.journal | String | titre du périodique |  | 
 | title.meeting | String | titre du congrès |  | 
 | title.monography | String | titre de monographe |  | 
-| typeConditor | String | type de document propre à Conditor pour repérer les doublons |  | 
+| typeConditor | String | type de document propre à Conditor pour repérer les doublons | x | 
 | utKey | String | identifiant du document WoS |  | 
 | viaf | String | identifiant d'auteur ou d'organisme |  | 
 | volume | String | volume du fascicule |  | 
