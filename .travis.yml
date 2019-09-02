@@ -1,9 +1,7 @@
 language: node_js
 sudo: true
-addons:
-  apt:
-    packages:
-      - oracle-java9-set-default
+jdk:
+  - openjdk9
 services:
   - postgresql
 before_script:
