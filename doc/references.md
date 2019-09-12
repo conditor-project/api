@@ -4,7 +4,7 @@
 
 ## Version de l'API
 
-L'API Conditor inclue dans son URL un numéro de version afin de permettre une meilleur gestion des fonctionnalités dans le temps.
+L'API Conditor inclut dans son URL un numéro de version afin de permettre une meilleure gestion des fonctionnalités dans le temps.
 
 Exemple en version 1 :
 
@@ -12,7 +12,7 @@ Exemple en version 1 :
 https://api-integ.conditor.fr/v1/records
 ```
 
-Note : L'URL indiquée ci-dessus est provisoire et faire office d'URL de pré-production. L'URL finale sera https://api.conditor.fr
+Note : L'URL indiquée ci-dessus est provisoire et fait office d'URL de pré-production. L'URL finale sera https://api.conditor.fr
 
 
 ## Format de la réponse
@@ -54,23 +54,23 @@ Le JSON retourné par l'API Conditor est composé de champs extraits de la notic
 
 ## Mode Debug
 
-Par défaut, quand l'API renvoie une erreur (400, par exemple), les infos retournés sont minimales et pas forcément explicites pour quelqu'un qui ne connaît pas bien l'API. 
+Par défaut, quand l'API renvoie une erreur (400, par exemple), les informations retournées sont minimales et non forcément explicites pour quelqu'un qui ne connaît pas bien l'API. 
 
 Pour pallier ce défaut, le mode "debug" permet de demander à l'API de renvoyer plus de détails dans le message d'erreur retourné.
 
 Pour ce faire, il suffit d'utiliser le paramètre d'URL `debug` (sans valeur).
 
-Par exemple, sur la requête suivante
+Par exemple, sur la requête suivante :
 
 `https://api.conditor.fr/v1/records?page_size=465465465`
 
-L'API renvoie le code de retour HTTP 400 ainsi que le message "Bad Request".
+l'API renvoie le code de retour HTTP 400 ainsi que le message "Bad Request".
 
 Avec le paramètre debug :
 
 `https://api.conditor.fr/v1/records?page_size=465465465&debug`
 
-Le message retourné devient :
+le message retourné devient :
 
 ```json
 {

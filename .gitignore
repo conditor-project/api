@@ -157,6 +157,7 @@ fabric.properties
 *.env.sh
 local*
 pgdata/
+postgresql.conf
 
 # Visual Studio Code
 .vscode

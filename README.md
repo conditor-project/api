@@ -25,7 +25,7 @@ This API is coded in NodeJS with [ExpressJS](http://expressjs.com/) framework.
 It can be run by different ways :
 
 * Basically, with the `node` CLI
-* Using [forever](https://github.com/foreverjs/forever), via the `npm start` command
+* Using [forever](https://github.com/foreverjs/forever), via the `npm run start-forever` command
 * With docker, via the `make run-prod` command
 
 Logs are managed with morgan, and written in the `$LOG_PATH/conditor-api.log` file
@@ -41,6 +41,7 @@ Logs are managed with morgan, and written in the `$LOG_PATH/conditor-api.log` fi
 ```bash
 git clone https://github.com/conditor-project/api.git
 cd api
+make install # copy postgresql.conf.dist to postgresql.conf
 ```
 
 For native node start or forever start :
@@ -57,11 +58,12 @@ make build
 <a name="running-the-api"></a>
 ## Running the API
 
-Before launchig the following commands, you must set `LOG_PATH` and `CONDITOR_ES_HOSTS` environments variables. For example :
+Before launchig the following commands, you MUST set `LOG_PATH`, `CONDITOR_ES_HOSTS` and `RECORD_INDEX` environments variables. For example :
 
 ```bash
 export LOG_PATH="$HOME/var/log"
 export CONDITOR_ES_HOSTS="localhost:9200"
+export RECORD_INDEX="records"
 ```
 
 You can also set other optional environment variables...
@@ -82,14 +84,16 @@ export PG_PORT="5432"
 export PG_USERNAME="conditor"
 export PG_PASSWORD="conditor"
 export PG_DATABASE="conditor"
+export PG_DATADIR="./pgdata"
 export PGADMIN_DEFAULT_EMAIL="pgadmin@mailbox.com"
 export PGADMIN_DEFAULT_PASSWORD="pgadminpwd"
+export PGADMIN_PORT="5432"
 ```
 
 For native node start or forever start :
 
 ```bash
-npm start
+npm run start-forever
 ```
 
 For development purpose

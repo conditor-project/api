@@ -30,22 +30,22 @@ Liste des champs du JSON par ordre alphabétique :
 | doi | String | identifiant DOI du document |  | 
 | duplicateRules | String | règles qui ont permis l'appariement | x | 
 | duplicates.idConditor | String | idConditor de la notice qui a été appariée comme doublon certain | x | 
+| duplicates.isValidatedByUser | Boolean | la notice a été validée ou non par un utilisateur (valeur True ou False) | x |
 | duplicates.rules | String | règles qui ont permis l'appariement | x | 
 | duplicates.sessionName | String | nom de la session : SOURCE_date d'ingestion | x | 
 | duplicates.source | String | source de la notice qui a été appariée comme doublon certain | x | 
 | eisbn | String | isbn électronique |  | 
 | eissn | String | issn électronique |  | 
+| electronicPublicationDate | String | date de publication (électronique) présente dans la notice source |  | 
 | ensam | String | identifiant de document ensam (lien vers le document) |  | 
 | first3AuthorNames | String | 3 premiers auteurs prénom complet ou initiale si la source propose uniquement l'initiale (utile au dédoublonnage) | x | 
 | first3AuthorNamesWithInitials | String | 3 premiers auteurs initiale du prénom (utile au dédoublonnage) | x | 
 | halAuthorId | String | liste des identifiants Hal des auteurs |  | 
 | halId | String | identifiant du document Hal |  | 
-| hasDoi | Boolean | présence ou non d'un DOI (valeur True ou False) |  | 
-| hasTransDuplicate | Boolean | existence d'un doublon par transitivité (valeur True or False)
-Si A doublon de B et B doublon de C alors A est doublon de C | x | 
-| idChain | String | ensemble des idConditors, préfixés par le nom de la source, des notices considérées comme doublons certains.
-Identifiants séparés par ! | x | 
-| idConditor | String | identifiant du document Conditor créé aléatoirement |  | 
+| hasDoi | Boolean | présence ou non d'un DOI (valeur True ou False) | x | 
+| hasTransDuplicate | Boolean | existence d'un doublon par transitivité (valeur True or False). Si A doublon de B et B doublon de C alors A est doublon de C | x | 
+| idChain | String | ensemble des idConditors, préfixés par le nom de la source, des notices considérées comme doublons certains. Identifiants séparés par ! | x | 
+| idConditor | String | identifiant du document Conditor créé aléatoirement | x | 
 | idHal | String | liste des identifiants des auteurs Hal regroupant les halAuthorId |  | 
 | idProdinra | String | identifiant du document ProdInra |  | 
 | ineris | String | identifiant du document Ineris |  | 
@@ -75,10 +75,11 @@ Identifiants séparés par ! | x |
 | part | String | partie d'un document |  | 
 | patentNumber | String | identifiant brevet |  | 
 | path | String | lien vers le document TEI Conditor | x | 
+| pii | String | Publisher Item Identifier sont des identifiants d'articles/communications/chapitres créés par les sociétés savantes |  |
 | pmc | String | identifiant du document texte intégral PubMedCentral |  | 
 | pmId | String | identifiant du document notice PubMedCentral |  | 
 | ppn | String | identifiant du document Sudoc |  | 
-| publicationDate | String | date de publication présente dans la notice source |  | 
+| publicationDate | String | date de publication (papier) présente dans la notice source |  | 
 | publicationDate.date | date | version de type date de publicationDate. Créée à partir de cette dernière, elle se présente sous la forme de Mois Jour Année, heure:seconde:centième:millième | x | 
 | reportNumber | String | numéro de rapport |  | 
 | researcherId | String | identifiant WoS de l'auteur |  | 
@@ -96,8 +97,9 @@ Identifiants séparés par ! | x |
 | title.journal | String | titre du périodique |  | 
 | title.meeting | String | titre du congrès |  | 
 | title.monography | String | titre de monographe |  | 
-| typeConditor | String | type de document propre à Conditor pour repérer les doublons |  | 
+| typeConditor | String | type de document propre à Conditor pour repérer les doublons | x | 
 | utKey | String | identifiant du document WoS |  | 
 | viaf | String | identifiant d'auteur ou d'organisme |  | 
 | volume | String | volume du fascicule |  | 
 | xissn | String | regroupement des issn et des eissn | x | 
+| xPublicationDate | String | regroupement des dates de publication papier et électronique présentes dans la notice source | x | 

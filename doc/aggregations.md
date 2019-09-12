@@ -2,7 +2,7 @@
 
 Des données d'agrégations peuvent êtres obtenues sur certaines routes de l'API Conditor via le paramètre d'url `aggs`.
 
-Le fonctionnement de ces agrégations se base entiérement sur celui d'[Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html), hormis en ce qui concerne la syntaxe qui elle a été adaptée pour les besoins de l'API.
+Le fonctionnement de ces agrégations se base entièrement sur celui d'[Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html), hormis en ce qui concerne la syntaxe qui, elle, a été adaptée pour les besoins de l'API.
 
 ## Liste des routes supportant les agrégations
 
@@ -27,7 +27,7 @@ La syntaxe à utiliser dépend du type du champ à agréger.
 
 ## Limitation
 
-Les limitations sont les même que pour Elasticsearch.
+Les limitations sont les mêmes que pour Elasticsearch.
 En particulier, les agrégations sont interdites sur certains types de champs, notamment ceux de type "`text`".
 Il est donc parfois nécessaire d'utiliser une version "normalisée" des champs textuels (Ex : `title.default.normalized`) pour faire l'agrégation correspondante.
 
