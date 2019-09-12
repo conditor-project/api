@@ -1,12 +1,14 @@
 'use strict';
 
-const Joi    = require('joi'),
+const Joi    = require('@hapi/joi'),
       semver = require('semver')
 ;
 
-const configValidator = module.exports;
+const configValidator = {};
 
-const customJoi = extend();
+module.exports = configValidator;
+
+const customJoi = _extend();
 const ipUser = Joi.object()
                   .keys({
                           ip   : Joi.string().ip({version: ['ipv4'], cidr: 'forbidden'}),
@@ -49,9 +51,10 @@ configValidator.schema = Joi.object()
                                     sourceIdsMap: Joi.object(),
                                     indices     : Joi.object().keys({
                                                                       records: {
-                                                                        index: Joi.string(),
-                                                                        type: Joi.string(),
-                                                                        excludes: Joi.array().optional()
+                                                                        index   : Joi.string(),
+                                                                        type    : Joi.string(),
+                                                                        excludes: Joi.array().optional(),
+                                                                        optional: Joi.boolean().optional()
                                                                       }
                                                                     })
                                   })
@@ -59,7 +62,7 @@ configValidator.schema = Joi.object()
 ;
 
 
-function extend () {
+function _extend () {
   return Joi.extend((joi) => ({
     base    : joi.string(),
     name    : 'string',

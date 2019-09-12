@@ -6,8 +6,7 @@ const _ = require('lodash');
 const defaultOptions = {
   host            : 'localhost',
   dialect         : 'postgres',
-  port            : 5432,
-  operatorsAliases: false
+  port            : 5432
 };
 
 module.exports = {

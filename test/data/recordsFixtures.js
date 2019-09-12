@@ -22,6 +22,18 @@ module.exports = [
       {
         source    : 'hal',
         idConditor: 'c'
+      },
+      {
+        source    : 'crossref',
+        idConditor: 'l'
+      },
+      {
+        source    : 'wos',
+        idConditor: 'w'
+      },
+      {
+        source    : 'sudoc',
+        idConditor: 'y'
       }
     ]
   },
@@ -48,6 +60,9 @@ module.exports = [
       },
       {
         idConditor: 'h'
+      },
+      {
+        idConditor: 'l'
       }
     ]
   },
@@ -70,6 +85,9 @@ module.exports = [
       },
       {
         idConditor: 'b'
+      },
+      {
+        idConditor: 'w'
       }
     ]
   },
@@ -103,6 +121,45 @@ module.exports = [
     ]
   },
   {
+    idConditor     : 'l',
+    sourceUid      : 'crossref$1',
+    isDuplicate    : true,
+    isNearDuplicate: true,
+    idChain        : '!crossref:l!wos:w!',
+    duplicates     : [
+      {
+        source    : 'wos',
+        idConditor: 'w'
+      }
+    ],
+    nearDuplicates : [
+      {
+        idConditor: 'a'
+      }
+    ]
+  },
+  {
+    idConditor     : 'w',
+    sourceUid      : 'wos$10',
+    isDuplicate    : true,
+    isNearDuplicate: true,
+    idChain        : '!crossref:l!wos:w!',
+    duplicates     : [
+      {
+        source    : 'crossref',
+        idConditor: 'l'
+      }
+    ],
+    nearDuplicates : [
+      {
+        idConditor: 'a'
+      },
+      {
+        idConditor: 'b'
+      }
+    ]
+  },
+  {
     idConditor     : 'x',
     sourceUid      : 'pubmed$2',
     isDuplicate    : true,
@@ -112,6 +169,19 @@ module.exports = [
       {
         source    : 'hal',
         idConditor: 'c'
+      }
+    ]
+  },
+  {
+    idConditor     : 'y',
+    sourceUid      : 'sudoc$1',
+    isDuplicate    : false,
+    isNearDuplicate: true,
+    idChain        : '!sudoc:y!',
+    duplicates     : [],
+    nearDuplicates : [
+      {
+        idConditor: 'b'
       }
     ]
   }

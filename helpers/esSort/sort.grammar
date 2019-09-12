@@ -19,7 +19,7 @@ Sorts
 
 Sort
   =
-  _ field:StringLiteral _ order:Order? _ mode:Mode? _ options:Options? _ { return Object.assign(buildSort(field, order, mode), options); }
+  _ field:StringLiteral _ order:Order? _ mode:Mode? _ options:Options? _ { return Object.assign({}, options, buildSort(field, order, mode)); }
 
 Order
   =

@@ -87,7 +87,7 @@ function getErrorHandler (res) {
     if (res.headersSent) return;
 
     if (_.has(res, 'req.query.debug') && res.req.query.debug !== 'false' && String(status).startsWith('4')) {
-      return res.status(status).send(_format(err, res.locals));
+      return res.status(status).send(_format4xxResponse(err, res.locals));
     }
     res.sendStatus(status);
   };
@@ -100,12 +100,13 @@ const errorMessagesMapping = [
         },
         {
           predicate: (reason) => reason.isJoi,
-          message  : (reason) => _.get(reason, 'details.0.message'),
-          details  : (reason) => {
-            const value = _.get(reason, 'details.0.context.value');
-            return `got (${typeof value}) ${_.isObject(value) ? JSON.stringify(value) : value}`;
+          iterateOn: 'details',
+          message  : (reason, i = 0) => _.get(reason, `details.${i}.message`,'').replace(/"/gm,'\''),
+          details  : (reason, i = 0) => {
+            const value = _.get(reason, `details.${i}.context.value`);
+            return `got (${typeof value}) ${_.isObject(value) ? JSON.stringify(value) : value}`.replace(/"/gm,'\'');
           },
-          label    : (reason) => _.get(reason, 'details.0.context.label')
+          label    : (reason, i = 0) => _.get(reason, `details.${i}.context.label`)
         },
         {
           predicate: (reason) => {return _(reason).keys().intersection(['body', 'response']).size() === 2;},
@@ -130,17 +131,25 @@ const statusNamesMapping = {
   /* add others if needed */
 };
 
-function _format (reason, {invalidOptions = [], ...resLocals} = {}) {
+function _format4xxResponse (reason, {invalidOptions = [], ...resLocals} = {}) {
   const mapping = _.find(errorMessagesMapping, ({predicate}) => predicate(reason));
+  const errors = [];
+
+
+  if (mapping && mapping.iterateOn) {
+    _.chain(reason)
+     .get(mapping.iterateOn)
+     .each((value, index) => {
+       errors.push(
+         _buildError(mapping, reason, index)
+       );
+     })
+     .value();
+  } else {
+    errors.push(_buildError(mapping, reason));
+  }
   const errorResponse = {
-    errors: [{
-      status    : reason.status,
-      statusName: _.get(statusNamesMapping, reason.status),
-      name      : _.invoke(mapping, 'name', reason) || reason.name,
-      label     : _.invoke(mapping, 'label', reason),
-      message   : _.invoke(mapping, 'message', reason) || reason.message,
-      details   : _.invoke(mapping, 'details', reason, resLocals)
-    }]
+    errors: errors
   };
 
   if (invalidOptions.length) {
@@ -149,10 +158,19 @@ function _format (reason, {invalidOptions = [], ...resLocals} = {}) {
       details: invalidOptions
     }];
   }
-
   return errorResponse;
 }
 
+function _buildError (mapping, reason, index) {
+  return {
+    status    : reason.status,
+    statusName: _.get(statusNamesMapping, reason.status),
+    name      : _.invoke(mapping, 'name', reason, index) || reason.name,
+    label     : _.invoke(mapping, 'label', reason, index),
+    message   : _.invoke(mapping, 'message', reason, index) || reason.message,
+    details   : _.invoke(mapping, 'details', reason, index) || reason.details
+  };
+}
 
 function _headerWarningBuilder (warnings) {
   return _(warnings)

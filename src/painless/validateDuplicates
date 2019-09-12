@@ -26,23 +26,25 @@
     if(ctx._source.duplicates == null){
       ctx._source.duplicates = new ArrayList();
     }
+
     if(ctx._source.nearDuplicates == null){
       ctx._source.nearDuplicates = new ArrayList();
     }
 
-    if(params.duplicates == null){
-      params.duplicates = new ArrayList();
+    if(params.duplicatesChain == null){
+      params.duplicatesChain = new ArrayList();
     }
+
     if(params.nonDuplicates == null){
-      params.duplicates = new ArrayList();
+      params.nonDuplicates = new ArrayList();
     }
 
 
-    ArrayList allReportedDuplicates= new ArrayList();
-    allReportedDuplicates.addAll(params.duplicates);
-    allReportedDuplicates.addAll(params.nonDuplicates);
+    ArrayList nearDuplicatesToRemove = new ArrayList();
+    nearDuplicatesToRemove.addAll(params.duplicatesChain);
+    nearDuplicatesToRemove.addAll(params.nonDuplicates);
 
-    for(def duplicate:params.duplicates){
+    for(def duplicate:params.duplicatesChain){
       if(duplicate.idConditor == ctx._source.idConditor){
         continue;
       }
@@ -52,10 +54,13 @@
     ctx._source.isDuplicate = ctx._source.duplicates.size() > 0 ? true: false;
 
     if(ctx._source.nearDuplicates.size() != 0){
-      for(def duplicate:allReportedDuplicates){
+      for(def duplicate:nearDuplicatesToRemove){
         removeIx(ctx._source.nearDuplicates, duplicate);
       }
       ctx._source.isNearDuplicate = ctx._source.nearDuplicates.size() > 0 ?true: false;
     }
 
-    ctx._source.idChain = params.duplicatesIdChain;
+    if(params.duplicatesIdChain != null){
+        ctx._source.idChain = params.duplicatesIdChain;
+    }
+

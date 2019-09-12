@@ -1,7 +1,8 @@
 'use strict';
 
-const _     = require('lodash'),
-      state = require('./state')
+const _         = require('lodash'),
+      state     = require('./state'),
+      {indices} = require('config-component').get(module)
 ;
 
 const responseFormat = module.exports;
@@ -34,7 +35,12 @@ responseFormat.getSingleScalarResult = (response) => {
 };
 
 responseFormat.getResult = (response) => {
-  const hits         = _.map(response.hits.hits, (hit) => {return _.assign({}, hit._source, _formatHit(hit));}),
+  const hits         = _.map(response.hits.hits,
+                             (hit) => {
+                               return _.assign({},
+                                               _.omit(hit._source, indices.records.excludes),
+                                               _formatHit(hit));
+                             }),
         aggregations = _.get(response, 'aggregations', null)
   ;
 
@@ -55,8 +61,10 @@ responseFormat.paginate = (result, from = 0, size = 10) => {
   if (size === 0) return result;
 
   const page     = Math.floor(from / Math.max(size, 1) + 1),
-        lastPage = _.max([_.chain([result.totalCount,
-                                   state.get('indices.records.cachedSettings.maxResultWindow', 10000)])
+        lastPage = _.max([_.chain([
+                                    result.totalCount,
+                                    state.get('indices.records.cachedSettings.maxResultWindow', 10000) - size
+                                  ])
                            .min()
                            .divide(size)
                            .ceil()
@@ -101,7 +109,7 @@ function addWarning (warning) {
 function _formatHit (hit) {
   return {
     _score: hit._score,
-    _sort:hit.sort
+    _sort : hit.sort
   };
 }
 

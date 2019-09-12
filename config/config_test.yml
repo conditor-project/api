@@ -17,11 +17,6 @@ security:
     forbiddenIds:
       - forbidThisId
 
-elastic:
-  clients:
-    main:
-      log: # Possible values: error, info, trace, warning, debug
-        - error
 
 pg:
  clients:
@@ -32,3 +27,4 @@ indices:
   recordsTest:
     index: records-test
     type: %env(RECORD_TYPE)%
+    optional : true # this indice does not need to exist at startup

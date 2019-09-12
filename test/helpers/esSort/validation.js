@@ -3,7 +3,7 @@
 const schema = require('../../../helpers/esSort/validation').getSchema(),
       _      = require('lodash'),
       should = require('should'), // jshint ignore:line
-      Joi    = require('joi')
+      Joi    = require('@hapi/joi')
 ;
 
 const asts = [

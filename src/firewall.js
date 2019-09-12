@@ -1,13 +1,13 @@
 'use strict';
 
-const express          = require('express'),
-      firewall         = express.Router(),
-      {security}       = require('config-component').get(module),
-      {verify} = require('./jwtToken'),
-      jwt              = require('jsonwebtoken'),
-      _                = require('lodash'),
-      includes         = require('lodash/fp/includes'),
-      db               = require('../db/models/index')
+const express    = require('express'),
+      firewall   = express.Router(),
+      {security} = require('config-component').get(module),
+      {verify}   = require('./jwtToken'),
+      jwt        = require('jsonwebtoken'),
+      _          = require('lodash'),
+      includes   = require('lodash/fp/includes'),
+      db         = require('../db/models/index')
 ;
 
 module.exports = firewall;
@@ -45,7 +45,12 @@ function authorize (req, res, next) {
     res.set('WWW-Authenticate', 'Bearer');
     return res.sendStatus(401);
   }
-  const email = _getEmail(req);
+
+  let email;
+  if (!(email = _getEmail(req))){
+    return res.sendStatus(403);
+  }
+
   db
     .Users
     .findOrCreate({where: {email}, defaults: {email}})

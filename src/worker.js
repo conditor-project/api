@@ -96,6 +96,6 @@ app.get('/', (req, res) => {res.redirect(`/v${semver.major(config.app.version)}`
 app.use(`/v${semver.major(config.app.version)}`, root);
 app.use(`/v${semver.major(config.app.version)}`, firewall, scroll, records, duplicatesValidations);
 // This two must be last
-app.use(errorHandler);
 app.use(notFoundHandler);
+app.use(errorHandler);
 

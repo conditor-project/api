@@ -3,7 +3,7 @@
 const esb    = require('elastic-builder/src'),
       _      = require('lodash'),
       parser = require('./parser'),
-      Joi    = require('joi'),
+      Joi    = require('@hapi/joi'),
       schema = require('./validation').getSchema()
 ;
 

@@ -15,3 +15,10 @@ security:
     inMemory:
       - ip: 127.0.0.1
         email: user@conditor.fr
+
+elastic:
+  clients:
+    main:
+      log: # Possible values: error, info, trace, warning, debug
+        - error
+        - warning

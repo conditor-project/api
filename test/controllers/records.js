@@ -11,22 +11,14 @@ const request   = require('supertest'),
 ;
 
 const apiVersion = `v${semver.major(config.app.version)}`;
-before(function(){
-  app._start();
-});
-
-after(function() {
-  app._close();
-});
-
-describe('GET /records', function() {
-  this.timeout(100000);
 
 
+describe(`GET /${apiVersion}/records`, function() {
+  this.timeout(300000);
 
-  describe('?scroll={DurationString}&size={Number}', function() {
+  describe('?scroll={DurationString}&page_size={Number}', function() {
     it('Should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
-      const requestUrl = `/${apiVersion}/records/_filter/sudoc?scroll=5m&include=idConditor,titre&exclude=titre.value`;
+      const requestUrl = `/${apiVersion}/records/_filter/sudoc/duplicate?scroll=5m&include=idConditor,titre&exclude=titre.value`;
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
@@ -68,6 +60,7 @@ describe('GET /records', function() {
       return request(app)
         .get(requestUrl)
         .set('X-Forwarded-For', '111.11.11.1') // We spoof our ip
+        .expect((res) => {if (res.statusType !== 2) throw new Error(res.status);})
         .expect('Content-Type', /json/)
         .then(response => {
           const aggregations = JSON.parse(response.text).aggregations;
@@ -201,7 +194,7 @@ describe('GET /records', function() {
 
           res.on('end', function() {
             yauzl.fromBuffer(
-              new Buffer(res.data, 'binary'),
+               Buffer.from(res.data, 'binary'),
               {lazyEntries: true},
               (err, zipfile) => {
                 if (err) return cb(err);
@@ -229,6 +222,5 @@ describe('GET /records', function() {
         });
     });
   });
-
 })
 ;

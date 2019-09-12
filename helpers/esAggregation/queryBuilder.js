@@ -1,10 +1,10 @@
 'use strict';
 
 
-const esb        = require('elastic-builder/src'),
-      _          = require('lodash'),
-      parser     = require('./parser'),
-      attemptMap = require('./validation').attemptMap
+const esb          = require('elastic-builder/src'),
+      _            = require('lodash'),
+      parser       = require('./parser'),
+      {validate} = require('./validation')
 ;
 
 const queryBuilder = module.exports;
@@ -13,7 +13,7 @@ queryBuilder.build = build;
 
 function build (aggsQueryString) {
   const ast          = parser.parse(aggsQueryString),
-        validatedAst = attemptMap(ast)
+        validatedAst = validate(ast, {abortEarly:false})
   ;
 
   return _buildAggs(validatedAst);

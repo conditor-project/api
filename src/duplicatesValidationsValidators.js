@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require('joi'),
+const Joi = require('@hapi/joi'),
       _   = require('lodash')
 ;
 
@@ -33,7 +33,7 @@ validator.normalize = (duplicatesValidations) => {
     .pick(['reportDuplicates', 'reportNonDuplicates'])
     .mapValues((reports) => {
       return _.map(reports, (report) => {
-        if (!_.isString(report)) return report;
+        if (_.isPlainObject(report)) return report;
         return {recordId: report};
       });
     })

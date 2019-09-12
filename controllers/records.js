@@ -17,14 +17,14 @@ const IS_DUPLICATE          = 'duplicate',
       IS_NOT_NEAR_DUPLICATE = 'not_near_duplicate'
 ;
 
-const filterByCriteriaRouteTemplate = `(/:source(hal|wos|sudoc))?`
+// @todo make dynamic source
+const filterByCriteriaRouteTemplate = `(/:source(hal|sudoc|crossref|pubmed))?`
                                       + `(/:publicationYear(((18|19|20)[0-9]{2})))?`
                                       + `(/:isDuplicate(${IS_DUPLICATE}|${IS_NOT_DUPLICATE}))?`
                                       + `(/:isNearDuplicate(${IS_NEAR_DUPLICATE}|${IS_NOT_NEAR_DUPLICATE}))?`
 ;
 
 const router = module.exports = express.Router();
-
 
 // /records/_filter(/{source})(/{year})(/{DUPLICATE_FLAG})(/{NEAR_DUPLICATE_FLAG})
 router.get(`/records/_filter` + filterByCriteriaRouteTemplate,

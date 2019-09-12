@@ -12,7 +12,8 @@ const express                                            = require('express'),
       records                                            = require('../src/managers/recordsManager'),
       validateQueryString                                = require('../helpers/validateQueryString'),
       getInvalidOptionsHandler                           = require('../src/getInvalidOptionsHandler'),
-      {updateDuplicatesTree}                              = require('../src/managers/duplicatesManager')
+      {updateDuplicatesTree}                             = require('../src/managers/duplicatesManager'),
+      {logError}                                         = require('../helpers/logger')
 ;
 
 module.exports = router;
@@ -23,79 +24,72 @@ const includes = _(sourceIdsMap)
   .value()
 ;
 
+// /duplicatesValidations
 router.post('/duplicatesValidations', (req, res, next) => {
   if (!req.is('json')) return res.sendStatus(415);
 
   validateBody(req.body)
-    .then(normalizeBody)
-    .then(normalizedBody => res.locals.reqBody = normalizedBody)
-    .then(() => validateQueryString(req.query, 'access_token', 'debug'))
+    .then((validatedBody) => {
+      res.locals.reqBody = normalizeBody(validatedBody);
+
+      return validateQueryString(req.query, 'access_token', 'debug');
+    })
     .then(getInvalidOptionsHandler(res))
     .then(() => records.getSingleHitByIdConditor(res.locals.reqBody.recordId, {includes}))
     .then(({result: initialRecord}) => {
-      const nearDuplicatesIds          = _.map(initialRecord.nearDuplicates, (duplicate) => duplicate.idConditor),
-            duplicatesIds              = _.map(initialRecord.duplicates, (duplicate) => duplicate.idConditor),
-            reportedRecordsIds         = _.concat(_.chain(res)
-                                                   .get('locals.reqBody.reportDuplicates', [])
-                                                   .map('recordId')
-                                                   .value(),
-                                                  _.chain(res)
-                                                   .get('locals.reqBody.reportNonDuplicates', [])
-                                                   .map('recordId')
-                                                   .value()),
-            // Sanity checks
-            invalidRecordsIds          = _.difference(reportedRecordsIds, nearDuplicatesIds),
-            nonUniqValidatedRecordsIds = _(reportedRecordsIds).groupBy()
-                                                              .pickBy(group => group.length > 1)
-                                                              .keys()
-                                                              .value(),
-            duplicatesIntersection     = _.intersection(reportedRecordsIds, duplicatesIds)
-      ;
-      if (nonUniqValidatedRecordsIds.length) throw nonUniqueRecordsIdsException(nonUniqValidatedRecordsIds);
-      if (invalidRecordsIds.length) throw invalidRecordsIdsException(invalidRecordsIds);
-      if (duplicatesIntersection.length) throw duplicatesIntersectionException(duplicatesIntersection);
-
+      const reportedRecordsIds = _buildReportedRecordsIds({
+                                                            reportDuplicates   : res.locals.reqBody.reportDuplicates,
+                                                            reportNonDuplicates: res.locals.reqBody.reportNonDuplicates
+                                                          });
+      _checkRequestSanity(
+        initialRecord,
+        reportedRecordsIds
+      );
       res.locals.initialRecord = initialRecord;
-      return reportedRecordsIds;
+
+      return records.searchByIdConditors(reportedRecordsIds, {includes});
     })
-    .then(reportedRecordsIds => records.searchByIdConditors(reportedRecordsIds, {includes}))
-    .then(({result}) => {
+    .then(({result: reportedRecords}) => {
 
-      const recordsMap = _buildRecordsMap(result, res.locals.initialRecord);
+      const recordsMap = _buildRecordsMap(reportedRecords, res.locals.initialRecord);
 
-      return {
-        initialRecord      : recordsMap[res.locals.reqBody.recordId],
-        reportDuplicates   : _.map(res.locals.reqBody.reportDuplicates,
-                                   ({recordId, comment}) => _.chain(recordsMap[recordId])
-                                                             .set('comment', comment)
-                                                             .set('isDuplicate', true)
-                                                             .value()),
-        reportNonDuplicates: _.map(res.locals.reqBody.reportNonDuplicates,
-                                   ({recordId, comment}) => _.chain(recordsMap[recordId])
-                                                             .set('comment', comment)
-                                                             .set('isDuplicate', false)
-                                                             .value())
-      };
-    })
-    .then(({initialRecord, reportDuplicates, reportNonDuplicates}) => {
-      const bulk = _.transform(_.concat(reportDuplicates, reportNonDuplicates), (bulk, targetRecord) => {
-        bulk.push({
-                    isDuplicate      : targetRecord.isDuplicate,
-                    initialSource    : initialRecord.source,
-                    initialSourceId  : initialRecord.sourceId,
-                    initialIdConditor: initialRecord.idConditor,
-                    targetSource     : targetRecord.source,
-                    targetSourceId   : targetRecord.sourceId,
-                    targetIdConditor : targetRecord.idConditor,
-                    comment          : targetRecord.comment && he.encode(targetRecord.comment),
-                    UserId           : req.user.id
-                  });
-      }, []);
+      const initialRecord       = recordsMap[res.locals.reqBody.recordId],
+            reportDuplicates    = _.map(res.locals.reqBody.reportDuplicates,
+                                        ({recordId, comment}) => _.chain(recordsMap[recordId])
+                                                                  .set('comment', comment)
+                                                                  .set('isDuplicate', true)
+                                                                  .value()),
+            reportNonDuplicates = _.map(res.locals.reqBody.reportNonDuplicates,
+                                        ({recordId, comment}) => _.chain(recordsMap[recordId])
+                                                                  .set('comment', comment)
+                                                                  .set('isDuplicate', false)
+                                                                  .value())
+      ;
 
-      return db.DuplicatesValidations.bulkCreate(bulk, {validate: true, individualHooks: true})
+      const duplicatesChainIds =
+              _([initialRecord])
+                .concat(
+                  _.get(initialRecord, 'duplicates', []),
+                  reportDuplicates,
+                  _.flatMap(reportDuplicates, 'duplicates')
+                )
+                .compact()
+                .uniq()
+                .map('idConditor')
+                .value()
+      ;
+      const conflictIds = _.intersection(duplicatesChainIds, _.map(reportNonDuplicates, 'idConditor'));
+
+      if (conflictIds.length) throw duplicatesChainConflictException(duplicatesChainIds, conflictIds);
+
+      const bulk = _buildDuplicatesValidationsBulk(req.user.id, initialRecord, {reportDuplicates, reportNonDuplicates});
+
+      return db.DuplicatesValidations
+               .bulkCreate(bulk, {validate: true, individualHooks: true})
                .then(() => {
                  return updateDuplicatesTree(initialRecord, {reportDuplicates, reportNonDuplicates});
                });
+
     })
     .then(() => res.sendStatus(201))
     .catch(reThrow)
@@ -122,6 +116,47 @@ function _buildRecordsMap (...records) {
   );
 }
 
+function _buildDuplicatesValidationsBulk (userId, initialRecord, {reportDuplicates = [], reportNonDuplicates = []}) {
+  return _.transform(_.concat(reportDuplicates, reportNonDuplicates),
+                     (bulk, targetRecord) => {
+                       bulk.push({
+                                   isDuplicate      : targetRecord.isDuplicate,
+                                   initialSource    : initialRecord.source,
+                                   initialSourceId  : initialRecord.sourceId,
+                                   initialIdConditor: initialRecord.idConditor,
+                                   targetSource     : targetRecord.source,
+                                   targetSourceId   : targetRecord.sourceId,
+                                   targetIdConditor : targetRecord.idConditor,
+                                   comment          : targetRecord.comment && he.encode(targetRecord.comment),
+                                   UserId           : userId
+                                 });
+                     },
+                     []
+  );
+}
+
+function _checkRequestSanity (initialRecord, reportedRecordsIds) {
+  const nearDuplicatesIds          = _.map(initialRecord.nearDuplicates, (duplicate) => duplicate.idConditor),
+        duplicatesIds              = _.map(initialRecord.duplicates, (duplicate) => duplicate.idConditor),
+        // Sanity checks
+        invalidRecordsIds          = _.difference(reportedRecordsIds, nearDuplicatesIds),
+        nonUniqValidatedRecordsIds = _(reportedRecordsIds).groupBy()
+                                                          .pickBy(group => group.length > 1)
+                                                          .keys()
+                                                          .value(),
+        duplicatesIntersection     = _.intersection(reportedRecordsIds, duplicatesIds)
+  ;
+  if (nonUniqValidatedRecordsIds.length) throw nonUniqueRecordsIdsException(nonUniqValidatedRecordsIds);
+  if (invalidRecordsIds.length) throw invalidRecordsIdsException(invalidRecordsIds);
+  if (duplicatesIntersection.length) throw duplicatesIntersectionException(duplicatesIntersection);
+}
+
+function _buildReportedRecordsIds ({reportDuplicates = [], reportNonDuplicates = []}) {
+  return _.concat(_.map(reportDuplicates, 'recordId'),
+                  _.map(reportNonDuplicates, 'recordId')
+  );
+}
+
 /*
  * Exceptions
  */
@@ -143,5 +178,12 @@ function duplicatesIntersectionException (duplicatesIntersection) {
   let err = new Error(`Records Ids must be not be present in record.duplicates collections, found: ${duplicatesIntersection}`);
   err.name = 'duplicatesIntersectionException';
   err.status = 400;
+  return err;
+}
+
+function duplicatesChainConflictException (duplicatesChainIds, conflictIds) {
+  let err = new Error(`Conflict between the expected duplicates chain: ${duplicatesChainIds}, and the reported nonDuplicates: ${conflictIds}`);
+  err.name = 'duplicatesChainConflictException';
+  err.status = 409;
   return err;
 }

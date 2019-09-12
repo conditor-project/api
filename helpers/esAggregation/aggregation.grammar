@@ -30,22 +30,22 @@ AggregationType
   / GlobalAgg
 
 GlobalAgg
-  = _ type:"global"i _ options:AggOptions? { return Object.assign({type:"global"}, options);}
+  = _ type:"global"i _ options:AggOptions? { return Object.assign({}, options, {type:"global"});}
 
 NestedAgg
   = _ type:"nested"i _ ":" _ path:NestedField _ { return {path, type:"nested"}; }
 
 CardinalityAgg
   = _ type:"cardinality"i _ ":" _ field:AggField _ options:AggOptions?
-   { return Object.assign({field, type:"cardinality"}, options); }
+   { return Object.assign({}, options, {field, type:"cardinality"}); }
 
 TermsAgg
   = _ type:"terms"i _ ":" _ field:AggField _ options:AggOptions?
-   { return Object.assign({field, type:"terms"}, options); }
+   { return Object.assign({}, options, {field, type:"terms"}); }
 
 DateRangeAgg
   = _ type:"date_range"i _ ":" _ field:AggField _ ranges:Ranges _ options:AggOptions?
-   { return Object.assign({type:"date_range", field, ranges}, options); }
+   { return Object.assign({}, options, {type:"date_range", field, ranges}); }
 
 Ranges
   = ":" _ range:Range* { return range; }

@@ -21,7 +21,7 @@ function setup () {
       return validate(config)
         .catch((error) => {
           logError('Config validation Error'.bold + '\n', error.annotate(process.env.NODE_ENV === 'production'));
-          process.exit(1);
+          throw error;
         });
     })
     .then(() => {
@@ -47,7 +47,7 @@ function setup () {
         })
         .catch((reason) => {
           logError(`${'Smoke test'.bold} : ${'failed'.bold.danger}: \n`, reason);
-          process.exit(1);
+          throw reason;
         });
     })
     .then(() => {
@@ -62,9 +62,5 @@ function setup () {
                    .then(() => logInfo(`${'Sequelize'.bold}: Sync tables`))
             ;
         });
-    })
-    .catch((reason) => {
-      logError(reason);
-      process.exit(1);
     });
 }

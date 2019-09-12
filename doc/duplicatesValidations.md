@@ -19,13 +19,13 @@ La syntaxe de l'objet attendu dans le body de la requête HTTP est la suivante :
 
 ```json
 {
-    "recordId": <String> idConditor,
+    "recordId": idConditor (String),
     "reportDuplicates":
-          [<String> idConditor]
-        | [{"recordId":<String>, "comment":<String 400>}],
+          [idConditor (String)]
+        | [{"recordId": idConditor (String), "comment": comment (String max.400)}],
     "reportNonDuplicates":
-          [<String> idConditor]
-        | [{"recordId":<String>, "comment":<String 400>}]
+          [idConditor (String)]
+        | [{"recordId": idConditor (String), "comment": comment (String max.400)}]
 }
 ```
 

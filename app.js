@@ -18,8 +18,10 @@ setup()
       cluster.fork({state: JSON.stringify(state.get())});
     }
   })
-  .catch((reason) => {throw reason;})
-;
+  .catch((reason) => {
+    logError(reason);
+    process.exit(1);
+  });
 
 cluster.on('exit', function(worker, code, signal) {
   if (code) {

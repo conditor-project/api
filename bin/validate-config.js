@@ -10,8 +10,13 @@ validate(config)
     logSuccess('Config validation confirmed'.success);
   })
   .catch((error) => {
-    if (!error.isJoi) return logError(error);
-    logError('Config validation Error'.bold + '\n', error.annotate());
+    if (error.isJoi) {
+      logError('Config validation Error'.bold + '\n',
+               error.annotate(process.env.NODE_ENV === 'production'));
+    }
+    else { logError(error);}
+
+    process.exit(1);
   })
 ;
 

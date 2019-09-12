@@ -1,11 +1,11 @@
 'use strict';
 
-const Joi                   = require('joi'),
+const Joi                   = require('@hapi/joi'),
       {aggregation: config} = require('config-component').get(module),
       _                     = require('lodash')
 ;
 
-module.exports.attemptMap = attemptMap;
+module.exports.validate = validate;
 
 /**
  * Bucket Aggregations
@@ -80,17 +80,34 @@ const cardinalityAggsSchema = Joi.object()
                                        })
 ;
 
-const bucketAggs = [termsAggsSchema, dateRangeAggsSchema, nestedAggsSchema];
-const metricsAggs = [cardinalityAggsSchema];
+const bucketAggs = {termsAggsSchema, dateRangeAggsSchema, nestedAggsSchema, globalAggsSchema};
+const metricsAggs = {cardinalityAggsSchema};
+const allAggs = Object.assign(bucketAggs, metricsAggs);
+const subAggs = Object.assign(bucketAggs, metricsAggs); // Only bucket aggregations can have sub-aggregations, of types bucket and metrics
 
-const subAggs = [].concat(bucketAggs, metricsAggs);
+const aggsSchema = Joi.array().items(_buildAggsAlternatives(allAggs));
 
-function _getSubAggsSchema () { return Joi.lazy(() => {return Joi.array().items(...subAggs);}, {once: true});}
+function _getSubAggsSchema () {
+  return Joi.lazy(() => {return Joi.array().items(_buildAggsAlternatives(subAggs));},
+                  {once: true});
+}
 
-const schemas = {termsAggsSchema, dateRangeAggsSchema, nestedAggsSchema, cardinalityAggsSchema, globalAggsSchema};
 
-function attemptMap (values) {
-  return _.map(values, (value) => {
-    return Joi.attempt(value, schemas[_.camelCase(value.type) + 'AggsSchema']);
-  });
+function _buildAggsAlternatives (aggs) {
+  return _.reduce(aggs,
+                     (alternatives, aggSchema) => {
+                       const name = Joi.reach(aggSchema, 'type').describe().valids[0];
+                       return alternatives.when(Joi.object().keys({type: Joi.string().valid(name)}).unknown(true),
+                                                {then: aggSchema});
+                     },
+                     Joi.alternatives()
+  );
+}
+
+
+function validate (aggsAst, options = {abortEarly: true}) {
+  const validatedValues = Joi.validate(aggsAst, aggsSchema, options);
+  if (_.get(validatedValues, 'error')) throw validatedValues.error;
+
+  return validatedValues.value;
 }
