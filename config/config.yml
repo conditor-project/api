@@ -91,3 +91,4 @@ indices:
     type: %env(RECORD_TYPE)%
     excludes:
       - path
+      - idElasticsearch

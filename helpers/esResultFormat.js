@@ -36,11 +36,7 @@ responseFormat.getSingleScalarResult = (response) => {
 
 responseFormat.getResult = (response) => {
   const hits         = _.map(response.hits.hits,
-                             (hit) => {
-                               return _.assign({},
-                                               _.omit(hit._source, indices.records.excludes),
-                                               _formatHit(hit));
-                             }),
+                             (hit) => _formatHit(hit)),
         aggregations = _.get(response, 'aggregations', null)
   ;
 
@@ -107,10 +103,14 @@ function addWarning (warning) {
 }
 
 function _formatHit (hit) {
-  return {
-    _score: hit._score,
-    _sort : hit.sort
-  };
+  return _.assign(
+    {},
+    _.omit(hit._source, indices.records.excludes),
+    {
+      _score: hit._score,
+      _sort : hit.sort
+    }
+  );
 }
 
 // Exceptions

@@ -12,8 +12,7 @@ const express                                            = require('express'),
       records                                            = require('../src/managers/recordsManager'),
       validateQueryString                                = require('../helpers/validateQueryString'),
       getInvalidOptionsHandler                           = require('../src/getInvalidOptionsHandler'),
-      {updateDuplicatesTree}                             = require('../src/managers/duplicatesManager'),
-      {logError}                                         = require('../helpers/logger')
+      {updateDuplicatesTree}                             = require('../src/managers/duplicatesManager')
 ;
 
 module.exports = router;

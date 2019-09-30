@@ -90,7 +90,7 @@ router.get(`/records(/_filter` + filterByCriteriaRouteTemplate + `)?/zip`,
                        })
                        .on('progress', (progress) => {
                          if (_.get(scrollStream, '_total') === progress.entries.processed) {
-                           logDebug(`Zip : archive finished ${progress.entries.processed}/${progress.entries.total}`);
+                           logDebug(`Zip : archive finished ${progress.entries.processed}/${progress.entries.total} documents`);
                          }
                        })
                        .on('warning', (warning) => {
