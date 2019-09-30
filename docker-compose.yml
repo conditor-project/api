@@ -5,7 +5,7 @@ services:
     depends_on: 
       - conditorpg
     container_name: conditor-api
-    image: conditor/api:1.0.1
+    image: conditor/api:1.1.0
     environment :
       TZ: "Europe/Paris"
       LOG_PATH: /var/log
