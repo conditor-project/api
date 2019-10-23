@@ -12,14 +12,16 @@ const file = './.jwt/tokenRegistry.json';
 
 program
   .version('0.1.0')
-  .option('-s, --subject <sub>', 'Set subject field on jwt token')
-  .action((options) => { generateToken(options.subject);})
+  .option('-s, --subject <sub>', 'Set subject field on jwt token. Must be an email address')
+  .option('-e, --expiresin <days>', 'Set expiresIn length in days. Must be an integer[1-90]')
+  .action((options) => {generateToken(options.subject, options.expiresin);})
   .parse(process.argv)
 ;
 
 
-function generateToken (sub) {
-  const token = generate({sub}),
+function generateToken (sub, exp) {
+
+  const token = generate({sub, exp}),
         entry = _buildRegistration(token)
   ;
 

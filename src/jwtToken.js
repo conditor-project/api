@@ -3,23 +3,25 @@
 const {security: {jwt: jwtConfig}, app} = require('config-component').get(module),
       jwt                               = require('jsonwebtoken'),
       nanoid                            = require('nanoid'),
-      email                             = require('./emailValidator')
+      email                             = require('./emailValidator'),
+      expiresIn                         = require('./expiresInValidator')
 ;
 
 const jwtToken = module.exports;
 
 // @see https://tools.ietf.org/html/rfc7519#section-4.1.2
 
-jwtToken.generate = ({jwtId, sub} = {}) => {
+jwtToken.generate = ({jwtId, sub, exp} = {}) => {
 
   email.assert(sub);
+  expiresIn.assert(exp);
 
   return jwt.sign(
     {},
     jwtConfig.secret,
     {
       algorithm: jwtConfig.algorithm,
-      expiresIn: jwtConfig.expiresIn,
+      expiresIn: exp ? `${exp} days` : jwtConfig.expiresIn,
       issuer   : app.name,
       subject  : sub ? `mailto:${sub}` : 'mailto:user@conditor.fr',
       jwtid    : jwtId || nanoid()
