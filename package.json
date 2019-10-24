@@ -59,6 +59,7 @@
     "elasticsearch": "15.3.1",
     "elasticsearch-scroll-stream": "^1.1.4",
     "express": "^4.16.4",
+    "express-useragent": "^1.0.13",
     "file-stream-rotator": "^0.4.1",
     "forever": "^1.0.0",
     "format-link-header": "^2.1.0",

@@ -45,7 +45,8 @@ const
   resConfig             = require('../middlewares/resConfig'),
   httpMethodsHandler    = require('../middlewares/httpMethodsHandler'),
   morgan                = require('../middlewares/morgan'),
-  notFoundHandler       = require('../middlewares/notFoundHandler')
+  notFoundHandler       = require('../middlewares/notFoundHandler'),
+  userAgent = require('express-useragent')
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
@@ -93,7 +94,7 @@ app.use(bodyParser.json());
 app.use(resConfig, httpMethodsHandler);
 app.use(compression());
 app.get('/', (req, res) => {res.redirect(`/v${semver.major(config.app.version)}`);});
-app.use(`/v${semver.major(config.app.version)}`, root);
+app.use(`/v${semver.major(config.app.version)}`, userAgent.express(), root);
 app.use(`/v${semver.major(config.app.version)}`, firewall, scroll, records, duplicatesValidations);
 // This two must be last
 app.use(notFoundHandler);
