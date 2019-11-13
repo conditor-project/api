@@ -25,7 +25,6 @@ const
   compression                     = require('compression'),
   _                               = require('lodash'),
   state                           = require('../helpers/state'),
-  bodyParser                      = require('body-parser'),
   db                              = require('../db/models/index')
 ;
 
@@ -46,7 +45,9 @@ const
   httpMethodsHandler    = require('../middlewares/httpMethodsHandler'),
   morgan                = require('../middlewares/morgan'),
   notFoundHandler       = require('../middlewares/notFoundHandler'),
-  userAgent = require('express-useragent')
+  bodyParser            = require('body-parser'),
+  qs                    = require('querystringify'),
+  userAgent             = require('express-useragent')
 ;
 
 const clusterId = cluster.isWorker ? `Worker ${cluster.worker.id}` : 'Master';
@@ -85,11 +86,12 @@ app._close = () => {
   });
 };
 
-
 app.set('etag', false);
 app.set('json spaces', 2);
 app.set('trust proxy', _.get(config.security, 'reverseProxy', false));
+app.set('query parser', (queryString) => qs.parse(queryString || ''));
 app.use(helmet({noSniff: false}), morgan);
+
 app.use(bodyParser.json());
 app.use(resConfig, httpMethodsHandler);
 app.use(compression());

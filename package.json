@@ -80,6 +80,7 @@
     "pegjs": "^0.10.0",
     "pg": "^7.11.0",
     "pg-hstore": "^2.3.2",
+    "querystringify": "^2.1.1",
     "semver": "^6.0.0",
     "sequelize": "^5.8.6",
     "sequelize-auto-migrations": "^1.0.3",

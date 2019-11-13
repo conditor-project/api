@@ -20,7 +20,7 @@ function logError (err) {
   const message = typeof err === 'string' ? arguments : [err.message, err];
   console.error('%s: [%s]: %s',
                 appName.bold.danger,
-                new Date(Date.now()).toLocaleString(),
+                _getDate(),
                 ...(_.map(message, trans))
   )
   ;
@@ -29,7 +29,7 @@ function logError (err) {
 function logSuccess () {
   console.info('%s: [%s]:',
                appName.bold.success,
-               new Date(Date.now()).toLocaleString(),
+               _getDate(),
                ...(_.map(arguments, trans))
   );
 }
@@ -37,7 +37,7 @@ function logSuccess () {
 function logInfo () {
   console.info('%s: [%s]:',
                appName.bold.info,
-               new Date(Date.now()).toLocaleString(),
+               _getDate(),
                ...(_.map(arguments, trans))
   );
 }
@@ -46,7 +46,7 @@ function logWarning () {
   if (process.env.NODE_ENV === 'test') return;
   console.warn('%s: [%s]:',
                appName.bold.warning,
-               new Date(Date.now()).toLocaleString(),
+               _getDate(),
                ...(_.map(arguments, trans))
   );
 }
@@ -55,7 +55,11 @@ function logDebug () {
   if (['test', 'production'].includes(process.env.NODE_ENV)) return;
   console.info('%s: [%s]:',
                appName.bold.primary,
-               new Date(Date.now()).toLocaleString(),
+               _getDate(),
                ...(_.map(arguments, trans))
   );
+}
+
+function _getDate () {
+  return new Date(Date.now()).toLocaleString(undefined, {timeZoneName: 'short'});
 }

@@ -18,7 +18,7 @@ describe(`GET /${apiVersion}/records`, function() {
 
   describe('?scroll={DurationString}&page_size={Number}', function() {
     it('Should iteratively respond with JSON results and Header/Scroll-Id', function(done) {
-      const requestUrl = `/${apiVersion}/records/_filter/sudoc/duplicate?scroll=5m&include=idConditor,titre&exclude=titre.value`;
+      const requestUrl = `/${apiVersion}/records/_filter/sudoc/2016/duplicate?page_size=100&scroll=5m&include=idConditor,titre&exclude=titre.value`;
       logInfo('Request on: ' + requestUrl);
       request(app)
         .get(requestUrl)
