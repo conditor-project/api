@@ -8,7 +8,7 @@ before_script:
   - psql -c "CREATE USER conditor WITH PASSWORD 'conditor';" -U postgres
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE conditor TO conditor;" -U postgres
   - npm run start-forever
-  - sleep 10
+  - sleep 20
   - npm run stop-forever
 node_js:
   - '10'
