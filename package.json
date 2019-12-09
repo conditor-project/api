@@ -19,6 +19,7 @@
     "list-registry": "node ./bin/list-registry.js",
     "config:view": "view-config",
     "config:validate": "npm run validate-config",
+    "sequelize": "sequelize",
     "token:generate": "node ./bin/generate-token.js",
     "token:cleanup": "node ./bin/cleanup-registry.js",
     "token:list": "npm run list-registry",
