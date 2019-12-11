@@ -13,7 +13,14 @@ const esConf = require('co-config/es.js');
 esConf.index = `tests-api-${Date.now()}`;
 
 const docOne = generateFakeDoc();
-const duplicatesOfOne = Array(5).fill({}).map(() => generateFakeDoc());
+const duplicatesOfOne = Array(10)
+  .fill({})
+  .map(() => generateFakeDoc())
+  .map(doc => {
+    doc.isDuplicate = true;
+    doc.duplicates = [];
+    return doc;
+  });
 docOne.isDuplicate = true;
 docOne.duplicates = [];
 docOne.isNearDuplicate = true;
