@@ -4,7 +4,7 @@
 const Promise = require('bluebird');
 const faker = require('faker');
 const models = require('../../db/models');
-// const { expect } = require('chai');
+const { expect } = require('chai');
 const generateFakeDoc = require('./generate-fake-doc.js');
 const replayHumanValidation = require('../../bin/replay-human-validation.js');
 const { main: esClient } = require('../../helpers/clients/elastic').startAll().get();
@@ -13,7 +13,7 @@ const esConf = require('co-config/es.js');
 esConf.index = `tests-api-${Date.now()}`;
 
 const docOne = generateFakeDoc();
-const duplicatesOfOne = Array(10)
+const nearDuplicatesOfOne = Array(10)
   .fill({})
   .map(() => generateFakeDoc())
   .map(doc => {
@@ -24,15 +24,17 @@ const duplicatesOfOne = Array(10)
 docOne.isDuplicate = true;
 docOne.duplicates = [];
 docOne.isNearDuplicate = true;
-docOne.nearDuplicates = duplicatesOfOne.map(duplicate => ({ idConditor: duplicate.idConditor }));
+docOne.nearDuplicates = nearDuplicatesOfOne.map(duplicate => ({ idConditor: duplicate.idConditor }));
 
-const humanValidations = duplicatesOfOne.map(duplicate => {
+const humanValidations = nearDuplicatesOfOne.map(duplicate => {
   return {
     isDuplicate: faker.random.boolean(),
     initialSource: docOne.source,
     initialSourceId: docOne.sourceId,
+    initialIdConditor: docOne.idConditor,
     targetSource: duplicate.source,
     targetSourceId: duplicate.sourceId,
+    targetIdConditor: duplicate.idConditor,
     comment: faker.lorem.sentence(10, 15),
     UserId: faker.random.number(100)
   };
@@ -42,7 +44,7 @@ describe('replay-human-validation.js', function () {
   before(function () {
     return esClient.indices.create({ index: esConf.index, body: esMapping })
       .then(() => {
-        return Promise.map([docOne, ...duplicatesOfOne], (doc) => {
+        return Promise.map([docOne, ...nearDuplicatesOfOne], (doc) => {
           return esClient.create({
             index: esConf.index,
             type: esConf.type,
@@ -65,12 +67,27 @@ describe('replay-human-validation.js', function () {
   });
 
   it('should replay the human validations', function () {
-    return replayHumanValidation();
+    return replayHumanValidation()
+      .then(() => esClient.search({
+        index: esConf.index,
+        q: `source:${docOne.source} AND sourceId:${docOne.sourceId}`
+      }))
+      .then(result => {
+        expect(result.hits.hits).to.have.lengthOf(1);
+        const doc = result.hits.hits[0]._source;
+        expect(doc.idConditor).to.equal(docOne.idConditor);
+        const duplicates = doc.duplicates;
+        duplicates.map(duplicate => {
+          const isDuplicateFound = humanValidations.filter(humanValidation => humanValidation.isDuplicate)
+            .some(duplicateValidation => duplicate.source === duplicateValidation.targetSource && duplicate.idConditor === duplicateValidation.targetIdConditor);
+          expect(isDuplicateFound).to.be.true;
+        });
+      });
   });
 
   after(function () {
     return esClient.indices.delete({ index: esConf.index })
-      .then(() => models.sequelize.drop())
-      .then(() => models.sequelize.close());
+      // .then(() => models.sequelize.drop())
+      // .then(() => models.sequelize.close());
   });
 });
