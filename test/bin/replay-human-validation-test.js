@@ -82,6 +82,8 @@ describe('replay-human-validation.js', function () {
             .some(duplicateValidation => duplicate.source === duplicateValidation.targetSource && duplicate.idConditor === duplicateValidation.targetIdConditor);
           expect(isDuplicateFound).to.be.true;
         });
+        const nearDuplicates = doc.nearDuplicates;
+        expect(nearDuplicates).to.be.empty;
       });
   });
 
