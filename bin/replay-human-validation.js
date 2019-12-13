@@ -25,32 +25,24 @@ function replayHumanValidation () {
         const duplicatesValidations = groupDuplicatesValidations[key];
         return Promise.join(
           // get initialRecord
-          esClient.search({
-            index: esConf.index,
-            q: `source:${duplicatesValidations[0].initialSource} AND sourceId:${duplicatesValidations[0].initialSourceId}`
-          }).then(result => result.hits.hits.pop()._source),
+          getRecord(duplicatesValidations[0].initialSource, duplicatesValidations[0].initialSourceId),
           // get reportDuplicates
           Promise.filter(duplicatesValidations, duplicateValidation => duplicateValidation.isDuplicate)
-            .map(duplicateValidation => {
-              return esClient.search({
-                index: esConf.index,
-                q: `source:${duplicateValidation.targetSource} AND sourceId:${duplicateValidation.targetSourceId}`
-              });
-            })
-            .map(result => result.hits.hits.pop()._source),
+            .map(duplicateValidation => getRecord(duplicateValidation.targetSource, duplicateValidation.targetSourceId)),
           // get reportNonDuplicates
           Promise.filter(duplicatesValidations, duplicateValidation => !duplicateValidation.isDuplicate)
-            .map(duplicateValidation => {
-              return esClient.search({
-                index: esConf.index,
-                q: `source:${duplicateValidation.targetSource} AND sourceId:${duplicateValidation.targetSourceId}`
-              });
-            })
-            .map(result => result.hits.hits.pop()._source),
+            .map(duplicateValidation => getRecord(duplicateValidation.targetSource, duplicateValidation.targetSourceId)),
           function (initialRecord, reportDuplicates, reportNonDuplicates) {
             return updateDuplicatesTree(initialRecord, { reportDuplicates, reportNonDuplicates }, { index: esConf.index });
           }
         );
       });
     });
+}
+
+function getRecord (source, sourceId) {
+  return esClient.search({
+    index: esConf.index,
+    q: `source:${source} AND sourceId:${sourceId}`
+  }).then(result => result.hits.hits.pop()._source);
 }

@@ -89,7 +89,6 @@ describe('replay-human-validation.js', function () {
 
   after(function () {
     return esClient.indices.delete({ index: esConf.index })
-      // .then(() => models.sequelize.drop())
-      // .then(() => models.sequelize.close());
+      .then(() => models.sequelize.sync({ force: true }));
   });
 });
