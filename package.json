@@ -12,6 +12,7 @@
     "test": "export NODE_ENV=test; npm run config:validate && mocha --recursive",
     "test:helpers": "export NODE_ENV=test; npx view-config; mocha test/helpers --recursive",
     "test:managers": "export NODE_ENV=test; npm run config:validate && mocha test/src/managers --recursive",
+    "test:db:create": "psql -c 'CREATE DATABASE conditor-test;' -U postgres",
     "coverage": "NODE_ENV=test nyc --reporter=html mocha --recursive",
     "validate-config": "view-config && node ./bin/validate-config.js",
     "generate-token": "node ./bin/generate-token.js",
@@ -25,7 +26,7 @@
     "token:list": "npm run list-registry",
     "insertversion:docker": "sed -i \"s#\\(image: conditor/api:\\)\\([-\\.a-z0-9]\\+\\)#\\1${npm_package_version}#g\" docker-compose.yml docker-compose.build.yml",
     "version": "npm run insertversion:docker && git add docker-compose.yml docker-compose.build.yml",
-    "install:travis": "npm install && NODE_ENV=test npm run sequelize db:create && unzip -P ${ZIP_PASSWORD} ./test/data/records.zip -d ./test/data && curl -X PUT \"http://localhost:9200/records\" -d @node_modules/co-config/mapping.json -H \"Content-Type: application/json\" && npx elasticdump --input=./test/data/records.bkp.json --output=http://localhost:9200 --type=data"
+    "install:travis": "npm install && npm run test:db:create && unzip -P ${ZIP_PASSWORD} ./test/data/records.zip -d ./test/data && curl -X PUT \"http://localhost:9200/records\" -d @node_modules/co-config/mapping.json -H \"Content-Type: application/json\" && npx elasticdump --input=./test/data/records.bkp.json --output=http://localhost:9200 --type=data"
   },
   "repository": {
     "type": "git",
