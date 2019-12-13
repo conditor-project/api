@@ -22,7 +22,7 @@ pg:
  clients:
    main:
      logging: false
-     database: conditor-test
+     database: conditor_test
 
 indices:
   recordsTest:
