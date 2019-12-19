@@ -25,12 +25,13 @@ function authenticate (req, res, next) {
   req.isAuthenticated = false;
   try {
     req.jwtToken = _getJwtToken(req);
-    if (
-      authenticateByJwt(req.jwtToken)
-      || authenticateByIp(req.ip)
-    ) {
-      req.isAuthenticated = true;
+
+    if (typeof req.jwtToken === 'string') {
+      req.isAuthenticated = isAuthenticatedByJwt(req.jwtToken);
+    } else {
+      req.isAuthenticated = isAuthenticatedByIp(req.ip);
     }
+
   } catch (err) {
     if (err.name === 'tokenMethodError') return res.sendStatus(err.status);
     return next(err);
@@ -47,7 +48,7 @@ function authorize (req, res, next) {
   }
 
   let email;
-  if (!(email = _getEmail(req))){
+  if (!(email = _getEmail(req))) {
     return res.sendStatus(403);
   }
 
@@ -63,7 +64,7 @@ function authorize (req, res, next) {
 }
 
 
-function authenticateByIp (ip) {
+function isAuthenticatedByIp (ip) {
   return !_.chain(security)
            .get('ip.inMemory', [])
            .find(['ip', ip])
@@ -72,7 +73,7 @@ function authenticateByIp (ip) {
 }
 
 // @see http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html
-function authenticateByJwt (jwtToken) {
+function isAuthenticatedByJwt (jwtToken) {
   if (jwtToken == null) return false;
 
   try {

@@ -42,7 +42,7 @@ nodejs:
   stackTraceLimit: 10
 
 log:
-  path: %env(HOME)%%env(LOG_PATH)%
+  path: %env(LOG_PATH)%
 
 express:
   api:
