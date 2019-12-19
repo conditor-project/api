@@ -10,6 +10,7 @@ Main api of the conditor-project
 - **[Querying the API](#querying-the-api)**
 - **[Access rights](#access-rights)**
 - **[Token Management](#token-management)**
+- **[Human validations](#human-validation-script)**
 - **[API Documentation](#api)**
 
 ## Description
@@ -146,27 +147,64 @@ To obtain a token, contact the Conditor team, they will give you a 31 days valid
 
 Currently, 3 commands can help you for managing tokens :
 
-### cleanup token registry
+- ### list all tokens
+
+List all avalaible JWT tokens, with validity ranges.
+```bash
+$ npm run list-registry
+```
+
+Script available at [./bin/list-registry.js](./bin/list-registry.js)
+
+- ### generate a new token
+
+Generate a new JWT token, valid during 31 days (default value)
+```bash
+$ npm run generate-token -- --help
+Usage: generate-token [options]
+
+Options:
+  -V, --version           output the version number
+  -s, --subject <sub>     Set subject field on jwt token. Must be an email address
+  -e, --expiresin <days>  Set expiresIn length in days. Must be an integer[1-90]
+  -h, --help              output usage information
+```
+
+Example, generate a token for John DOE valid during 15 days :
+```
+$ npm run generate-token -- -s john.doe@nobody.com -e 15
+
+> conditor-api@1.2.3 generate-token /home/rmeja/Dev/conditor/api
+> node ./bin/generate-token.js "-s" "john.doe@nobody.com" "-e" "15"
+
+Jwt token generated
+{
+  token: 'eyJhbG***********************************-vT_Q',
+  creation: '2019-12-16 10:00:00',
+  expiration: '2019-12-31 10:00:00',
+  subject: 'mailto:john.doe@nobody.com',
+  jwtid: 'v********O-5********8'
+}
+```
+
+Script available at [./bin/generate-token.js](./bin/generate-token.js)
+
+- ### cleanup all tokens
 
 `npm run cleanup-registry`
 
 Script available at [./bin/cleanup-registry.js](./bin/cleanup-registry.js)
 
-### generate a new token
+<a name="human-validation-script"></a>
+## Human validations script
 
-`npm run generate-token`
+Replay human validations stored in Postgres
 
-Generate a new JWT token, valid during 31 days
+```bash
+$ npm run replay-human-validation
+```
 
-Script available at [./bin/generate-token.js](./bin/generate-token.js)
-
-### list-registry
-
-`npm run list-registry`
-
-List all avalaible JWT tokens, with validity ranges.
-
-Script available at [./bin/list-registry.js](./bin/list-registry.js)
+Script available at [./bin/replay-human-validation.js](./bin/replay-human-validation.js)
 
 <a name="api"></a>
 ## API Documentation

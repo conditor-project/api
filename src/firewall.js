@@ -26,7 +26,7 @@ function authenticate (req, res, next) {
   try {
     req.jwtToken = _getJwtToken(req);
 
-    if (typeof req.jwtToken === 'string') {
+    if (typeof req. jwtToken === 'string') {
       req.isAuthenticated = isAuthenticatedByJwt(req.jwtToken);
     } else {
       req.isAuthenticated = isAuthenticatedByIp(req.ip);
