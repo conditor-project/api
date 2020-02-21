@@ -6,6 +6,7 @@ const { main: esClient } = require('../helpers/clients/elastic').startAll().get(
 const _ = require('lodash');
 const Promise = require('bluebird');
 const { updateDuplicatesTree } = require('../src/managers/duplicatesManager.js');
+const colors = require('colors');
 
 if (process.argv[1] === __filename) {
   replayHumanValidation()
@@ -35,7 +36,11 @@ function replayHumanValidation () {
           function (initialRecord, reportDuplicates, reportNonDuplicates) {
             return updateDuplicatesTree(initialRecord, { reportDuplicates, reportNonDuplicates }, { index: esConf.index });
           }
-        );
+        )
+        .catch(function(err) {
+          if (err.name !== 'updateDuplicatesTreeException' && err.name !== 'replayHumanValidationException') throw err;
+          else console.log(colors.red(err.name + ' : ' + err.details));
+        });
       });
     });
 }
@@ -43,6 +48,15 @@ function replayHumanValidation () {
 function getRecord (source, sourceId) {
   return esClient.search({
     index: esConf.index,
-    q: `source:${source} AND sourceId:${sourceId}`
-  }).then(result => result.hits.hits.pop()._source);
+    q: `(source:"${source}") AND (sourceId:"${sourceId}")`
+  }).then(function(result) {
+    let hit = result.hits.hits.pop();
+    if (!hit || !hit._source) {
+      let err = new Error('replayHumanValidationException');
+      err.name = 'replayHumanValidationException';
+      err.details = `query (source:"${source}") AND (sourceId:"${sourceId}") did not return anything`;
+      throw err;
+    }
+    return hit._source;
+  });
 }
