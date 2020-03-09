@@ -38,11 +38,15 @@ function updateDuplicatesTree (initialRecord, {reportDuplicates = [], reportNonD
               _.flatMap(reportDuplicates, 'duplicates')
             )
             .compact()
-            .uniq()
+            .uniqBy('idConditor')
+            .map(function(item) {
+              return _.find(reportDuplicates, (reportDuplicate) => reportDuplicate.idConditor === item.idConditor) !== undefined
+                ? _.set(item, 'isValidatedByUser', true)
+                : item;
+            })
             .map(_toNestedDuplicate)
             .value()
   ;
-
 
   const nonDuplicates =
           _(reportNonDuplicates)
