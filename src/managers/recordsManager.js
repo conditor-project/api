@@ -9,8 +9,7 @@ const
   ScrollStream        = require('elasticsearch-scroll-stream'),
   queryStringToParams = require('../queryStringToParams'),
   {buildRequestBody}  = require('../documentQueryBuilder'),
-  reference           = require('co-reference'),
-  rules               = require('../../config/notice-reference-rules.json')
+  reference           = require('co-reference')
 ;
 
 const recordsManager = module.exports;
