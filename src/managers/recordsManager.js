@@ -214,7 +214,7 @@ function getNoticeUnique (duplicates) {
   return Promise
     .resolve()
     .then(() => {
-      let selection = reference.select(duplicates, rules);
+      let selection = reference.select(duplicates);
       if (!selection.err) return selection.res;
       else return selection;
     });
