@@ -170,8 +170,8 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res, next) => {
 
 });
 
-// /records/{idConditor}/unique
-router.get('/records/:idConditor([0-9A-Za-z_~]+)/unique', (req, res, next) => {
+// /records/{idConditor}/reference
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/reference', (req, res, next) => {
   validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token', 'debug')
     .then(getInvalidOptionsHandler(res))
     .then((query) => {
