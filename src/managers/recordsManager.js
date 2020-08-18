@@ -35,7 +35,7 @@ recordsManager.search = search;
 recordsManager.searchByIdConditors = searchByIdConditors;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
-recordsManager.getNoticeUnique = getNoticeUnique;
+recordsManager.getNoticeReference = getNoticeReference;
 recordsManager.getDuplicatesByIdConditor = getDuplicatesByIdConditor;
 recordsManager.getNearDuplicatesByIdConditor = getNearDuplicatesByIdConditor;
 
@@ -210,7 +210,7 @@ function search ({q, aggs, sort, ...options}) {
     });
 }
 
-function getNoticeUnique (duplicates) {
+function getNoticeReference (duplicates) {
   return Promise
     .resolve()
     .then(() => {

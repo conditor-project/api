@@ -177,7 +177,7 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/reference', (req, res, next) =>
     .then((query) => {
       return records
         .getDuplicatesByIdConditor(req.params.idConditor, query, 'and_self')
-        .then(function(result) { return records.getNoticeUnique(result.hits); })
+        .then(function(result) { return records.getNoticeReference(result.hits); })
         .then((result) => res.json(result))
         .catch(next)
         ;
