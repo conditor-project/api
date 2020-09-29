@@ -10,7 +10,7 @@ services:
       args:
         - http_proxy
         - https_proxy
-    image: conditor/api:1.2.4
+    image: conditor/api:1.2.5
     environment :
       TZ: "Europe/Paris"
       LOG_PATH: /var/log
