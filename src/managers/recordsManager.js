@@ -8,7 +8,8 @@ const
   _                   = require('lodash'),
   ScrollStream        = require('elasticsearch-scroll-stream'),
   queryStringToParams = require('../queryStringToParams'),
-  {buildRequestBody}  = require('../documentQueryBuilder')
+  {buildRequestBody}  = require('../documentQueryBuilder'),
+  reference           = require('co-reference')
 ;
 
 const recordsManager = module.exports;
@@ -34,6 +35,7 @@ recordsManager.search = search;
 recordsManager.searchByIdConditors = searchByIdConditors;
 recordsManager.filterByCriteria = filterByCriteria;
 recordsManager.getScrollStreamFilterByCriteria = getScrollStreamFilterByCriteria;
+recordsManager.getNoticeReference = getNoticeReference;
 recordsManager.getDuplicatesByIdConditor = getDuplicatesByIdConditor;
 recordsManager.getNearDuplicatesByIdConditor = getNearDuplicatesByIdConditor;
 
@@ -205,6 +207,16 @@ function search ({q, aggs, sort, ...options}) {
         .then(esResultFormat.getResult)
         .then(paginate)
         ;
+    });
+}
+
+function getNoticeReference (duplicates) {
+  return Promise
+    .resolve()
+    .then(() => {
+      let selection = reference.select(duplicates);
+      if (!selection.err) return selection.res;
+      else return selection;
     });
 }
 

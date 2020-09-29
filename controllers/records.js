@@ -170,6 +170,20 @@ router.get('/records/:idConditor([0-9A-Za-z_~]+)/tei', (req, res, next) => {
 
 });
 
+// /records/{idConditor}/reference
+router.get('/records/:idConditor([0-9A-Za-z_~]+)/reference', (req, res, next) => {
+  validateQueryString(req.query, records.getDuplicatesByIdConditor.options, 'access_token', 'debug')
+    .then(getInvalidOptionsHandler(res))
+    .then((query) => {
+      return records
+        .getDuplicatesByIdConditor(req.params.idConditor, query, 'and_self')
+        .then(function(result) { return records.getNoticeReference(result.hits); })
+        .then((result) => res.json(result))
+        .catch(next)
+        ;
+    });
+});
+
 
 // /records/{idConditor}/duplicates
 router.get('/records/:idConditor([0-9A-Za-z_~]+)/duplicates', (req, res, next) => {
