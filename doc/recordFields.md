@@ -52,9 +52,9 @@ Liste des champs du JSON par ordre alphabétique :
 | duplicates.sessionName | String | nom de la session : SOURCE_date d'ingestion | x |  | 
 | duplicates.source | String | source de la notice qui a été appariée comme doublon certain | x |  |
 | duplicates.sourceUid | String | identifiant source de la notice qui a été appariée comme doublon certain | x | x |
-| editor.forename | String | prénom de l'éditeur |  | x |
-| editor.idRef | String | identifiant idRef de l'éditeur |  | x |
-| editor.surname | String | nom de l'éditeur |  | x |   
+| editor.forename | String | prénom de l'éditeur scientifique |  | x |
+| editor.idRef | String | identifiant idRef de l'éditeur scientifique |  | x |
+| editor.surname | String | nom de l'éditeur scientifique |  | x |   
 | eisbn | String | isbn électronique |  |  | 
 | eissn | String | issn électronique |  |  | 
 | electronicPublicationDate | String | date de publication (électronique) présente dans la notice source |  |  |
