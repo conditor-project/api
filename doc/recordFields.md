@@ -39,8 +39,8 @@ Liste des champs du JSON par ordre alphabétique :
 | creationDate | date | date de création de la notice | x |  | 
 | defenseOrganisms.associatedLaboratory | String | laboratoire associé de l'organisme de soutenance |  | x | 
 | defenseOrganisms.associatedLaboratoryIdRef | String | identifiant idRef du laboratoire associé de l'organisme de soutenance |  | x | 
-| defenseOrganisms.degreeGrantor | String | organisme qui délivre le diplôme |  | x | 
-| defenseOrganisms.degreeGrantorIdRef | String | identifiant idRef de l'organisme qui délivre le diplôme  |  | x | 
+| defenseOrganisms.degreeGrantor | String | organisme de soutenance |  | x | 
+| defenseOrganisms.degreeGrantorIdRef | String | identifiant idRef de l'organisme de soutenance  |  | x | 
 | defenseOrganisms.doctoralSchool | String | école doctorale de l'organisme de soutenance |  | x | 
 | defenseOrganisms.doctoralSchoolIdRef | String | identifiant idRef de l'école doctorale de l'organisme de soutenance |  | x | 
 | documentType | String | type de document de la source |  |  | 
