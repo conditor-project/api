@@ -134,7 +134,7 @@ Liste des champs du JSON par ordre alphabétique :
 | publishingDirector.surname | String | nom du directeur de publication |  | x | 
 | reportNumber | String | numéro de rapport |  |  | 
 | researcherId | String | identifiant WoS de l'auteur |  |  | 
-| rnsr | String | code RNSR de la notice initiale |  | x |
+| rnsr | String | code RNSR de la notice initiale |  |  |
 | sciencespo | String | identifiant du document de Sciences Po |  |  | 
 | sessionName | String | nom de la session : SOURCE_date d'ingestion | x |  | 
 | source | String | source de la notice | x |  | 
