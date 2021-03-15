@@ -69,7 +69,7 @@ Liste des champs du JSON par ordre alphabétique :
 | ensam | String | identifiant de document ensam (lien vers le document) |  |  | 
 | first3AuthorNames | String | 3 premiers auteurs prénom complet ou initiale si la source propose uniquement l'initiale (utile au dédoublonnage) | x |  | 
 | first3AuthorNamesWithInitials | String | 3 premiers auteurs initiale du prénom (utile au dédoublonnage) | x |  | 
-| fulltextPath | String | chemin ver le texte intégral |  | x | 
+| fulltextPath | String | chemin ver le texte intégral |  |  | 
 | funders.grantNumber | String | numéro du financement |  | x | 
 | funders.name | String | nom du financeur |  | x |
 | halAuthorId | String | liste des identifiants Hal des auteurs |  |  | 
