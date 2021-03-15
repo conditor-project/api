@@ -107,12 +107,12 @@ Liste des champs du JSON par ordre alphabétique :
 | nearDuplicates.source | String | source de la notice appariée comme doublon incertain | x |  |
 | nearDuplicates.sourceUid | String | identifiant source de la notice appariée comme doublon incertain | x | x |  
 | nearDuplicates.type | String | type Conditor du document source de la notice appariée comme doublon incertain | x |  | 
-| nearDuplicatesDetectedBySimilarity.duplicateBySymmetry | boolean | doublon incertain par symétrie | x | x |
-| nearDuplicatesDetectedBySimilarity.idConditor | String | idConditor du doublon incertain par symétrie | x | x |
-| nearDuplicatesDetectedBySimilarity.similarityRate | number | taux de similarité du doublon incertain par symétrie | x | x |
-| nearDuplicatesDetectedBySimilarity.source | String | source du doublon incertain par symétrie | x | x |
+| nearDuplicatesDetectedBySimilarity.duplicateBySymmetry | boolean | doublon incertain par symétrie | x |  |
+| nearDuplicatesDetectedBySimilarity.idConditor | String | idConditor du doublon incertain par symétrie | x |  |
+| nearDuplicatesDetectedBySimilarity.similarityRate | number | taux de similarité du doublon incertain par symétrie | x |  |
+| nearDuplicatesDetectedBySimilarity.source | String | source du doublon incertain par symétrie | x |  |
 | nearDuplicatesDetectedBySimilarity.sourceUid | String | identifiant source du doublon incertain par symétrie | x | x |
-| nearDuplicatesDetectedBySimilarity.type | String | type de document Conditor du doublon incertain par symétrie | x | x |
+| nearDuplicatesDetectedBySimilarity.type | String | type de document Conditor du doublon incertain par symétrie | x |  |
 | nnt | String | identifiant des thèses |  |  | 
 | oatao | String | identifiant du document de l'archive de Toulouse |  |  | 
 | okina | String | identifiant du document de l'archive d'Angers |  |  | 
