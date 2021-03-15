@@ -19,9 +19,9 @@ Liste des champs du JSON par ordre alphabétique :
 | authors.affiliations.isni | String | identifiant isni de la structure |  |  | 
 | authors.affiliations.ref | String | identifiant AuréHal de la structure |  |  | 
 | authors.affiliations.rnsr | String | identifiant RNSR de la structure |  |  | 
-| authors.enrichments.idHal | String | identifiant idHal de l'auteur attribué par alignement à partir des données idRef | x | x | 
-| authors.enrichments.idRef | String | identifiant idRef de l'auteur attribué par alignement à partir des données idRef | x | x | 
-| authors.enrichments.orcId | String | identifiant orcId de l'auteur attribué par alignement à partir des données idRef | x | x | 
+| authors.enrichments.idHal | String | identifiant idHal de l'auteur attribué par alignement à partir des données idRef (équivalence idRef ou orcId avec idHal) | x | x | 
+| authors.enrichments.idRef | String | identifiant idRef de l'auteur attribué par alignement à partir des données idRef (équivalence idHal ou orcId avec idRef) | x | x | 
+| authors.enrichments.orcId | String | identifiant orcId de l'auteur attribué par alignement à partir des données idRef (équivalence idHal ou idRef avec orcId)| x | x | 
 | authors.forename | String | prénom de l'auteur |  |  | 
 | authors.halAuthorId | String | identifiant Hal de l'auteur |  |  | 
 | authors.idHal | String | identifiant Hal de l'auteur regroupant les halAuthorId |  |  | 
@@ -59,11 +59,11 @@ Liste des champs du JSON par ordre alphabétique :
 | eisbn | String | isbn électronique |  |  | 
 | eissn | String | issn électronique |  |  | 
 | electronicPublicationDate | String | date de publication (électronique) présente dans la notice source |  |  |
-| enrichments.classifications.bso | String | classification issue du bso | x | x |
-| enrichments.classifications.scienceMetrix.level | String | niveau de la classification issue de Science Metrix | x | x |
-| enrichments.classifications.scienceMetrix.value | String | valeur de la classification issue de Science Metrix | x | x |
-| enrichments.classifications.scopus.level | String | niveau de la classification issue de Scopus | x | x |
-| enrichments.classifications.scopus.value | String | valeur de la classification issue de Scopus | x | x |
+| enrichments.classifications.bso | String | classification issue du BSO à partir du DOI| x | x |
+| enrichments.classifications.scienceMetrix.level | String | niveau de la classification issue de Science Metrix à partir de l'ISSN| x | x |
+| enrichments.classifications.scienceMetrix.value | String | valeur de la classification issue de Science Metrix à partir de l'ISSN| x | x |
+| enrichments.classifications.scopus.level | String | niveau de la classification issue de Scopus à partir de l'ISSN | x | x |
+| enrichments.classifications.scopus.value | String | valeur de la classification issue de Scopus à partir de l'ISSN | x | x |
 | enrichments.oa.core | String | mention d'Open Access d'après Core | x | x |
 | enrichments.oa.unpaywall | String | mention d'Open Access d'après Unpaywall | x | x |
 | ensam | String | identifiant de document ensam (lien vers le document) |  |  | 
