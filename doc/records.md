@@ -40,46 +40,46 @@ Il est aussi possible de faire une requête sur un champ imbriqué (par exemple,
 
 Faire une recherche sur un nom d'auteur :
 ```url
-https://api-integ.conditor.fr/v1/records?q="first3AuthorNames:bob"
+https://api.conditor.fr/v1/records?q="first3AuthorNames:bob"&access_token=
 ```
 
 Faire une recherche sur les codes RNSR (nested query) :
 ```url
-https://api-integ.conditor.fr/v1/records?q=authors>affiliations>"authors.affiliations.rnsr:199218201Y"
+https://api.conditor.fr/v1/records?q=authors>affiliations>"authors.affiliations.rnsr:199218201Y"&access_token=
 ```
 
 Faire une recherche sur les adresses des affiliations auteurs (nested query) :
 ```url
-https://api-integ.conditor.fr/v1/records?q=authors>affiliations>"authors.affiliations.address:rennes"
+https://api.conditor.fr/v1/records?q=authors>affiliations>"authors.affiliations.address:rennes"&access_token=
 ```
 
 Déclencher un scroll :
 ```url
-https://api-integ.conditor.fr/v1/records?scroll=5m
+https://api.conditor.fr/v1/records?scroll=5m&access_token=
 ```
 Renvoyer uniquement le champ authors de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authors
+https://api.conditor.fr/v1/records?includes=authors&access_token=
 ```
 Renvoyer uniquement les champs authors et idConditor de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authors,idConditor
+https://api.conditor.fr/v1/records?includes=authors,idConditor&access_token=
 ```
 Renvoyer uniquement le sous-champ surname de authors de chaque notice :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authors.surname
+https://api.conditor.fr/v1/records?includes=authors.surname&access_token=
 ```
 Exclure le champ authors :
 ```url
-https://api-integ.conditor.fr/v1/records?excludes=authors
+https://api.conditor.fr/v1/records?excludes=authors&access_token=
 ```
 Cumuler les paramètres `excludes` et `includes` :
 ```url
-https://api-integ.conditor.fr/v1/records?includes=authors&excludes=authors.surname
+https://api.conditor.fr/v1/records?includes=authors&excludes=authors.surname&access_token=
 ```
 Choisir nombre de résultats retournés :
 ```url
-https://api-integ.conditor.fr/v1/records?page_size=100
+https://api.conditor.fr/v1/records?page_size=100&access_token=
 ```
 
 ------
@@ -109,7 +109,7 @@ Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Ut
 Récupérer toutes les notices dans une archive en incluant uniquement le titre et la date de création.
 
 ```url
-https://api-integ.conditor.fr/v1/records/zip?includes=title,creationDate
+https://api.conditor.fr/v1/records/zip?includes=title,creationDate&access_token=
 ```
 
 ------
@@ -152,19 +152,19 @@ Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Ut
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate
+https://api.conditor.fr/v1/records/_filter/hal/2014/not_duplicate&access_token=
 ```
 
 Filtrer la réponse afin de récupérer des notices de hal publiées en 2014 marquées comme non-doublon en incluant uniquement l'idConditor :
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate?includes=idConditor
+https://api.conditor.fr/v1/records/_filter/hal/2014/not_duplicate?includes=idConditor&access_token=
 ```
 
 Filtrer la réponse afin de récupérer les notices publiées en 2014 marquées comme doublon certain et doublon incertain en incluant uniquement l'idConditor et le titre. Le tout filtré par une recherche sur l'auteur :
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?includes=idConditor,title&q="first3AuthorNames:bob"
+https://api.conditor.fr/v1/records/_filter/2014/duplicate/near_duplicate?includes=idConditor,title&q="first3AuthorNames:bob"&access_token=
 ```
 
 ------
@@ -204,13 +204,13 @@ Une recherche plus fine peut être effectuée grâce au paramètre d'url `q`. Ut
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2014 marquées comme non-doublon :
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/hal/2014/not_duplicate/zip
+https://api.conditor.fr/v1/records/_filter/hal/2014/not_duplicate/zip&access_token=
 ```
 
 Filtrer la réponse afin de récupérer une archive des notices de hal publiées en 2015 marquées comme doublon en incluant uniquement l'idConditor.
 
 ```url
-https://api-integ.conditor.fr/v1/records/_filter/hal/2015/duplicate/zip?includes=idConditor
+https://api.conditor.fr/v1/records/_filter/hal/2015/duplicate/zip?includes=idConditor&access_token=
 ```
 
 ------
@@ -240,12 +240,12 @@ Route de récupération d'une notice identifiée par son idConditor.
 Récupérer une notice identifiée :
 
 ```url
-https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz
+https://api.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz&access_token=
 ```
 Récupérer une notice identifiée et extraire le champ title :
 
 ```url
-https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?includes=title
+https://api.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?includes=title&access_token=
 ```
 
 ------
@@ -269,7 +269,7 @@ Route de récupération du TEI d'une notice identifiée.
 Récupérer le TEI d'une notice identifiée :
 
 ```url
-https://api-integ.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei
+https://api.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei&access_token=
 ```
 
 
