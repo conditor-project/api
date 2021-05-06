@@ -75,7 +75,7 @@
     "joi": "^14.3.1",
     "js-sha1": "^0.6.0",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "lucene-query-parser": "^1.2.0",
     "lz-string": "^1.4.4",
     "moment-duration-format": "^2.3.2",
