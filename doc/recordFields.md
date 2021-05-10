@@ -5,10 +5,9 @@ de champs à vocations techniques comme `idConditor`, `sessionName`, `isDuplicat
 
 Liste des champs du JSON par ordre alphabétique :
 
-| Champs      | Type    | Description                                | Champs Conditor                            | Nouveautés 2021 A venir                           |
+| Champs      | Type    | Description                                | Champs Conditor                            | Nouveautés 2021                            |
 | ----------- | ------- | ------------------------------------------ | ------------------------------------------ | ------------------------------------------ |
 | _score | number | score d'ElasticSearch en fonction de la requête | x |  | 
-| abstract | String | résumé en anglais |  | sera remplacé par abtract.en et abstract.fr |  
 | abstract.en | String | résumé en anglais |  | x |  | 
 | abstract.fr | String | résumé en français |  | x |  | 
 | articleNumber | String | numéro d'article |  |  | 
