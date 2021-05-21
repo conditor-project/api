@@ -37,7 +37,7 @@ Authorization: Bearer eyJzdWIiOiAiMTI...AxN
 Par exemple avec `curl` : 
 
 ```bash
-curl -H "Authorization: Bearer eyJzdWIiOiAiMTI...AxN" https://api-integ.conditor/v1/records
+curl -H "Authorization: Bearer eyJzdWIiOiAiMTI...AxN" https://api.conditor.fr/v1/records
 ```
 
 
@@ -45,7 +45,7 @@ curl -H "Authorization: Bearer eyJzdWIiOiAiMTI...AxN" https://api-integ.conditor
 **Via le paramètre d'URL `access_token`**
 
 ```url
-https://api.conditor.fr/v1/records/v1/records?access_token=eyJzdWIiOiAiMTI...AxN
+https://api.conditor.fr/v1/records?access_token=eyJzdWIiOiAiMTI...AxN
 ```
 
 
