@@ -9,10 +9,8 @@ L'API Conditor inclut dans son URL un numéro de version afin de permettre une m
 Exemple en version 1 :
 
 ```Url
-https://api-integ.conditor.fr/v1/records
+https://api.conditor.fr/v1/records
 ```
-
-Note : L'URL indiquée ci-dessus est provisoire et fait office d'URL de pré-production. L'URL finale sera https://api.conditor.fr
 
 
 ## Format de la réponse
