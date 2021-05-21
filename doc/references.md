@@ -9,7 +9,7 @@ L'API Conditor inclut dans son URL un numéro de version afin de permettre une m
 Exemple en version 1 :
 
 ```Url
-https://api.conditor.fr/v1/records
+https://api.conditor.fr/v1
 ```
 
 
