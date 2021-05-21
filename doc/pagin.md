@@ -44,7 +44,7 @@ En réponse vous obtenez dans les ***headers*** HTTP :
 Headers retournés correspondant à cet exemple :
 
 ```Headers
-Link:<https://api-integ.conditor.fr/v1/records/_filter/hal?page=1&page_size=5>; rel="first", <https://api-integ.conditor.fr/v1/records/_filter/hal?page=2&page_size=5>; rel="prev", <https://api-integ.conditor.fr/v1/records/_filter/hal?page=4&page_size=5>; rel="next", <https://api-integ.conditor.fr/v1/records/_filter/hal?page=2000&page_size=5>; rel="last"
+Link:<https://api.conditor.fr/v1/records/_filter/hal?page=1&page_size=5>; rel="first", <https://api-integ.conditor.fr/v1/records/_filter/hal?page=2&page_size=5>; rel="prev", <https://api-integ.conditor.fr/v1/records/_filter/hal?page=4&page_size=5>; rel="next", <https://api-integ.conditor.fr/v1/records/_filter/hal?page=2000&page_size=5>; rel="last"
 X-Result-Count:5
 X-Total-Count:93174
 ```
