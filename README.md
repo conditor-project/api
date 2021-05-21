@@ -126,7 +126,7 @@ make run-prod
 <a name="querying-the-api"></a>
 ## Querying the API
 
-The official, production version, of the Conditor API, is (or will be soon) available at https://api.conditor.fr
+The official, production version, of the Conditor API, is available at https://api.conditor.fr
 
 All available URLs are listed and descripted on [this page](./doc/records.md).
 
