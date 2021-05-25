@@ -240,7 +240,7 @@ Route de récupération d'une notice identifiée par son idConditor.
 Récupérer une notice identifiée :
 
 ```url
-https://api.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz&access_token=
+https://api.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz?&access_token=
 ```
 Récupérer une notice identifiée et extraire le champ title :
 
@@ -269,7 +269,7 @@ Route de récupération du TEI d'une notice identifiée.
 Récupérer le TEI d'une notice identifiée :
 
 ```url
-https://api.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei&access_token=
+https://api.conditor.fr/v1/records/xXFCmTU2kwDkCTJlyQz1gOgBz/tei?&access_token=
 ```
 
 
