@@ -62,7 +62,7 @@
     "elasticdump": "^6.16.0",
     "elasticsearch": "15.3.1",
     "elasticsearch-scroll-stream": "^1.2.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-useragent": "^1.0.13",
     "file-stream-rotator": "^0.4.1",
     "forever": "^1.0.0",
