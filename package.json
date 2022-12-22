@@ -74,7 +74,7 @@
     "ip-address": "^5.9.4",
     "joi": "^14.3.1",
     "js-sha1": "^0.6.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.15",
     "lucene-query-parser": "^1.2.0",
     "lz-string": "^1.4.4",
